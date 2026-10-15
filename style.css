@@ -181,3 +181,22 @@
   0% { opacity: 1; visibility: visible; }
   100% { opacity: 0; visibility: hidden; }
 }
+
+/* Mermaid Diagram Styling */
+.mermaid svg {
+  max-width: 100% !important;
+  height: auto !important;
+  font-family: inherit;
+}
+
+/* KaTeX Math Formula Display */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5em 0;
+  margin: 0.5em 0;
+}
+.katex {
+  font-size: 1.05em;
+  text-rendering: auto;
+}

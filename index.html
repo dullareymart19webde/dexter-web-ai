@@ -16,6 +16,12 @@
     <!-- Highlight.js for Code Syntax -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX for Math Equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- Mermaid for Flowcharts & Diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,6 +142,12 @@
           <button id="export-chat-btn" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border" title="Export Conversation (Markdown)">
             <i class="ph ph-download-simple text-base"></i>
             <span class="hidden sm:inline">Export</span>
+          </button>
+
+          <!-- Keyboard Shortcuts -->
+          <button id="shortcuts-btn" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border" title="Keyboard Shortcuts (?)">
+            <i class="ph ph-keyboard text-base"></i>
+            <span class="hidden md:inline">Shortcuts</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -260,7 +272,56 @@
               </div>
             </div>
           </div>
-          
+
+          <!-- Slash Commands Quick Menu -->
+          <div id="slash-commands-menu" class="hidden absolute bottom-[calc(100%+8px)] left-0 right-0 bg-card/95 backdrop-blur-2xl border border-border/80 shadow-2xl rounded-2xl p-2 z-40 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-bottom-2 duration-150">
+            <div class="text-[10px] font-bold text-muted-foreground/70 uppercase px-2.5 py-1 tracking-wider">Quick Commands (Type /)</div>
+            <div class="space-y-0.5" id="slash-commands-list">
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/summarize">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">/summarize</span>
+                  <span class="text-xs text-foreground">Summarize key points</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">3 bullet points</span>
+              </button>
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/fix">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">/fix</span>
+                  <span class="text-xs text-foreground">Find bugs & fix code</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">Debug & optimize</span>
+              </button>
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/explain">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">/explain</span>
+                  <span class="text-xs text-foreground">Explain concept simply</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">Simple analogies</span>
+              </button>
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/refactor">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">/refactor</span>
+                  <span class="text-xs text-foreground">Clean & modularize</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">Best practices</span>
+              </button>
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/test">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">/test</span>
+                  <span class="text-xs text-foreground">Generate unit tests</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">With edge cases</span>
+              </button>
+              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/translate">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/translate</span>
+                  <span class="text-xs text-foreground">Translate text</span>
+                </div>
+                <span class="text-[10px] text-muted-foreground">Multi-language</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Compact Chat Form Floating Island -->
           <form id="chat-form" class="relative flex items-center gap-1.5 bg-card/90 backdrop-blur-xl border border-border/80 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/15 rounded-2xl p-1.5 pl-2.5 transition-all duration-200 shadow-sm">
             
@@ -320,8 +381,8 @@
     <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
       <div class="absolute inset-0 bg-background/80 backdrop-blur-md modal-backdrop"></div>
-      <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
-        <div class="flex items-center justify-between pb-4 border-b border-border/60 mb-5">
+      <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-lg max-h-[88vh] flex flex-col overflow-hidden p-6 animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-border/60 shrink-0">
           <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <i class="ph-bold ph-gear text-lg"></i>
@@ -333,7 +394,7 @@
           </button>
         </div>
         
-        <div class="space-y-4">
+        <div class="space-y-4 overflow-y-auto pr-1 py-4 flex-1">
           <!-- Theme Setting Card -->
           <div class="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 border border-border/40">
             <div>
@@ -345,6 +406,39 @@
             </button>
           </div>
 
+          <!-- Custom System Instructions -->
+          <div class="p-3.5 rounded-2xl bg-secondary/50 border border-border/40 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold">Custom Instructions</h3>
+              <span class="text-[10px] font-medium text-muted-foreground">Persisted locally</span>
+            </div>
+            <p class="text-xs text-muted-foreground">What would you like Dexter to know about you to tailor responses?</p>
+            <textarea id="custom-instructions-input" rows="3" placeholder="e.g. I am a software engineer. Provide concise explanations and production-ready code with type annotations." class="w-full bg-card/70 text-foreground px-3 py-2 rounded-xl text-xs border border-border/60 focus:border-indigo-500/50 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 resize-none transition-all"></textarea>
+          </div>
+
+          <!-- Text-to-Speech Customizer -->
+          <div class="p-3.5 rounded-2xl bg-secondary/50 border border-border/40 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold">Voice & Speech (TTS)</h3>
+              <button id="test-voice-btn" type="button" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                <i class="ph ph-speaker-high"></i> Test Voice
+              </button>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[11px] font-medium text-muted-foreground">Voice</label>
+              <select id="tts-voice-select" class="w-full bg-card/70 text-foreground px-2.5 py-1.5 rounded-xl text-xs border border-border/60 focus:border-indigo-500/50 focus:outline-none">
+                <option value="">Default System Voice</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>Speed Rate</span>
+                <span id="tts-speed-val" class="font-mono text-foreground font-semibold">1.0x</span>
+              </div>
+              <input type="range" id="tts-speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-indigo-600 cursor-pointer">
+            </div>
+          </div>
+
           <!-- API Key Status Card -->
           <div class="p-3.5 rounded-2xl bg-secondary/50 border border-border/40 space-y-2">
             <div class="flex items-center justify-between">
@@ -353,7 +447,7 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected
               </span>
             </div>
-            <p class="text-xs text-muted-foreground">Model: <span class="font-mono font-medium text-foreground">gemini-2.5-flash</span></p>
+            <p class="text-xs text-muted-foreground">Model: <span class="font-mono font-medium text-foreground">gemini-2.5-flash</span> (Free Tier)</p>
             <input type="password" value="********************************" disabled class="w-full bg-card/60 text-muted-foreground px-3 py-2 rounded-xl text-xs font-mono border border-border/50 opacity-70 cursor-not-allowed">
           </div>
 
@@ -364,6 +458,81 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-md shortcuts-backdrop"></div>
+      <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3.5 border-b border-border/60 mb-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <i class="ph-bold ph-keyboard text-lg"></i>
+            </div>
+            <h2 class="text-lg font-bold">Keyboard Shortcuts</h2>
+          </div>
+          <button id="close-shortcuts-btn" class="p-2 hover:bg-secondary rounded-xl transition-colors text-muted-foreground hover:text-foreground">
+            <i class="ph ph-x text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Collapse / Expand Prompt Bar</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Ctrl + K</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Send Message</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Enter</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Add New Line in Prompt</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Shift + Enter</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Quick Slash Commands</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">/</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Shortcuts Cheat Sheet</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">? or Ctrl + /</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Close Modals / Cancel</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Esc</kbd>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Session Modal -->
+    <div id="rename-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-md rename-backdrop"></div>
+      <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-sm p-5 animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-border/60 mb-3.5">
+          <h3 class="text-base font-bold">Rename Chat</h3>
+          <button id="close-rename-btn" class="p-1.5 hover:bg-secondary rounded-xl text-muted-foreground hover:text-foreground">
+            <i class="ph ph-x text-base"></i>
+          </button>
+        </div>
+        <form id="rename-form" class="space-y-3">
+          <input type="text" id="rename-input" maxlength="60" class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Chat title...">
+          <div class="flex items-center justify-end gap-2 pt-1">
+            <button type="button" id="cancel-rename-btn" class="px-3 py-1.5 rounded-xl hover:bg-secondary text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
+            <button type="submit" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Drag-and-Drop Anywhere Overlay -->
+    <div id="drag-drop-overlay" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-background/85 backdrop-blur-md pointer-events-none transition-all duration-200">
+      <div class="p-8 rounded-3xl border-2 border-dashed border-indigo-500 bg-card/90 shadow-2xl flex flex-col items-center gap-3 animate-in zoom-in-95 duration-150 text-center max-w-sm">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center animate-bounce">
+          <i class="ph-bold ph-cloud-arrow-up text-3xl"></i>
+        </div>
+        <p class="text-base font-bold text-foreground">Drop file to analyze</p>
+        <p class="text-xs text-muted-foreground">Images, documents, PDF, audio, and code files</p>
       </div>
     </div>
 
