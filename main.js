@@ -542,19 +542,19 @@ function appendMessage(role, text, fileInfo = null) {
     
     msgDiv.appendChild(innerBubble);
   } else {
-    // Dexter Message
+    // Dexter Message - Frameless and clean, just like ChatGPT/Claude
     const wrapperDiv = document.createElement("div");
-    wrapperDiv.className = "flex gap-3.5 max-w-[95%] sm:max-w-[85%]";
+    wrapperDiv.className = "flex gap-3.5 w-full";
     
     // Avatar
     const avatar = document.createElement("div");
-    avatar.className = `w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-1 shadow-sm ring-1 ring-border/80 ${isGrouped ? 'invisible' : ''}`;
+    avatar.className = `w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-0.5 shadow-sm ring-1 ring-border/80 ${isGrouped ? 'invisible' : ''}`;
     avatar.innerHTML = '<img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />';
     
     const contentWrapper = document.createElement("div");
-    contentWrapper.className = "flex flex-col gap-1.5 w-full min-w-0";
+    contentWrapper.className = "flex flex-col gap-1 w-full min-w-0";
 
-    innerBubble.className = `w-fit rounded-2xl bg-card/90 backdrop-blur-md border border-border/80 text-card-foreground px-5 py-4 shadow-sm markdown-body overflow-x-auto ${isGrouped ? 'rounded-tl-xl' : 'rounded-tl-sm'}`;
+    innerBubble.className = "w-full text-foreground markdown-body overflow-x-auto leading-relaxed text-[15px] pt-0.5";
     
     const typingDotsHtml = `
       <div class="typing-indicator flex items-center gap-1.5 py-1">
@@ -744,11 +744,11 @@ function showTypingIndicator() {
   div.className = "flex w-full justify-start animate-in fade-in duration-300";
   
   div.innerHTML = `
-    <div class="flex gap-3.5 max-w-[85%]">
-      <div class="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-1 shadow-sm border border-border/80">
+    <div class="flex gap-3.5 items-center">
+      <div class="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 shadow-sm ring-1 ring-border/80">
         <img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />
       </div>
-      <div class="rounded-2xl rounded-tl-sm bg-card/90 backdrop-blur-md border border-border/80 px-5 py-4 shadow-sm flex items-center gap-1.5 h-12">
+      <div class="flex items-center gap-1.5 py-2">
         <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
         <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
         <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
