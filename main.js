@@ -291,12 +291,12 @@ function appendMessage(role, text, imageUrl = null) {
   let contentElement = innerBubble; // The element where text will be injected
   
   if (role === 'user') {
-    innerBubble.className = `w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl bg-primary text-primary-foreground px-5 py-3 shadow-sm text-[15px] leading-relaxed whitespace-pre-wrap ${isGrouped ? 'rounded-tr-xl' : 'rounded-tr-sm'}`;
+    innerBubble.className = `w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-3.5 shadow-md shadow-indigo-500/15 text-[15px] leading-relaxed whitespace-pre-wrap ${isGrouped ? 'rounded-tr-xl' : 'rounded-tr-sm'}`;
     
     // Display uploaded photo in user message
     if (imageUrl) {
       const imgContainer = document.createElement("div");
-      imgContainer.className = "mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/10 max-w-sm";
+      imgContainer.className = "mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/10 max-w-sm shadow-sm";
       const imgEl = document.createElement("img");
       imgEl.src = imageUrl;
       imgEl.alt = "Uploaded image";
@@ -316,23 +316,23 @@ function appendMessage(role, text, imageUrl = null) {
   } else {
     // Dexter Message
     const wrapperDiv = document.createElement("div");
-    wrapperDiv.className = "flex gap-3 max-w-[95%] sm:max-w-[85%]";
+    wrapperDiv.className = "flex gap-3.5 max-w-[95%] sm:max-w-[85%]";
     
     // Avatar
     const avatar = document.createElement("div");
-    avatar.className = `w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 shadow-sm ring-1 ring-border ${isGrouped ? 'invisible' : ''}`;
+    avatar.className = `w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-1 shadow-sm ring-1 ring-border/80 ${isGrouped ? 'invisible' : ''}`;
     avatar.innerHTML = '<img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />';
     
     const contentWrapper = document.createElement("div");
-    contentWrapper.className = "flex flex-col gap-1 w-full min-w-0";
+    contentWrapper.className = "flex flex-col gap-1.5 w-full min-w-0";
 
-    innerBubble.className = `w-fit rounded-2xl bg-card border border-border text-card-foreground px-5 py-4 shadow-sm markdown-body overflow-x-auto ${isGrouped ? 'rounded-tl-xl' : 'rounded-tl-sm'}`;
+    innerBubble.className = `w-fit rounded-2xl bg-card/90 backdrop-blur-md border border-border/80 text-card-foreground px-5 py-4 shadow-sm markdown-body overflow-x-auto ${isGrouped ? 'rounded-tl-xl' : 'rounded-tl-sm'}`;
     
     const typingDotsHtml = `
       <div class="typing-indicator flex items-center gap-1.5 py-1">
-        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
-        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
-        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
       </div>
     `;
 
@@ -348,19 +348,19 @@ function appendMessage(role, text, imageUrl = null) {
 
     // Message Action Buttons
     const actionRow = document.createElement("div");
-    actionRow.className = "flex items-center gap-2 mt-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity";
+    actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-opacity";
     actionRow.innerHTML = `
-      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary p-1.5 rounded-full transition-colors copy-msg" title="Copy Message">
+      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors copy-msg" title="Copy Message">
         <i class="ph ph-copy text-sm"></i>
       </button>
-      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary p-1.5 rounded-full transition-colors regen-msg" title="Regenerate Response">
+      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors regen-msg" title="Regenerate Response">
         <i class="ph ph-arrows-clockwise text-sm"></i>
       </button>
-      <div class="h-3 w-px bg-border mx-1"></div>
-      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary p-1.5 rounded-full transition-colors" title="Good Response">
+      <div class="h-3 w-px bg-border/60 mx-1"></div>
+      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors" title="Good Response">
         <i class="ph ph-thumbs-up text-sm"></i>
       </button>
-      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary p-1.5 rounded-full transition-colors" title="Bad Response">
+      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors" title="Bad Response">
         <i class="ph ph-thumbs-down text-sm"></i>
       </button>
     `;
@@ -396,11 +396,11 @@ function appendMessage(role, text, imageUrl = null) {
     updateText: (newText) => {
       contentElement.dataset.rawText = newText;
       contentElement.innerHTML = marked.parse(newText) + `
-        <div class="mt-2 text-muted-foreground">
+        <div class="mt-2 text-indigo-500">
           <div class="typing-indicator flex items-center gap-1.5 py-1">
-            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
-            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
-            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
           </div>
         </div>
       `;
@@ -446,14 +446,14 @@ function showTypingIndicator() {
   div.className = "flex w-full justify-start animate-in fade-in duration-300";
   
   div.innerHTML = `
-    <div class="flex gap-3 max-w-[85%]">
-      <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 mt-1 shadow-sm border border-border">
+    <div class="flex gap-3.5 max-w-[85%]">
+      <div class="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-1 shadow-sm border border-border/80">
         <img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />
       </div>
-      <div class="rounded-2xl rounded-tl-sm bg-card border border-border px-5 py-4 shadow-sm flex items-center gap-1.5 h-12">
-        <div class="w-2 h-2 bg-muted-foreground rounded-full typing-dot"></div>
-        <div class="w-2 h-2 bg-muted-foreground rounded-full typing-dot"></div>
-        <div class="w-2 h-2 bg-muted-foreground rounded-full typing-dot"></div>
+      <div class="rounded-2xl rounded-tl-sm bg-card/90 backdrop-blur-md border border-border/80 px-5 py-4 shadow-sm flex items-center gap-1.5 h-12">
+        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
+        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
+        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
       </div>
     </div>
   `;
@@ -471,14 +471,20 @@ function removeTypingIndicator() {
 // Suggestion Buttons Logic
 document.querySelectorAll('.suggestion-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const spans = btn.querySelectorAll('span');
-    if (spans.length >= 2) {
-      const fullPrompt = `${spans[0].textContent} ${spans[1].textContent}`;
-      
+    let fullPrompt = btn.dataset.prompt;
+    if (!fullPrompt) {
+      const spans = btn.querySelectorAll('span');
+      if (spans.length >= 3) {
+        fullPrompt = `${spans[1].textContent.trim()} ${spans[2].textContent.trim()}`;
+      } else if (spans.length >= 2) {
+        fullPrompt = `${spans[0].textContent.trim()} ${spans[1].textContent.trim()}`;
+      }
+    }
+    
+    if (fullPrompt) {
       messageInput.value = fullPrompt;
       messageInput.style.height = 'auto';
       messageInput.style.height = (messageInput.scrollHeight) + 'px';
-      
       chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }
   });
@@ -508,11 +514,11 @@ function updateActiveSidebarClass() {
   items.forEach(item => {
     const isCurrent = item.dataset.sessionId === currentSessionId;
     if (isCurrent) {
-      item.classList.add("bg-secondary", "text-foreground");
-      item.classList.remove("text-muted-foreground");
+      item.classList.add("bg-secondary", "text-foreground", "shadow-sm", "border-border/80");
+      item.classList.remove("text-muted-foreground", "border-transparent");
     } else {
-      item.classList.remove("bg-secondary", "text-foreground");
-      item.classList.add("text-muted-foreground");
+      item.classList.remove("bg-secondary", "text-foreground", "shadow-sm", "border-border/80");
+      item.classList.add("text-muted-foreground", "border-transparent");
     }
   });
 }
@@ -572,7 +578,7 @@ async function loadChatHistory(sessionId) {
 function renderSidebarSessions(querySnapshot) {
   const historyList = document.getElementById("chat-history-list");
   if (!historyList) return;
-  historyList.innerHTML = '<div class="text-xs font-semibold text-muted-foreground px-2 py-2 uppercase tracking-wider">Recent</div>';
+  historyList.innerHTML = '<div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent</div>';
   
   if (querySnapshot.empty) {
     const emptyNotice = document.createElement("div");
@@ -588,7 +594,7 @@ function renderSidebarSessions(querySnapshot) {
     
     const container = document.createElement("div");
     container.dataset.sessionId = sessionId;
-    container.className = `group flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm font-medium transition-colors ${currentSessionId === sessionId ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`;
+    container.className = `group flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm font-medium border transition-all ${currentSessionId === sessionId ? 'bg-secondary text-foreground shadow-sm border-border/80' : 'text-muted-foreground border-transparent hover:bg-secondary/60 hover:text-foreground'}`;
     
     const titleBtn = document.createElement("button");
     titleBtn.className = "flex-1 text-left truncate flex items-center gap-2 py-1 min-w-0";
