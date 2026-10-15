@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Sessions Collection
+    match /sessions/{sessionId} {
+      allow read, delete: if true;
+      allow create, update: if request.resource.data.title is string
+                            && request.resource.data.title.size() > 0
+                            && request.resource.data.title.size() <= 100
+                            && request.resource.data.createdAt is timestamp;
+      
+      // Messages Subcollection
+      match /messages/{messageId} {
+        allow read, delete: if true;
+        allow create, update: if request.resource.data.role is string
+                              && request.resource.data.role in ['user', 'dexter', 'assistant', 'system']
+                              && request.resource.data.message is string
+                              && request.resource.data.message.size() <= 100000
+                              && request.resource.data.timestamp is timestamp
+                              && (!('image' in request.resource.data) || (request.resource.data.image is string && request.resource.data.image.size() <= 900000));
+      }
+    }
+  }
+}

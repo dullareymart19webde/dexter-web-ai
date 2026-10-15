@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, query, orderBy, serverTimestamp, getDocs, doc, setDoc, writeBatch } from "firebase/firestore";
+import { getFirestore, collection, addDoc, query, orderBy, serverTimestamp, getDocs, doc, setDoc, writeBatch, onSnapshot, deleteDoc } from "firebase/firestore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
@@ -501,17 +501,35 @@ function clearMessages() {
   if (welcomeScreen) welcomeScreen.style.display = 'flex';
 }
 
+function updateActiveSidebarClass() {
+  const historyList = document.getElementById("chat-history-list");
+  if (!historyList) return;
+  const items = historyList.querySelectorAll("[data-session-id]");
+  items.forEach(item => {
+    const isCurrent = item.dataset.sessionId === currentSessionId;
+    if (isCurrent) {
+      item.classList.add("bg-secondary", "text-foreground");
+      item.classList.remove("text-muted-foreground");
+    } else {
+      item.classList.remove("bg-secondary", "text-foreground");
+      item.classList.add("text-muted-foreground");
+    }
+  });
+}
+
 async function createNewSession(firstMessageText) {
-  currentSessionId = crypto.randomUUID();
-  const title = firstMessageText.length > 25 ? firstMessageText.substring(0, 25) + "..." : firstMessageText;
+  if (!currentSessionId) {
+    currentSessionId = crypto.randomUUID();
+  }
+  const cleanTitle = (firstMessageText || "New Chat").replace(/[\r\n]+/g, " ").trim();
+  const title = cleanTitle.length > 28 ? cleanTitle.substring(0, 28) + "..." : cleanTitle;
   try {
     await setDoc(doc(db, "sessions", currentSessionId), {
-      title: title,
+      title: title || "New Chat",
       createdAt: serverTimestamp()
     });
-    loadSidebarSessions(); 
   } catch (error) {
-    console.error("Error creating session", error);
+    console.error("Error creating session:", error);
   }
 }
 
@@ -537,7 +555,7 @@ async function saveMessageToFirestore(role, message, image = null) {
 async function loadChatHistory(sessionId) {
   clearMessages();
   currentSessionId = sessionId;
-  loadSidebarSessions(); // update active state in UI
+  updateActiveSidebarClass();
   try {
     const q = query(collection(db, "sessions", sessionId, "messages"), orderBy("timestamp", "asc"));
     const querySnapshot = await getDocs(q);
@@ -551,51 +569,94 @@ async function loadChatHistory(sessionId) {
   }
 }
 
-async function loadSidebarSessions() {
+function renderSidebarSessions(querySnapshot) {
   const historyList = document.getElementById("chat-history-list");
-  if(!historyList) return;
+  if (!historyList) return;
   historyList.innerHTML = '<div class="text-xs font-semibold text-muted-foreground px-2 py-2 uppercase tracking-wider">Recent</div>';
   
+  if (querySnapshot.empty) {
+    const emptyNotice = document.createElement("div");
+    emptyNotice.className = "text-xs text-muted-foreground/60 px-3 py-3 italic";
+    emptyNotice.textContent = "No previous chats";
+    historyList.appendChild(emptyNotice);
+    return;
+  }
+  
+  querySnapshot.forEach((docSnap) => {
+    const session = docSnap.data();
+    const sessionId = docSnap.id;
+    
+    const container = document.createElement("div");
+    container.dataset.sessionId = sessionId;
+    container.className = `group flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm font-medium transition-colors ${currentSessionId === sessionId ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`;
+    
+    const titleBtn = document.createElement("button");
+    titleBtn.className = "flex-1 text-left truncate flex items-center gap-2 py-1 min-w-0";
+    titleBtn.innerHTML = `<i class="ph ph-chat-circle text-muted-foreground flex-shrink-0 text-base"></i><span class="truncate">${session.title || "New Chat"}</span>`;
+    titleBtn.addEventListener("click", () => {
+      if (currentSessionId !== sessionId) {
+        loadChatHistory(sessionId);
+      }
+      if (window.innerWidth < 768) toggleSidebar();
+    });
+    
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "opacity-0 group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 p-1.5 rounded-lg transition-all ml-1 flex-shrink-0";
+    deleteBtn.title = "Delete Chat";
+    deleteBtn.innerHTML = '<i class="ph ph-trash text-sm"></i>';
+    deleteBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (confirm(`Delete "${session.title || "this chat"}"?`)) {
+        try {
+          await deleteDoc(doc(db, "sessions", sessionId));
+          if (currentSessionId === sessionId) {
+            currentSessionId = null;
+            clearMessages();
+          }
+        } catch (err) {
+          console.error("Error deleting session:", err);
+        }
+      }
+    });
+    
+    container.appendChild(titleBtn);
+    container.appendChild(deleteBtn);
+    historyList.appendChild(container);
+  });
+}
+
+function initSidebarSessionsListener() {
   try {
     const q = query(collection(db, "sessions"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    querySnapshot.forEach((docSnap) => {
-      const session = docSnap.data();
-      const sessionId = docSnap.id;
-      
-      const btn = document.createElement("button");
-      btn.className = `w-full text-left px-3 py-2 rounded-lg text-sm font-medium truncate transition-colors ${currentSessionId === sessionId ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}`;
-      btn.innerHTML = `<i class="ph ph-chat-circle mr-2 align-middle text-muted-foreground"></i>${session.title || "New Chat"}`;
-      
-      btn.addEventListener("click", () => {
-        if(currentSessionId !== sessionId) {
-          loadChatHistory(sessionId);
-        }
-        if (window.innerWidth < 768) toggleSidebar();
-      });
-      historyList.appendChild(btn);
+    onSnapshot(q, (snapshot) => {
+      renderSidebarSessions(snapshot);
+      dismissLoadingScreen();
+    }, (error) => {
+      console.warn("Real-time sessions listener error:", error);
+      dismissLoadingScreen();
     });
   } catch (error) {
-    console.warn("Error loading sessions: ", error);
+    console.warn("Error setting up sessions listener:", error);
+    dismissLoadingScreen();
   }
+}
 
-  // Fade out loading screen
+function dismissLoadingScreen() {
   const loadingScreen = document.getElementById("loading-screen");
   if (loadingScreen && !loadingScreen.classList.contains("fade-out")) {
     setTimeout(() => {
       loadingScreen.classList.add("fade-out");
       setTimeout(() => loadingScreen.remove(), 800);
-    }, 1500); // Show it for at least 1.5 seconds so it looks cool
+    }, 1200);
   }
 }
 
 const newChatBtn = document.getElementById("new-chat-btn");
-if(newChatBtn) {
+if (newChatBtn) {
   newChatBtn.addEventListener("click", () => {
     currentSessionId = null;
     clearMessages();
-    loadSidebarSessions();
+    updateActiveSidebarClass();
     if (window.innerWidth < 768) toggleSidebar();
   });
 }
@@ -695,7 +756,7 @@ chatForm.addEventListener("submit", async (e) => {
 
 
 window.addEventListener("DOMContentLoaded", () => {
-  loadSidebarSessions();
+  initSidebarSessionsListener();
   
   
   setTimeout(() => {
