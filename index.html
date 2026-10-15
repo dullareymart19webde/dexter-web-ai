@@ -60,42 +60,44 @@
     </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-68 md:w-72 h-full border-r border-border/80 bg-card/60 backdrop-blur-2xl flex flex-col transition-all duration-300 z-30 transform -translate-x-full md:translate-x-0 absolute md:relative shadow-sm">
-      <div class="p-4 border-b border-border/60 flex items-center justify-between gap-2">
-        <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 shadow-sm shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.98]">
-          <i class="ph-bold ph-plus text-base"></i>
-          <span>New Chat</span>
-        </button>
-        <button id="close-sidebar" class="md:hidden p-2 rounded-xl hover:bg-secondary text-muted-foreground transition-colors">
-          <i class="ph ph-x text-lg"></i>
-        </button>
-      </div>
-
-      <!-- Search Past Chats -->
-      <div class="px-3 pt-2 pb-1">
-        <div class="relative flex items-center">
-          <i class="ph ph-magnifying-glass absolute left-2.5 text-muted-foreground text-xs pointer-events-none"></i>
-          <input type="text" id="history-search-input" placeholder="Search chats..." class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl pl-7 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all">
+    <aside id="sidebar" class="w-68 md:w-72 h-full border-r border-border/80 bg-card/60 backdrop-blur-2xl flex flex-col transition-all duration-300 z-30 transform -translate-x-full md:translate-x-0 absolute md:relative shadow-sm overflow-hidden shrink-0">
+      <div class="w-68 md:w-72 h-full flex flex-col shrink-0">
+        <div class="p-4 border-b border-border/60 flex items-center justify-between gap-2">
+          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 shadow-sm shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.98]">
+            <i class="ph-bold ph-plus text-base"></i>
+            <span>New Chat</span>
+          </button>
+          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Collapse sidebar (Ctrl+B)">
+            <i class="ph ph-sidebar-simple text-lg"></i>
+          </button>
         </div>
-      </div>
 
-      <!-- Chat History List -->
-      <div class="flex-1 overflow-y-auto p-3 space-y-1" id="chat-history-list">
-        <div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent</div>
-        <div class="text-xs text-muted-foreground/60 px-3 py-3 italic">No previous chats</div>
-      </div>
+        <!-- Search Past Chats -->
+        <div class="px-3 pt-2 pb-1">
+          <div class="relative flex items-center">
+            <i class="ph ph-magnifying-glass absolute left-2.5 text-muted-foreground text-xs pointer-events-none"></i>
+            <input type="text" id="history-search-input" placeholder="Search chats..." class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl pl-7 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all">
+          </div>
+        </div>
 
-      <!-- Sidebar Footer -->
-      <div class="p-3 border-t border-border/60 flex flex-col gap-1.5 bg-card/40">
-        <button id="open-settings-btn" class="flex items-center gap-2.5 text-sm font-medium text-muted-foreground hover:text-foreground w-full px-3 py-2 rounded-xl hover:bg-secondary/70 transition-colors">
-          <i class="ph ph-gear text-lg text-muted-foreground"></i>
-          <span>Settings</span>
-        </button>
-        <div class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
-          <span class="flex items-center gap-1.5 font-medium truncate">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Rey Mart Dulla
-          </span>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-secondary text-muted-foreground/80">Dexter AI</span>
+        <!-- Chat History List -->
+        <div class="flex-1 overflow-y-auto p-3 space-y-1" id="chat-history-list">
+          <div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent</div>
+          <div class="text-xs text-muted-foreground/60 px-3 py-3 italic">No previous chats</div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-border/60 flex flex-col gap-1.5 bg-card/40">
+          <button id="open-settings-btn" class="flex items-center gap-2.5 text-sm font-medium text-muted-foreground hover:text-foreground w-full px-3 py-2 rounded-xl hover:bg-secondary/70 transition-colors">
+            <i class="ph ph-gear text-lg text-muted-foreground"></i>
+            <span>Settings</span>
+          </button>
+          <div class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
+            <span class="flex items-center gap-1.5 font-medium truncate">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Rey Mart Dulla
+            </span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-secondary text-muted-foreground/80">Dexter AI</span>
+          </div>
         </div>
       </div>
     </aside>
@@ -104,9 +106,9 @@
     <div class="flex-1 flex flex-col h-full relative z-10 w-full overflow-hidden">
       <!-- Top Navigation Bar -->
       <header class="flex items-center justify-between px-4 sm:px-8 py-3.5 border-b border-border/60 bg-card/40 backdrop-blur-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] shrink-0">
-        <div class="flex items-center gap-3.5">
-          <button id="toggle-sidebar" class="md:hidden p-2 -ml-2 rounded-xl hover:bg-secondary text-muted-foreground transition-colors">
-            <i class="ph ph-list text-xl"></i>
+        <div class="flex items-center gap-3">
+          <button id="toggle-sidebar" class="p-2 -ml-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all flex items-center justify-center" title="Toggle sidebar (Ctrl+B)">
+            <i class="ph ph-sidebar-simple text-xl"></i>
           </button>
           
           <div class="relative w-10 h-10 rounded-2xl p-[1.5px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/20">
@@ -477,6 +479,10 @@
           </button>
         </div>
         <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Toggle Sidebar</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Ctrl + B</kbd>
+          </div>
           <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
             <span class="text-muted-foreground">Collapse / Expand Prompt Bar</span>
             <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Ctrl + K</kbd>

@@ -121,21 +121,37 @@ themeToggleBtn.addEventListener("click", () => {
 });
 
 
+function isDesktop() {
+  return window.innerWidth >= 768;
+}
+
 function toggleSidebar() {
-  sidebar.classList.toggle("-translate-x-full");
-  if (sidebar.classList.contains("-translate-x-full")) {
-    sidebarBackdrop.classList.add("hidden");
-    sidebarBackdrop.classList.remove("opacity-100");
+  if (isDesktop()) {
+    sidebar.classList.toggle("collapsed");
+    const isCollapsed = sidebar.classList.contains("collapsed");
+    localStorage.setItem("dexter_sidebar_collapsed", isCollapsed ? "true" : "false");
   } else {
-    sidebarBackdrop.classList.remove("hidden");
-   
-    setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
+    sidebar.classList.toggle("-translate-x-full");
+    if (sidebar.classList.contains("-translate-x-full")) {
+      sidebarBackdrop.classList.add("hidden");
+      sidebarBackdrop.classList.remove("opacity-100");
+    } else {
+      sidebarBackdrop.classList.remove("hidden");
+      setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
+    }
   }
+}
+
+// Restore desktop sidebar collapsed state on startup
+if (isDesktop() && localStorage.getItem("dexter_sidebar_collapsed") === "true") {
+  sidebar.classList.add("collapsed");
 }
 
 toggleSidebarBtn.addEventListener("click", toggleSidebar);
 closeSidebarBtn.addEventListener("click", toggleSidebar);
-sidebarBackdrop.addEventListener("click", toggleSidebar);
+sidebarBackdrop.addEventListener("click", () => {
+  if (!isDesktop()) toggleSidebar();
+});
 
 
 const settingsModal = document.getElementById("settings-modal");
@@ -703,6 +719,11 @@ window.addEventListener("keydown", (e) => {
     } else {
       collapseInput();
     }
+  }
+
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+    e.preventDefault();
+    toggleSidebar();
   }
 
   if ((e.ctrlKey || e.metaKey) && e.key === '/') {
