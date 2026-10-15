@@ -2,9 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, query, orderBy, serverTimestamp, getDocs, doc, setDoc, writeBatch } from "firebase/firestore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// ==========================================
-// CONFIGURATION: Replace these with your keys
-// ==========================================
+
 const firebaseConfig = {
   apiKey: "AIzaSyD-sUbdC9QLa6qNx7nhEfZhfUenG9gbk7I",
   authDomain: "dexter-ai-39dc5.firebaseapp.com",
@@ -17,15 +15,13 @@ const firebaseConfig = {
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// ==========================================
-// INITIALIZATION
-// ==========================================
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-// DOM Elements
+
 const messagesArea = document.getElementById("messages-area");
 const chatForm = document.getElementById("chat-form");
 const messageInput = document.getElementById("message-input");
@@ -45,13 +41,17 @@ const closeSidebarBtn = document.getElementById("close-sidebar");
 const sidebar = document.getElementById("sidebar");
 const sidebarBackdrop = document.getElementById("sidebar-backdrop");
 
-// State
+
 let currentBase64Image = null;
 let currentMimeType = null;
+let currentFullImageDataUrl = null;
 let lastUserMessage = "";
+let lastUserImage = null;
+let lastUserMimeType = null;
+let lastUserFullImageDataUrl = null;
 let isRecording = false;
 
-// Configure Marked.js Options
+
 if (marked.use) {
   marked.use({
     breaks: true,
@@ -64,9 +64,7 @@ if (marked.use) {
   });
 }
 
-// ==========================================
-// THEME TOGGLE
-// ==========================================
+
 themeToggleBtn.addEventListener("click", () => {
   const htmlDoc = document.documentElement;
   if (htmlDoc.getAttribute("data-theme") === "dark") {
@@ -78,9 +76,7 @@ themeToggleBtn.addEventListener("click", () => {
   }
 });
 
-// ==========================================
-// SIDEBAR LOGIC
-// ==========================================
+
 function toggleSidebar() {
   sidebar.classList.toggle("-translate-x-full");
   if (sidebar.classList.contains("-translate-x-full")) {
@@ -88,7 +84,7 @@ function toggleSidebar() {
     sidebarBackdrop.classList.remove("opacity-100");
   } else {
     sidebarBackdrop.classList.remove("hidden");
-    // small delay for transition
+   
     setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
   }
 }
@@ -97,9 +93,7 @@ toggleSidebarBtn.addEventListener("click", toggleSidebar);
 closeSidebarBtn.addEventListener("click", toggleSidebar);
 sidebarBackdrop.addEventListener("click", toggleSidebar);
 
-// ==========================================
-// SETTINGS MODAL LOGIC
-// ==========================================
+
 const settingsModal = document.getElementById("settings-modal");
 const openSettingsBtn = document.getElementById("open-settings-btn");
 const closeSettingsBtn = document.querySelector(".close-settings");
@@ -165,9 +159,7 @@ if(clearDataBtn) {
   });
 }
 
-// ==========================================
-// SCROLL TO BOTTOM LOGIC
-// ==========================================
+
 chatContainer.addEventListener("scroll", () => {
   const isScrolledUp = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight > 100;
   if (isScrolledUp) {
@@ -181,9 +173,7 @@ scrollToBottomBtn.addEventListener("click", () => {
   scrollToBottom();
 });
 
-// ==========================================
-// VOICE INPUT (WEB SPEECH API)
-// ==========================================
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (SpeechRecognition) {
   const recognition = new SpeechRecognition();
@@ -235,9 +225,7 @@ if (SpeechRecognition) {
   voiceButton.style.display = "none";
 }
 
-// ==========================================
-// IMAGE HANDLING
-// ==========================================
+
 imageUpload.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (file) {
@@ -250,6 +238,7 @@ imageUpload.addEventListener("change", (e) => {
       const base64Data = base64String.split(",")[1];
       currentBase64Image = base64Data;
       currentMimeType = file.type;
+      currentFullImageDataUrl = base64String;
     };
     reader.readAsDataURL(file);
   }
@@ -263,20 +252,16 @@ function clearImagePreview() {
   imagePreviewContainer.classList.add("hidden");
   currentBase64Image = null;
   currentMimeType = null;
+  currentFullImageDataUrl = null;
 }
 
-// ==========================================
-// UI HELPERS
-// ==========================================
 
-// Auto-resize textarea
 messageInput.addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
   if(this.value === '') this.style.height = 'auto';
 });
 
-// Handle Enter key
 messageInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -293,7 +278,7 @@ function hideWelcomeScreen() {
 
 let lastMessageRole = null;
 
-function appendMessage(role, text) {
+function appendMessage(role, text, imageUrl = null) {
   hideWelcomeScreen();
   
   const msgDiv = document.createElement("div");
@@ -307,7 +292,26 @@ function appendMessage(role, text) {
   
   if (role === 'user') {
     innerBubble.className = `w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl bg-primary text-primary-foreground px-5 py-3 shadow-sm text-[15px] leading-relaxed whitespace-pre-wrap ${isGrouped ? 'rounded-tr-xl' : 'rounded-tr-sm'}`;
-    innerBubble.textContent = text;
+    
+    // Display uploaded photo in user message
+    if (imageUrl) {
+      const imgContainer = document.createElement("div");
+      imgContainer.className = "mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/10 max-w-sm";
+      const imgEl = document.createElement("img");
+      imgEl.src = imageUrl;
+      imgEl.alt = "Uploaded image";
+      imgEl.className = "max-h-64 w-auto rounded-xl object-contain cursor-pointer hover:opacity-95 transition-opacity";
+      imgEl.onclick = () => window.open(imageUrl, '_blank');
+      imgContainer.appendChild(imgEl);
+      innerBubble.appendChild(imgContainer);
+    }
+
+    if (text && text !== "[Image attached]") {
+      const textDiv = document.createElement("div");
+      textDiv.textContent = text;
+      innerBubble.appendChild(textDiv);
+    }
+    
     msgDiv.appendChild(innerBubble);
   } else {
     // Dexter Message
@@ -324,9 +328,20 @@ function appendMessage(role, text) {
 
     innerBubble.className = `w-fit rounded-2xl bg-card border border-border text-card-foreground px-5 py-4 shadow-sm markdown-body overflow-x-auto ${isGrouped ? 'rounded-tl-xl' : 'rounded-tl-sm'}`;
     
+    const typingDotsHtml = `
+      <div class="typing-indicator flex items-center gap-1.5 py-1">
+        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+      </div>
+    `;
+
     if (text) {
       innerBubble.innerHTML = marked.parse(text);
       applySyntaxHighlighting(innerBubble);
+    } else {
+      // Waving dots while waiting or generating!
+      innerBubble.innerHTML = typingDotsHtml;
     }
     
     contentElement = innerBubble;
@@ -351,12 +366,11 @@ function appendMessage(role, text) {
     `;
     
     actionRow.querySelector('.copy-msg').addEventListener('click', () => {
-      // Need a way to get the latest text if it was streamed, we'll store it on the element
-      navigator.clipboard.writeText(innerBubble.dataset.rawText || text);
+      navigator.clipboard.writeText(innerBubble.dataset.rawText || text || "");
     });
 
     actionRow.querySelector('.regen-msg').addEventListener('click', () => {
-      if (lastUserMessage) {
+      if (lastUserMessage || lastUserImage) {
         msgDiv.remove();
         lastMessageRole = null; // reset grouping for regen
         chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
@@ -377,14 +391,23 @@ function appendMessage(role, text) {
   
   lastMessageRole = role;
 
-  // Return a controller for streaming updates
+  // Return a controller for streaming updates with waving dots while generating
   return {
     updateText: (newText) => {
       contentElement.dataset.rawText = newText;
-      contentElement.innerHTML = marked.parse(newText);
+      contentElement.innerHTML = marked.parse(newText) + `
+        <div class="mt-2 text-muted-foreground">
+          <div class="typing-indicator flex items-center gap-1.5 py-1">
+            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-muted-foreground rounded-full typing-dot inline-block"></span>
+          </div>
+        </div>
+      `;
       scrollToBottom();
     },
     finalize: () => {
+      contentElement.innerHTML = marked.parse(contentElement.dataset.rawText || "");
       applySyntaxHighlighting(contentElement);
       scrollToBottom();
     }
@@ -492,16 +515,20 @@ async function createNewSession(firstMessageText) {
   }
 }
 
-async function saveMessageToFirestore(role, message) {
+async function saveMessageToFirestore(role, message, image = null) {
   if (!currentSessionId) {
-    await createNewSession(message);
+    await createNewSession(message || "Image Query");
   }
   try {
-    await addDoc(collection(db, "sessions", currentSessionId, "messages"), {
+    const docData = {
       role: role,
-      message: message,
+      message: message || "",
       timestamp: serverTimestamp()
-    });
+    };
+    if (image && image.length < 800000) {
+      docData.image = image;
+    }
+    await addDoc(collection(db, "sessions", currentSessionId, "messages"), docData);
   } catch (error) {
     console.warn("Error saving message: ", error);
   }
@@ -517,7 +544,7 @@ async function loadChatHistory(sessionId) {
     
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
-      appendMessage(data.role, data.message);
+      appendMessage(data.role, data.message, data.image);
     });
   } catch (error) {
     console.warn("Error loading chat history: ", error);
@@ -626,22 +653,28 @@ chatForm.addEventListener("submit", async (e) => {
   let text = messageInput.value.trim();
   const hasImage = !!currentBase64Image;
   
-  if (!text && !hasImage && !lastUserMessage) return; 
+  if (!text && !hasImage && !lastUserMessage && !lastUserImage) return; 
 
   let displayMessage = text;
-  if (hasImage && !text) displayMessage = "[Image attached]";
+  let imageToDisplay = currentFullImageDataUrl;
+  let imgData = currentBase64Image;
+  let mimeData = currentMimeType;
   
   if (text || hasImage) {
-    appendMessage("user", displayMessage);
-    saveMessageToFirestore("user", displayMessage);
+    appendMessage("user", displayMessage, imageToDisplay);
+    saveMessageToFirestore("user", displayMessage, imageToDisplay);
     lastUserMessage = text; 
+    lastUserImage = currentBase64Image;
+    lastUserMimeType = currentMimeType;
+    lastUserFullImageDataUrl = currentFullImageDataUrl;
   } else {
+    // Regenerating
     text = lastUserMessage;
+    imgData = lastUserImage;
+    mimeData = lastUserMimeType;
   }
 
   const promptText = text;
-  const imgData = currentBase64Image;
-  const mimeData = currentMimeType;
   
   messageInput.value = "";
   messageInput.style.height = 'auto';
@@ -649,9 +682,8 @@ chatForm.addEventListener("submit", async (e) => {
   sendButton.disabled = true;
   if(voiceButton) voiceButton.disabled = true;
   
-  // We don't need typing indicator anymore since we stream immediately!
-  // Instead, create an empty Dexter message bubble that returns an updater
-  const updater = appendMessage("dexter", "...");
+  // Create an empty Dexter message bubble with waving typing dots!
+  const updater = appendMessage("dexter", null);
   
   const aiResponse = await streamDexterResponse(promptText, imgData, mimeData, updater);
   
@@ -661,13 +693,11 @@ chatForm.addEventListener("submit", async (e) => {
   if(voiceButton) voiceButton.disabled = false;
 });
 
-// ==========================================
-// ON LOAD
-// ==========================================
+
 window.addEventListener("DOMContentLoaded", () => {
   loadSidebarSessions();
   
-  // Safety timeout: dismiss loading screen after 3.5s maximum even if network is slow
+  
   setTimeout(() => {
     const loadingScreen = document.getElementById("loading-screen");
     if (loadingScreen && !loadingScreen.classList.contains("fade-out")) {
