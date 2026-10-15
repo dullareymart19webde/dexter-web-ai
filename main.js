@@ -40,6 +40,9 @@ const toggleSidebarBtn = document.getElementById("toggle-sidebar");
 const closeSidebarBtn = document.getElementById("close-sidebar");
 const sidebar = document.getElementById("sidebar");
 const sidebarBackdrop = document.getElementById("sidebar-backdrop");
+const collapseInputBtn = document.getElementById("collapse-input-btn");
+const collapsedInputPill = document.getElementById("collapsed-input-pill");
+const disclaimerText = document.getElementById("disclaimer-text");
 
 
 let currentBase64Image = null;
@@ -271,6 +274,47 @@ messageInput.addEventListener('keydown', function(e) {
   }
 });
 
+function collapseInput() {
+  chatForm.classList.add("hidden");
+  if (disclaimerText) disclaimerText.classList.add("hidden");
+  if (collapsedInputPill) {
+    collapsedInputPill.classList.remove("hidden");
+    collapsedInputPill.classList.add("flex");
+  }
+}
+
+function expandInput() {
+  if (collapsedInputPill) {
+    collapsedInputPill.classList.add("hidden");
+    collapsedInputPill.classList.remove("flex");
+  }
+  chatForm.classList.remove("hidden");
+  if (disclaimerText) disclaimerText.classList.remove("hidden");
+  messageInput.focus();
+}
+
+if (collapseInputBtn) {
+  collapseInputBtn.addEventListener("click", collapseInput);
+}
+
+if (collapsedInputPill) {
+  collapsedInputPill.addEventListener("click", expandInput);
+}
+
+window.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    if (chatForm.classList.contains("hidden")) {
+      expandInput();
+    } else {
+      collapseInput();
+    }
+  }
+  if (e.key === "Escape" && document.activeElement === messageInput && !messageInput.value) {
+    collapseInput();
+  }
+});
+
 function hideWelcomeScreen() {
   const welcomeScreen = document.getElementById("welcome-screen");
   if (welcomeScreen) welcomeScreen.style.display = 'none';
@@ -482,6 +526,7 @@ document.querySelectorAll('.suggestion-btn').forEach(btn => {
     }
     
     if (fullPrompt) {
+      expandInput();
       messageInput.value = fullPrompt;
       messageInput.style.height = 'auto';
       messageInput.style.height = (messageInput.scrollHeight) + 'px';
