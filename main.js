@@ -111,6 +111,8 @@ if (marked.use) {
 
 themeToggleBtn.addEventListener("click", () => {
   const htmlDoc = document.documentElement;
+  themeIcon.classList.add("theme-rotate");
+  setTimeout(() => themeIcon.classList.remove("theme-rotate"), 400);
   if (htmlDoc.getAttribute("data-theme") === "dark") {
     htmlDoc.setAttribute("data-theme", "light");
     themeIcon.classList.replace("ph-sun", "ph-moon");
@@ -776,7 +778,7 @@ function appendMessage(role, text, fileInfo = null) {
   const msgDiv = document.createElement("div");
   const isGrouped = lastMessageRole === role;
   const mtClass = isGrouped ? "mt-2" : "mt-6";
-  msgDiv.className = `flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ${role === 'user' ? 'justify-end' : 'justify-start'} ${mtClass}`;
+  msgDiv.className = `flex w-full message-fade-enter ${role === 'user' ? 'justify-end' : 'justify-start'} ${mtClass}`;
   
   const innerBubble = document.createElement("div");
   let contentElement = innerBubble;
@@ -858,7 +860,7 @@ function appendMessage(role, text, fileInfo = null) {
 
     // Message Action Buttons with Text-to-Speech
     const actionRow = document.createElement("div");
-    actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-opacity flex-wrap";
+    actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0 flex-wrap";
     actionRow.innerHTML = `
       <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors tts-msg" title="Listen / Read Aloud">
         <i class="ph ph-speaker-high text-sm"></i>
@@ -1285,7 +1287,7 @@ function renderSidebarSessions(querySnapshot) {
     
     const container = document.createElement("div");
     container.dataset.sessionId = sessionId;
-    container.className = `group flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm font-medium border transition-all ${isCurrent ? 'bg-secondary text-foreground shadow-sm border-border/80' : 'text-muted-foreground border-transparent hover:bg-secondary/60 hover:text-foreground'}`;
+    container.className = `session-item group flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm font-medium border transition-all ${isCurrent ? 'bg-secondary text-foreground shadow-sm border-border/80' : 'text-muted-foreground border-transparent hover:bg-secondary/60 hover:text-foreground'}`;
     
     const titleBtn = document.createElement("button");
     titleBtn.className = "flex-1 text-left truncate flex items-center gap-2 py-1 min-w-0";
