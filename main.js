@@ -832,30 +832,6 @@ function appendMessage(role, text, fileInfo = null) {
     contentWrapper.className = "flex flex-col gap-1 w-full min-w-0";
 
     innerBubble.className = "w-full text-foreground markdown-body overflow-x-auto leading-relaxed text-[15px] pt-0.5";
-    
-    const typingDotsHtml = `
-      <div class="typing-indicator flex items-center gap-1.5 py-1">
-        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
-        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
-        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
-      </div>
-    `;
-
-    if (text) {
-      innerBubble.innerHTML = marked.parse(text);
-      postProcessContent(innerBubble);
-      const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-      if (words > 0) {
-        const readMins = Math.max(1, Math.ceil(words / 200));
-        const badge = document.createElement("span");
-        badge.className = "stats-badge text-[10px] text-muted-foreground/60 font-mono px-2 py-0.5 rounded-full bg-secondary/50 border border-border/40 select-none ml-1.5 flex items-center gap-1";
-        badge.innerHTML = `<i class="ph ph-article text-xs"></i> <span>${words} words</span> · <span>~${readMins}m read</span>`;
-        actionRow.appendChild(badge);
-      }
-    } else {
-      innerBubble.innerHTML = typingDotsHtml;
-    }
-    
     contentElement = innerBubble;
 
     // Message Action Buttons with Text-to-Speech
@@ -879,6 +855,30 @@ function appendMessage(role, text, fileInfo = null) {
         <i class="ph ph-thumbs-down text-sm"></i>
       </button>
     `;
+
+    const typingDotsHtml = `
+      <div class="typing-indicator flex items-center gap-1.5 py-1">
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+        <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+      </div>
+    `;
+
+    if (text) {
+      innerBubble.dataset.rawText = text;
+      innerBubble.innerHTML = marked.parse(text);
+      postProcessContent(innerBubble);
+      const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+      if (words > 0) {
+        const readMins = Math.max(1, Math.ceil(words / 200));
+        const badge = document.createElement("span");
+        badge.className = "stats-badge text-[10px] text-muted-foreground/60 font-mono px-2 py-0.5 rounded-full bg-secondary/50 border border-border/40 select-none ml-1.5 flex items-center gap-1";
+        badge.innerHTML = `<i class="ph ph-article text-xs"></i> <span>${words} words</span> · <span>~${readMins}m read</span>`;
+        actionRow.appendChild(badge);
+      }
+    } else {
+      innerBubble.innerHTML = typingDotsHtml;
+    }
     
     actionRow.querySelector('.tts-msg').addEventListener('click', function() {
       speakText(innerBubble.dataset.rawText || text || "", this);
@@ -1237,12 +1237,25 @@ async function loadChatHistory(sessionId) {
   updateActiveSidebarClass();
   activeSessionHistory = [];
   try {
-    const q = query(collection(db, "sessions", sessionId, "messages"), orderBy("timestamp", "asc"));
+    const q = collection(db, "sessions", sessionId, "messages");
     const querySnapshot = await getDocs(q);
-    
+    const docsList = [];
     querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      appendMessage(data.role, data.message, data.image);
+      docsList.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    docsList.sort((a, b) => {
+      const getMs = (t) => {
+        if (!t) return 0;
+        if (typeof t.toMillis === 'function') return t.toMillis();
+        if (t.seconds) return t.seconds * 1000;
+        return new Date(t).getTime() || 0;
+      };
+      return getMs(a.timestamp) - getMs(b.timestamp);
+    });
+
+    docsList.forEach((data) => {
+      appendMessage(data.role || 'dexter', data.message, data.image);
       if (data.message) {
         activeSessionHistory.push({
           role: data.role === 'dexter' ? 'model' : 'user',
@@ -1251,7 +1264,7 @@ async function loadChatHistory(sessionId) {
       }
     });
   } catch (error) {
-    console.warn("Error loading chat history: ", error);
+    console.error("Error loading chat history: ", error);
   }
 }
 
