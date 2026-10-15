@@ -19,16 +19,36 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW error:', err));
+  });
+}
+
+// AI Personas Definition
+const PERSONAS = {
+  default: "You are Dexter, an intelligent, friendly, and highly capable AI assistant. Provide insightful, structured, clear, and accurate answers.",
+  architect: "You are a Principal Software Architect and elite engineer. You write clean, modular, scalable, type-safe, production-grade code. You anticipate edge cases, recommend design patterns, and explain architectural decisions concisely.",
+  tutor: "You are an elite academic professor and patient tutor. You break down complex STEM and general topics into intuitive, step-by-step explanations, utilizing analogies, real-world examples, and clear mathematical proofs where relevant.",
+  writer: "You are an award-winning executive communications strategist and senior copywriter. You write crisp, compelling, polished, and persuasive prose with immaculate tone, clarity, and formatting.",
+  debugger: "You are a seasoned senior security auditor and debugging specialist. You analyze code with laser focus on race conditions, memory leaks, performance bottlenecks, vulnerability vectors, and provide immediate hardened fixes."
+};
+
+let currentPersona = localStorage.getItem("dexter_persona") || "default";
+let isWebSearchEnabled = false;
 
 const messagesArea = document.getElementById("messages-area");
 const chatForm = document.getElementById("chat-form");
 const messageInput = document.getElementById("message-input");
-const imageUpload = document.getElementById("image-upload");
-const imagePreviewContainer = document.getElementById("image-preview-container");
+const fileUpload = document.getElementById("file-upload");
+const filePreviewContainer = document.getElementById("file-preview-container");
 const imagePreview = document.getElementById("image-preview");
-const removeImageBtn = document.getElementById("remove-image");
+const filePreviewBadge = document.getElementById("file-preview-badge");
+const filePreviewIcon = document.getElementById("file-preview-icon");
+const filePreviewName = document.getElementById("file-preview-name");
+const removeFileBtn = document.getElementById("remove-file-btn");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const themeIcon = document.getElementById("theme-icon");
 const sendButton = document.getElementById("send-button");
@@ -43,15 +63,18 @@ const sidebarBackdrop = document.getElementById("sidebar-backdrop");
 const collapseInputBtn = document.getElementById("collapse-input-btn");
 const collapsedInputPill = document.getElementById("collapsed-input-pill");
 const disclaimerText = document.getElementById("disclaimer-text");
+const personaSelect = document.getElementById("persona-select");
+const exportChatBtn = document.getElementById("export-chat-btn");
+const historySearchInput = document.getElementById("history-search-input");
+const webSearchToggle = document.getElementById("web-search-toggle");
+const webSearchIcon = document.getElementById("web-search-icon");
+const sandboxModal = document.getElementById("sandbox-modal");
+const sandboxIframe = document.getElementById("sandbox-iframe");
+const closeSandboxBtn = document.getElementById("close-sandbox-btn");
 
-
-let currentBase64Image = null;
-let currentMimeType = null;
-let currentFullImageDataUrl = null;
+let currentAttachedFile = null;
 let lastUserMessage = "";
-let lastUserImage = null;
-let lastUserMimeType = null;
-let lastUserFullImageDataUrl = null;
+let lastUserFile = null;
 let isRecording = false;
 
 
@@ -229,33 +252,183 @@ if (SpeechRecognition) {
 }
 
 
-imageUpload.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result;
-      imagePreview.src = base64String;
-      imagePreviewContainer.classList.remove("hidden");
-      
-      const base64Data = base64String.split(",")[1];
-      currentBase64Image = base64Data;
-      currentMimeType = file.type;
-      currentFullImageDataUrl = base64String;
-    };
-    reader.readAsDataURL(file);
+// Persona Selector Listener
+if (personaSelect) {
+  personaSelect.value = currentPersona;
+  personaSelect.addEventListener("change", (e) => {
+    currentPersona = e.target.value;
+    localStorage.setItem("dexter_persona", currentPersona);
+  });
+}
+
+// Google Web Search Toggle
+if (webSearchToggle) {
+  webSearchToggle.addEventListener("click", () => {
+    isWebSearchEnabled = !isWebSearchEnabled;
+    if (isWebSearchEnabled) {
+      webSearchToggle.classList.add("bg-indigo-500/20", "text-indigo-600", "dark:text-indigo-400", "ring-1", "ring-indigo-500/40");
+      webSearchToggle.title = "Live Web Search: Enabled (Gemini Google Grounding)";
+    } else {
+      webSearchToggle.classList.remove("bg-indigo-500/20", "text-indigo-600", "dark:text-indigo-400", "ring-1", "ring-indigo-500/40");
+      webSearchToggle.title = "Toggle Live Web Search";
+    }
+  });
+}
+
+// History Search
+if (historySearchInput) {
+  historySearchInput.addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    const historyList = document.getElementById("chat-history-list");
+    if (!historyList) return;
+    const items = historyList.querySelectorAll("[data-session-id]");
+    items.forEach(item => {
+      const title = (item.innerText || "").toLowerCase();
+      if (!term || title.includes(term)) {
+        item.classList.remove("hidden");
+      } else {
+        item.classList.add("hidden");
+      }
+    });
+  });
+}
+
+// Export Conversation
+if (exportChatBtn) {
+  exportChatBtn.addEventListener("click", () => {
+    const allChildren = Array.from(messagesArea.children).filter(c => c.id !== "welcome-screen");
+    if (allChildren.length === 0) {
+      alert("No messages to export yet.");
+      return;
+    }
+    let markdown = `# Dexter AI Conversation Export\n*Exported on ${new Date().toLocaleString()}*\n\n---\n\n`;
+    allChildren.forEach(msg => {
+      const isUser = msg.classList.contains("justify-end");
+      const bubble = msg.querySelector(".markdown-body") || msg.querySelector(".bg-gradient-to-r");
+      const text = bubble ? (bubble.dataset.rawText || bubble.innerText || "") : "";
+      if (isUser) {
+        markdown += `### 👤 User\n${text}\n\n`;
+      } else {
+        markdown += `### 🤖 Dexter AI\n${text}\n\n---\n\n`;
+      }
+    });
+
+    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dexter-chat-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+// Sandbox Modal Logic
+function openSandbox(code) {
+  if (sandboxIframe && sandboxModal) {
+    sandboxIframe.srcdoc = code;
+    sandboxModal.classList.remove("hidden");
+    sandboxModal.classList.add("flex");
   }
-});
+}
+function closeSandbox() {
+  if (sandboxModal && sandboxIframe) {
+    sandboxModal.classList.add("hidden");
+    sandboxModal.classList.remove("flex");
+    sandboxIframe.srcdoc = "";
+  }
+}
+if (closeSandboxBtn) closeSandboxBtn.addEventListener("click", closeSandbox);
+if (sandboxModal) {
+  sandboxModal.querySelector(".sandbox-backdrop")?.addEventListener("click", closeSandbox);
+}
 
-removeImageBtn.addEventListener("click", clearImagePreview);
+// Multi-Format File Upload Handling
+if (fileUpload) {
+  fileUpload.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-function clearImagePreview() {
-  imageUpload.value = "";
+    const isImage = file.type.startsWith("image/");
+    const isAudio = file.type.startsWith("audio/");
+    const isPdf = file.type === "application/pdf";
+    const isText = file.type.startsWith("text/") || 
+                   file.name.match(/\.(txt|md|csv|json|js|ts|py|html|css|xml|sql|sh)$/i);
+
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        imagePreview.src = base64String;
+        imagePreview.classList.remove("hidden");
+        filePreviewBadge.classList.add("hidden");
+        filePreviewContainer.classList.remove("hidden");
+
+        currentAttachedFile = {
+          type: "image",
+          mimeType: file.type,
+          base64Data: base64String.split(",")[1],
+          dataUrl: base64String,
+          name: file.name
+        };
+      };
+      reader.readAsDataURL(file);
+    } else if (isAudio || isPdf) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        imagePreview.classList.add("hidden");
+        filePreviewBadge.classList.remove("hidden");
+        filePreviewBadge.classList.add("flex");
+        filePreviewContainer.classList.remove("hidden");
+        filePreviewName.textContent = file.name;
+        filePreviewIcon.className = isAudio ? "ph ph-speaker-simple-high text-lg text-indigo-500" : "ph ph-file-pdf text-lg text-rose-500";
+
+        currentAttachedFile = {
+          type: isAudio ? "audio" : "pdf",
+          mimeType: file.type || (isPdf ? "application/pdf" : "audio/mp3"),
+          base64Data: base64String.split(",")[1],
+          dataUrl: null,
+          name: file.name
+        };
+      };
+      reader.readAsDataURL(file);
+    } else if (isText) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const textContent = reader.result;
+        imagePreview.classList.add("hidden");
+        filePreviewBadge.classList.remove("hidden");
+        filePreviewBadge.classList.add("flex");
+        filePreviewContainer.classList.remove("hidden");
+        filePreviewName.textContent = file.name;
+        filePreviewIcon.className = "ph ph-file-code text-lg text-indigo-500";
+
+        currentAttachedFile = {
+          type: "text",
+          textContent: textContent,
+          name: file.name
+        };
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Unsupported file format. Please attach images, audio, PDF, or code/text files.");
+    }
+  });
+}
+
+if (removeFileBtn) {
+  removeFileBtn.addEventListener("click", clearAttachedFile);
+}
+
+function clearAttachedFile() {
+  if (fileUpload) fileUpload.value = "";
   imagePreview.src = "";
-  imagePreviewContainer.classList.add("hidden");
-  currentBase64Image = null;
-  currentMimeType = null;
-  currentFullImageDataUrl = null;
+  imagePreview.classList.add("hidden");
+  filePreviewBadge.classList.add("hidden");
+  filePreviewBadge.classList.remove("flex");
+  filePreviewContainer.classList.add("hidden");
+  currentAttachedFile = null;
 }
 
 
@@ -322,35 +495,46 @@ function hideWelcomeScreen() {
 
 let lastMessageRole = null;
 
-function appendMessage(role, text, imageUrl = null) {
+function appendMessage(role, text, fileInfo = null) {
   hideWelcomeScreen();
   
   const msgDiv = document.createElement("div");
-  // Check if we should group this message
   const isGrouped = lastMessageRole === role;
   const mtClass = isGrouped ? "mt-2" : "mt-6";
   msgDiv.className = `flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ${role === 'user' ? 'justify-end' : 'justify-start'} ${mtClass}`;
   
   const innerBubble = document.createElement("div");
-  let contentElement = innerBubble; // The element where text will be injected
+  let contentElement = innerBubble;
   
   if (role === 'user') {
     innerBubble.className = `w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-3.5 shadow-md shadow-indigo-500/15 text-[15px] leading-relaxed whitespace-pre-wrap ${isGrouped ? 'rounded-tr-xl' : 'rounded-tr-sm'}`;
     
-    // Display uploaded photo in user message
-    if (imageUrl) {
-      const imgContainer = document.createElement("div");
-      imgContainer.className = "mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/10 max-w-sm shadow-sm";
-      const imgEl = document.createElement("img");
-      imgEl.src = imageUrl;
-      imgEl.alt = "Uploaded image";
-      imgEl.className = "max-h-64 w-auto rounded-xl object-contain cursor-pointer hover:opacity-95 transition-opacity";
-      imgEl.onclick = () => window.open(imageUrl, '_blank');
-      imgContainer.appendChild(imgEl);
-      innerBubble.appendChild(imgContainer);
+    // Display attached file or image
+    if (fileInfo) {
+      const isImg = (typeof fileInfo === 'string' && (fileInfo.startsWith('data:image') || fileInfo.startsWith('http'))) || 
+                    (fileInfo && fileInfo.type === 'image');
+      if (isImg) {
+        const imgContainer = document.createElement("div");
+        imgContainer.className = "mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/10 max-w-sm shadow-sm";
+        const imgEl = document.createElement("img");
+        imgEl.src = typeof fileInfo === 'string' ? fileInfo : (fileInfo.dataUrl || "");
+        imgEl.alt = "Uploaded image";
+        imgEl.className = "max-h-64 w-auto rounded-xl object-contain cursor-pointer hover:opacity-95 transition-opacity";
+        imgEl.onclick = () => window.open(imgEl.src, '_blank');
+        imgContainer.appendChild(imgEl);
+        innerBubble.appendChild(imgContainer);
+      } else {
+        const fileBadge = document.createElement("div");
+        fileBadge.className = "mb-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-xs font-medium w-fit";
+        const type = typeof fileInfo === 'object' ? fileInfo.type : 'file';
+        const name = typeof fileInfo === 'object' ? fileInfo.name : 'Attached file';
+        const iconName = type === 'audio' ? 'ph-speaker-simple-high' : (type === 'pdf' ? 'ph-file-pdf' : 'ph-file-code');
+        fileBadge.innerHTML = `<i class="ph ${iconName} text-base"></i> <span class="truncate max-w-[200px]">${name}</span>`;
+        innerBubble.appendChild(fileBadge);
+      }
     }
 
-    if (text && text !== "[Image attached]") {
+    if (text && text !== "[Image attached]" && text !== "[File attached]") {
       const textDiv = document.createElement("div");
       textDiv.textContent = text;
       innerBubble.appendChild(textDiv);
@@ -384,16 +568,18 @@ function appendMessage(role, text, imageUrl = null) {
       innerBubble.innerHTML = marked.parse(text);
       applySyntaxHighlighting(innerBubble);
     } else {
-      // Waving dots while waiting or generating!
       innerBubble.innerHTML = typingDotsHtml;
     }
     
     contentElement = innerBubble;
 
-    // Message Action Buttons
+    // Message Action Buttons with Text-to-Speech
     const actionRow = document.createElement("div");
     actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-opacity";
     actionRow.innerHTML = `
+      <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors tts-msg" title="Listen / Read Aloud">
+        <i class="ph ph-speaker-high text-sm"></i>
+      </button>
       <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors copy-msg" title="Copy Message">
         <i class="ph ph-copy text-sm"></i>
       </button>
@@ -409,14 +595,18 @@ function appendMessage(role, text, imageUrl = null) {
       </button>
     `;
     
+    actionRow.querySelector('.tts-msg').addEventListener('click', function() {
+      speakText(innerBubble.dataset.rawText || text || "", this);
+    });
+
     actionRow.querySelector('.copy-msg').addEventListener('click', () => {
       navigator.clipboard.writeText(innerBubble.dataset.rawText || text || "");
     });
 
     actionRow.querySelector('.regen-msg').addEventListener('click', () => {
-      if (lastUserMessage || lastUserImage) {
+      if (lastUserMessage || lastUserFile) {
         msgDiv.remove();
-        lastMessageRole = null; // reset grouping for regen
+        lastMessageRole = null;
         chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
       }
     });
@@ -435,7 +625,6 @@ function appendMessage(role, text, imageUrl = null) {
   
   lastMessageRole = role;
 
-  // Return a controller for streaming updates with waving dots while generating
   return {
     updateText: (newText) => {
       contentElement.dataset.rawText = newText;
@@ -458,12 +647,58 @@ function appendMessage(role, text, imageUrl = null) {
   };
 }
 
+// Text-to-Speech Helper
+function speakText(rawText, btn) {
+  if (!window.speechSynthesis) {
+    alert("Speech synthesis is not supported in this browser.");
+    return;
+  }
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    if (btn.dataset.speaking === "true") {
+      btn.dataset.speaking = "false";
+      btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+      return;
+    }
+  }
+  document.querySelectorAll('.tts-msg').forEach(b => {
+    b.dataset.speaking = "false";
+    b.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+  });
+
+  const clean = rawText
+    .replace(/```[\s\S]*?```/g, "Code block omitted.")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/[*#_~\[\]]/g, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .trim();
+
+  if (!clean) return;
+
+  const utterance = new SpeechSynthesisUtterance(clean);
+  btn.dataset.speaking = "true";
+  btn.innerHTML = '<i class="ph ph-stop-circle text-sm text-indigo-500 animate-pulse"></i>';
+
+  utterance.onend = () => {
+    btn.dataset.speaking = "false";
+    btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+  };
+  utterance.onerror = () => {
+    btn.dataset.speaking = "false";
+    btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
 function applySyntaxHighlighting(element) {
   element.querySelectorAll('pre code').forEach((block) => {
     hljs.highlightElement(block);
     const pre = block.parentElement;
     if (pre.querySelector('.copy-btn')) return; // already added
     pre.classList.add("relative", "group");
+
+    // Copy Code Button
     const copyBtn = document.createElement("button");
     copyBtn.className = "copy-btn absolute top-2 right-2 bg-secondary/80 text-secondary-foreground hover:bg-secondary p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 backdrop-blur-md";
     copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy';
@@ -473,6 +708,25 @@ function applySyntaxHighlighting(element) {
       setTimeout(() => copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy', 2000);
     };
     pre.appendChild(copyBtn);
+
+    // Live HTML / SVG Sandbox Preview Button
+    const codeText = block.innerText;
+    const isHtmlOrSvg = block.classList.contains("language-html") || 
+                        block.classList.contains("language-xml") || 
+                        block.classList.contains("language-svg") ||
+                        codeText.includes("<!DOCTYPE html>") || 
+                        codeText.includes("<html") || 
+                        codeText.includes("<svg");
+
+    if (isHtmlOrSvg) {
+      const previewBtn = document.createElement("button");
+      previewBtn.className = "preview-btn absolute top-2 right-20 bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 font-semibold shadow-sm";
+      previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Run';
+      previewBtn.onclick = () => {
+        openSandbox(codeText);
+      };
+      pre.appendChild(previewBtn);
+    }
   });
 }
 
@@ -713,29 +967,88 @@ if (newChatBtn) {
 }
 
 // ==========================================
-// GEMINI API CALL
+// GEMINI API CALL WITH PERSONAS & SEARCH
 // ==========================================
-async function streamDexterResponse(prompt, base64Image, mimeType, uiUpdater) {
+function getActiveModel() {
+  const personaInstruction = PERSONAS[currentPersona] || PERSONAS.default;
+  const config = {
+    model: "gemini-2.5-flash",
+    systemInstruction: personaInstruction
+  };
+  if (isWebSearchEnabled) {
+    config.tools = [{ googleSearch: {} }];
+  }
+  return genAI.getGenerativeModel(config);
+}
+
+async function streamDexterResponse(prompt, attachedFile, uiUpdater) {
   if (!GEMINI_API_KEY) {
     const errorText = "**Configuration Error:** Gemini API key is missing. Please set `VITE_GEMINI_API_KEY` in your environment variables (or Vercel dashboard).";
     uiUpdater.updateText(errorText);
     uiUpdater.finalize();
     return errorText;
   }
+
+  let activeModel = getActiveModel();
+
   try {
     let result;
-    if (base64Image && mimeType) {
-      const imagePart = {
-        inlineData: {
-          data: base64Image,
-          mimeType: mimeType
+    if (attachedFile) {
+      if (attachedFile.base64Data && attachedFile.mimeType) {
+        // Multimodal: image, audio, or PDF
+        const filePart = {
+          inlineData: {
+            data: attachedFile.base64Data,
+            mimeType: attachedFile.mimeType
+          }
+        };
+        const promptToUse = prompt || `Please analyze this attached ${attachedFile.type}.`;
+        try {
+          result = await activeModel.generateContentStream([promptToUse, filePart]);
+        } catch (callErr) {
+          if (isWebSearchEnabled) {
+            console.warn("Retrying without search grounding:", callErr);
+            const fallbackModel = genAI.getGenerativeModel({
+              model: "gemini-2.5-flash",
+              systemInstruction: PERSONAS[currentPersona] || PERSONAS.default
+            });
+            result = await fallbackModel.generateContentStream([promptToUse, filePart]);
+          } else {
+            throw callErr;
+          }
         }
-      };
-      const promptToUse = prompt || "Please describe this image.";
-      result = await model.generateContentStream([promptToUse, imagePart]);
+      } else if (attachedFile.textContent) {
+        // Text / code / CSV / JSON document
+        const fullPrompt = `Attached file "${attachedFile.name}":\n\`\`\`\n${attachedFile.textContent}\n\`\`\`\n\nUser request: ${prompt || "Please review or analyze this attached document."}`;
+        try {
+          result = await activeModel.generateContentStream(fullPrompt);
+        } catch (callErr) {
+          if (isWebSearchEnabled) {
+            const fallbackModel = genAI.getGenerativeModel({
+              model: "gemini-2.5-flash",
+              systemInstruction: PERSONAS[currentPersona] || PERSONAS.default
+            });
+            result = await fallbackModel.generateContentStream(fullPrompt);
+          } else {
+            throw callErr;
+          }
+        }
+      }
     } else {
       if (!prompt) return "";
-      result = await model.generateContentStream(prompt);
+      try {
+        result = await activeModel.generateContentStream(prompt);
+      } catch (callErr) {
+        if (isWebSearchEnabled) {
+          const fallbackModel = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            systemInstruction: PERSONAS[currentPersona] || PERSONAS.default
+          });
+          result = await fallbackModel.generateContentStream(prompt);
+        } else {
+          throw callErr;
+        }
+      }
     }
     
     let fullText = "";
@@ -763,46 +1076,41 @@ chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   
   let text = messageInput.value.trim();
-  const hasImage = !!currentBase64Image;
+  const fileToSubmit = currentAttachedFile;
   
-  if (!text && !hasImage && !lastUserMessage && !lastUserImage) return; 
+  if (!text && !fileToSubmit && !lastUserMessage && !lastUserFile) return; 
 
   let displayMessage = text;
-  let imageToDisplay = currentFullImageDataUrl;
-  let imgData = currentBase64Image;
-  let mimeData = currentMimeType;
+  let fileDataToDisplay = fileToSubmit;
   
-  if (text || hasImage) {
-    appendMessage("user", displayMessage, imageToDisplay);
-    saveMessageToFirestore("user", displayMessage, imageToDisplay);
+  if (text || fileToSubmit) {
+    appendMessage("user", displayMessage, fileDataToDisplay);
+    saveMessageToFirestore("user", displayMessage, fileDataToDisplay ? (fileDataToDisplay.dataUrl || fileDataToDisplay.name) : null);
     lastUserMessage = text; 
-    lastUserImage = currentBase64Image;
-    lastUserMimeType = currentMimeType;
-    lastUserFullImageDataUrl = currentFullImageDataUrl;
+    lastUserFile = fileToSubmit;
   } else {
     // Regenerating
     text = lastUserMessage;
-    imgData = lastUserImage;
-    mimeData = lastUserMimeType;
+    fileDataToDisplay = lastUserFile;
   }
 
   const promptText = text;
   
   messageInput.value = "";
   messageInput.style.height = 'auto';
-  clearImagePreview();
+  clearAttachedFile();
   sendButton.disabled = true;
-  if(voiceButton) voiceButton.disabled = true;
+  if (voiceButton) voiceButton.disabled = true;
   
   // Create an empty Dexter message bubble with waving typing dots!
   const updater = appendMessage("dexter", null);
   
-  const aiResponse = await streamDexterResponse(promptText, imgData, mimeData, updater);
+  const aiResponse = await streamDexterResponse(promptText, fileDataToDisplay, updater);
   
   saveMessageToFirestore("dexter", aiResponse);
   
   sendButton.disabled = false;
-  if(voiceButton) voiceButton.disabled = false;
+  if (voiceButton) voiceButton.disabled = false;
 });
 
 

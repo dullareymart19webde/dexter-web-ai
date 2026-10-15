@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dexter AI Assistant</title>
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="description" content="Dexter AI - Next-Gen Intelligent Workspace Companion with Multimodal Vision & Real-time AI">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="./style.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -62,6 +65,14 @@
         </button>
       </div>
 
+      <!-- Search Past Chats -->
+      <div class="px-3 pt-2 pb-1">
+        <div class="relative flex items-center">
+          <i class="ph ph-magnifying-glass absolute left-2.5 text-muted-foreground text-xs pointer-events-none"></i>
+          <input type="text" id="history-search-input" placeholder="Search chats..." class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl pl-7 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all">
+        </div>
+      </div>
+
       <!-- Chat History List -->
       <div class="flex-1 overflow-y-auto p-3 space-y-1" id="chat-history-list">
         <div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent</div>
@@ -109,8 +120,28 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="theme-toggle" class="p-2.5 rounded-2xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 border border-transparent hover:border-border" title="Toggle Theme">
-            <i class="ph ph-moon text-xl" id="theme-icon"></i>
+          <!-- AI Persona Selector -->
+          <div class="relative flex items-center">
+            <select id="persona-select" class="appearance-none bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold py-1.5 pl-7 pr-7 rounded-xl border border-border/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-colors">
+              <option value="default">⚡ Dexter (General)</option>
+              <option value="architect">💻 Code Architect</option>
+              <option value="tutor">🎓 Academic Tutor</option>
+              <option value="writer">✍️ Executive Writer</option>
+              <option value="debugger">🐞 Bug Hunter</option>
+            </select>
+            <i class="ph-bold ph-sparkle text-indigo-500 absolute left-2.5 text-xs pointer-events-none"></i>
+            <i class="ph ph-caret-down text-muted-foreground absolute right-2 text-xs pointer-events-none"></i>
+          </div>
+
+          <!-- Export Conversation -->
+          <button id="export-chat-btn" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border" title="Export Conversation (Markdown)">
+            <i class="ph ph-download-simple text-base"></i>
+            <span class="hidden sm:inline">Export</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="p-2 sm:p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 border border-transparent hover:border-border" title="Toggle Theme">
+            <i class="ph ph-moon text-lg" id="theme-icon"></i>
           </button>
         </div>
       </header>
@@ -203,11 +234,15 @@
             <i class="ph-bold ph-arrow-down text-sm"></i>
           </button>
 
-          <!-- Image Preview Area -->
-          <div id="image-preview-container" class="hidden absolute bottom-[calc(100%+10px)] left-0 bg-card/95 backdrop-blur-xl border border-border rounded-xl p-2 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-200">
-            <div class="relative group">
-              <img id="image-preview" src="" alt="Preview" class="h-20 w-auto object-cover rounded-lg shadow-inner">
-              <button id="remove-image" class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full w-5 h-5 flex items-center justify-center shadow-md transition-transform hover:scale-110">
+          <!-- File / Image Preview Area -->
+          <div id="file-preview-container" class="hidden absolute bottom-[calc(100%+10px)] left-0 bg-card/95 backdrop-blur-xl border border-border rounded-xl p-2 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-200">
+            <div class="relative group flex items-center gap-2">
+              <img id="image-preview" src="" alt="Preview" class="hidden h-20 w-auto object-cover rounded-lg shadow-inner">
+              <div id="file-preview-badge" class="hidden flex items-center gap-2 px-3 py-2 bg-secondary rounded-lg text-xs font-medium text-foreground">
+                <i id="file-preview-icon" class="ph ph-file-text text-lg text-indigo-500"></i>
+                <span id="file-preview-name" class="max-w-[180px] truncate">file.txt</span>
+              </div>
+              <button id="remove-file-btn" class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full w-5 h-5 flex items-center justify-center shadow-md transition-transform hover:scale-110">
                 <i class="ph ph-x text-[10px]"></i>
               </button>
             </div>
@@ -230,10 +265,15 @@
           <!-- Compact Chat Form Floating Island -->
           <form id="chat-form" class="relative flex items-center gap-1.5 bg-card/90 backdrop-blur-xl border border-border/80 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/15 rounded-2xl p-1.5 pl-2.5 transition-all duration-200 shadow-sm">
             
-            <label for="image-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image">
-              <i class="ph ph-image text-lg"></i>
-              <input type="file" id="image-upload" accept="image/*" class="hidden">
+            <label for="file-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image, document, audio or code file">
+              <i class="ph ph-paperclip text-lg"></i>
+              <input type="file" id="file-upload" accept="image/*,audio/*,application/pdf,.txt,.csv,.json,.js,.ts,.py,.html,.css,.md,.xml,.sql" class="hidden">
             </label>
+
+            <!-- Google Web Search Grounding Toggle -->
+            <button type="button" id="web-search-toggle" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Toggle Live Web Search">
+              <i class="ph ph-globe text-lg" id="web-search-icon"></i>
+            </button>
             
             <textarea id="message-input" rows="1" class="flex-1 max-h-32 min-h-[34px] bg-transparent border-0 focus:border-0 focus:ring-0 focus:outline-none outline-none resize-none py-1.5 px-2 text-sm text-foreground placeholder:text-muted-foreground/70 disabled:opacity-50" placeholder="Ask Dexter anything..." autocomplete="off"></textarea>
             
@@ -255,6 +295,25 @@
               <span>Dexter AI may make mistakes. Verify important facts.</span>
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Live Code Sandbox Modal -->
+    <div id="sandbox-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-md sandbox-backdrop"></div>
+      <div class="relative bg-card border border-border shadow-2xl rounded-2xl w-full max-w-4xl h-[82vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30 shrink-0">
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-xs font-semibold text-foreground">Live HTML/JS Sandbox Preview</span>
+          </div>
+          <button id="close-sandbox-btn" class="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-colors">
+            <i class="ph ph-x text-base"></i>
+          </button>
+        </div>
+        <div class="flex-1 w-full h-full bg-white relative">
+          <iframe id="sandbox-iframe" class="w-full h-full border-0" sandbox="allow-scripts allow-modals"></iframe>
         </div>
       </div>
     </div>
