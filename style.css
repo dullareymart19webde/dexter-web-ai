@@ -221,4 +221,14 @@
     pointer-events: none !important;
     visibility: hidden;
   }
+
+  /* When sidebar is open on desktop, hide the header toggle button so it is never duplicated */
+  #sidebar:not(.collapsed) ~ div header #toggle-sidebar {
+    display: none !important;
+  }
+
+  /* When sidebar is collapsed on desktop, show the header toggle button to re-open */
+  #sidebar.collapsed ~ div header #toggle-sidebar {
+    display: flex !important;
+  }
 }
