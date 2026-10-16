@@ -745,7 +745,17 @@ button:active:not(:disabled) {
   100% { transform: scale(1.08); filter: brightness(1.4); }
 }
 
-/* JARVIS Speech Callout Box */
+/* JARVIS Speech Callout Box & Voice Control Pill */
+#play-voice-intro-btn {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#play-voice-intro-btn:hover {
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
+}
+
 .jarvis-speech-box {
   background: rgba(0, 240, 255, 0.05);
   border: 1px solid rgba(0, 240, 255, 0.25);

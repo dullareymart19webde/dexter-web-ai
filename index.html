@@ -278,31 +278,13 @@
                     <span class="bar"></span>
                   </div>
 
-                  <!-- Interactive Talking JARVIS Speech Box -->
-                  <div class="jarvis-speech-box rounded-2xl p-3 sm:p-3.5 max-w-lg mx-auto w-full text-left relative group">
-                    <div class="flex items-start gap-2.5">
-                      <div class="w-7 h-7 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="ph-bold ph-waveform text-sm"></i>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-0.5">
-                          <span class="text-[9px] font-mono font-bold tracking-wider uppercase text-cyan-400">JARVIS Core Voice Briefing</span>
-                          <span class="text-[9px] text-muted-foreground/80 font-mono transition-colors" id="jarvis-voice-status">Autonomous Voice</span>
-                        </div>
-                        <p class="text-xs sm:text-[13px] text-foreground/95 leading-relaxed font-medium" id="jarvis-speech-text">
-                          "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?"
-                        </p>
-                      </div>
-                    </div>
-                    <div class="mt-2 pt-2 border-t border-cyan-500/15 flex items-center justify-between">
-                      <span class="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <i class="ph ph-headphones text-xs text-cyan-400"></i> Automatic briefing · Tap to replay
-                      </span>
-                      <button id="play-voice-intro-btn" type="button" class="px-2.5 py-1 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-500/30 hover:scale-105 active:scale-95 cursor-pointer">
-                        <i class="ph-bold ph-play text-xs" id="voice-intro-icon"></i>
-                        <span id="voice-intro-text">Voice Briefing</span>
-                      </button>
-                    </div>
+                  <!-- Sleek Voice Audio Control Pill (Zero Transcript Displayed) -->
+                  <div class="flex items-center justify-center gap-2 mt-2 mb-1">
+                    <button id="play-voice-intro-btn" type="button" class="px-3.5 py-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm shadow-cyan-500/10" title="Click to play or stop Dexter Voice">
+                      <span class="w-2 h-2 rounded-full bg-cyan-400/80 animate-pulse" id="jarvis-voice-status"></span>
+                      <i class="ph-bold ph-play text-xs" id="voice-intro-icon"></i>
+                      <span id="voice-intro-text">Dexter Voice</span>
+                    </button>
                   </div>
                 </div>
                 

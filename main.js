@@ -759,29 +759,6 @@ function stopAudioWaveSimulation() {
   }
 }
 
-// Real-time Karaoke Word Highlighting in Speech Box
-function highlightSpokenWord(charIndex, charLength) {
-  if (!jarvisSpeechText) return;
-  const fullText = JARVIS_INTRO_SPEECH;
-  if (typeof charIndex !== "number" || charIndex < 0 || charIndex >= fullText.length) return;
-
-  let len = charLength;
-  if (!len || len <= 0) {
-    const nextSpace = fullText.slice(charIndex).search(/[\s.,!?]/);
-    len = nextSpace > 0 ? nextSpace : 5;
-  }
-  const before = fullText.substring(0, charIndex);
-  const current = fullText.substring(charIndex, charIndex + len);
-  const after = fullText.substring(charIndex + len);
-
-  jarvisSpeechText.innerHTML = `"${before}<span class="spoken-word-highlight">${current}</span>${after}"`;
-}
-
-function resetSpokenWordHighlight() {
-  if (!jarvisSpeechText) return;
-  jarvisSpeechText.textContent = `"${JARVIS_INTRO_SPEECH}"`;
-}
-
 function setVoiceIntroState(isPlaying) {
   isVoiceIntroPlaying = isPlaying;
   if (jarvisWaveform) {
@@ -797,13 +774,9 @@ function setVoiceIntroState(isPlaying) {
 
   if (jarvisVoiceStatus) {
     if (isPlaying) {
-      jarvisVoiceStatus.innerHTML = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 mr-1 animate-ping"></span>TRANSMITTING';
-      jarvisVoiceStatus.classList.add("text-cyan-400", "font-bold");
-      jarvisVoiceStatus.classList.remove("text-muted-foreground/80");
+      jarvisVoiceStatus.className = "w-2 h-2 rounded-full bg-cyan-400 animate-ping ml-0.5";
     } else {
-      jarvisVoiceStatus.textContent = "Autonomous Voice";
-      jarvisVoiceStatus.classList.remove("text-cyan-400", "font-bold");
-      jarvisVoiceStatus.classList.add("text-muted-foreground/80");
+      jarvisVoiceStatus.className = "w-2 h-2 rounded-full bg-cyan-400/80 animate-pulse ml-0.5";
     }
   }
 
@@ -811,20 +784,21 @@ function setVoiceIntroState(isPlaying) {
     startAudioWaveSimulation();
   } else {
     stopAudioWaveSimulation();
-    resetSpokenWordHighlight();
   }
 
   if (playVoiceIntroBtn) {
     if (isPlaying) {
-      playVoiceIntroBtn.classList.replace("bg-cyan-500", "bg-rose-500");
-      playVoiceIntroBtn.classList.replace("text-black", "text-white");
+      playVoiceIntroBtn.classList.replace("bg-cyan-500/10", "bg-rose-500/20");
+      playVoiceIntroBtn.classList.replace("border-cyan-500/30", "border-rose-500/50");
+      playVoiceIntroBtn.classList.replace("text-cyan-400", "text-rose-400");
       if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-stop text-xs animate-pulse";
       if (voiceIntroText) voiceIntroText.textContent = "Stop Voice";
     } else {
-      playVoiceIntroBtn.classList.replace("bg-rose-500", "bg-cyan-500");
-      playVoiceIntroBtn.classList.replace("text-white", "text-black");
+      playVoiceIntroBtn.classList.replace("bg-rose-500/20", "bg-cyan-500/10");
+      playVoiceIntroBtn.classList.replace("border-rose-500/50", "border-cyan-500/30");
+      playVoiceIntroBtn.classList.replace("text-rose-400", "text-cyan-400");
       if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-play text-xs";
-      if (voiceIntroText) voiceIntroText.textContent = "Voice Briefing";
+      if (voiceIntroText) voiceIntroText.textContent = "Dexter Voice";
     }
   }
   if (railVoiceBtn) {
@@ -846,8 +820,14 @@ function playJarvisVoiceIntro(isAuto = false) {
     }
   }
 
+  // Resume paused synthesis queue in Chromium
+  try {
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    }
+  } catch (e) {}
+
   setVoiceIntroState(true);
-  resetSpokenWordHighlight();
 
   const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
   
@@ -866,12 +846,14 @@ function playJarvisVoiceIntro(isAuto = false) {
   utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
   utterance.pitch = 1.0;
 
+  utterance.onstart = () => {
+    speechHasSuccessfullySpoken = true;
+    removeAutoplayUnlockListeners();
+  };
+
   utterance.onboundary = (e) => {
     lastBoundaryTime = Date.now();
     triggerAcousticBeat();
-    if (typeof e.charIndex === "number") {
-      highlightSpokenWord(e.charIndex, e.charLength);
-    }
   };
 
   utterance.onend = () => setVoiceIntroState(false);
@@ -883,36 +865,70 @@ function playJarvisVoiceIntro(isAuto = false) {
   speechSynthesis.speak(utterance);
 }
 
-// Automatic Voice Playback on Opening the App
-let hasAutoPlayedVoice = false;
+// Automatic Voice Playback on Opening the App (Rock-Solid Multi-Trigger)
+let speechHasSuccessfullySpoken = false;
+
+function tryResumeAudioPipeline() {
+  if (window.speechSynthesis) {
+    try {
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+      }
+    } catch (e) {}
+  }
+}
+
+function removeAutoplayUnlockListeners() {
+  const events = ["pointerdown", "click", "touchstart", "keydown", "wheel"];
+  events.forEach(evt => {
+    window.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
+    document.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
+  });
+}
+
+function unlockAndAutoPlay() {
+  if (speechHasSuccessfullySpoken || isVoiceIntroPlaying) return;
+  tryResumeAudioPipeline();
+  playJarvisVoiceIntro(true);
+}
+
+function setupAutoplayUnlockListeners() {
+  const events = ["pointerdown", "click", "touchstart", "keydown", "wheel"];
+  events.forEach(evt => {
+    window.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
+    document.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
+  });
+}
 
 function autoPlayVoiceOnOpen() {
-  if (hasAutoPlayedVoice) return;
-  hasAutoPlayedVoice = true;
+  if (speechHasSuccessfullySpoken || isVoiceIntroPlaying) return;
+  tryResumeAudioPipeline();
 
   if (window.speechSynthesis) {
     if (speechSynthesis.getVoices().length > 0) {
-      setTimeout(() => playJarvisVoiceIntro(true), 350);
+      setTimeout(() => {
+        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
+          playJarvisVoiceIntro(true);
+        }
+      }, 150);
     } else {
       const onVoicesReady = () => {
         speechSynthesis.removeEventListener("voiceschanged", onVoicesReady);
-        setTimeout(() => playJarvisVoiceIntro(true), 350);
+        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
+          setTimeout(() => playJarvisVoiceIntro(true), 150);
+        }
       };
       speechSynthesis.addEventListener("voiceschanged", onVoicesReady);
-      setTimeout(() => playJarvisVoiceIntro(true), 800);
+      setTimeout(() => {
+        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
+          playJarvisVoiceIntro(true);
+        }
+      }, 450);
     }
   }
 }
 
-// Browser Autoplay Policy unlock fallback
-const unlockAndAutoPlay = () => {
-  if (!hasAutoPlayedVoice || !isVoiceIntroPlaying) {
-    autoPlayVoiceOnOpen();
-  }
-};
-window.addEventListener("pointerdown", unlockAndAutoPlay, { once: true });
-window.addEventListener("keydown", unlockAndAutoPlay, { once: true });
-window.addEventListener("click", unlockAndAutoPlay, { once: true });
+setupAutoplayUnlockListeners();
 
 if (playVoiceIntroBtn) {
   playVoiceIntroBtn.addEventListener("click", () => playJarvisVoiceIntro(false));
@@ -2215,11 +2231,12 @@ function dismissLoadingScreen() {
   if (loadingScreen && !loadingScreen.classList.contains("fade-out")) {
     setTimeout(() => {
       loadingScreen.classList.add("fade-out");
+      autoPlayVoiceOnOpen();
       setTimeout(() => {
         loadingScreen.remove();
         autoPlayVoiceOnOpen();
-      }, 700);
-    }, 450);
+      }, 600);
+    }, 350);
   } else {
     autoPlayVoiceOnOpen();
   }
