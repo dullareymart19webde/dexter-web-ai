@@ -812,15 +812,20 @@ function playJarvisVoiceIntro(isAuto = false) {
     return;
   }
 
-  if (speechSynthesis.speaking) {
+  // If already speaking or currently playing voice intro:
+  if (isVoiceIntroPlaying) {
+    if (isAuto) return; // Do not cancel on automated re-triggers
     speechSynthesis.cancel();
-    if (isVoiceIntroPlaying) {
-      setVoiceIntroState(false);
-      return;
-    }
+    setVoiceIntroState(false);
+    return;
   }
 
-  // Resume paused synthesis queue in Chromium
+  if (speechSynthesis.speaking) {
+    if (isAuto) return; // If already speaking something, let it continue
+    speechSynthesis.cancel();
+  }
+
+  // Resume paused synthesis queue in Chromium/Brave
   try {
     if (speechSynthesis.paused) {
       speechSynthesis.resume();
@@ -830,16 +835,19 @@ function playJarvisVoiceIntro(isAuto = false) {
   setVoiceIntroState(true);
 
   const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
-  
+  window._dexterActiveUtterance = utterance; // Prevent garbage collection in Chromium/Brave
+  utterance.lang = "en-US";
+
   const voices = speechSynthesis.getVoices();
-  const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
-  if (savedVoiceUri) {
-    const voice = voices.find(v => v.voiceURI === savedVoiceUri);
-    if (voice) utterance.voice = voice;
-  } else if (voices.length > 0) {
-    // Prefer clean English voice if available
-    const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Daniel") || v.name.includes("David") || v.name.includes("Guy")));
-    if (preferred) utterance.voice = preferred;
+  if (voices && voices.length > 0) {
+    const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
+    if (savedVoiceUri) {
+      const voice = voices.find(v => v.voiceURI === savedVoiceUri);
+      if (voice) utterance.voice = voice;
+    } else {
+      const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Daniel") || v.name.includes("David") || v.name.includes("Guy") || v.name.includes("Zira")));
+      if (preferred) utterance.voice = preferred;
+    }
   }
 
   const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
@@ -856,13 +864,24 @@ function playJarvisVoiceIntro(isAuto = false) {
     triggerAcousticBeat();
   };
 
-  utterance.onend = () => setVoiceIntroState(false);
+  utterance.onend = () => {
+    setVoiceIntroState(false);
+    window._dexterActiveUtterance = null;
+  };
   utterance.onerror = (err) => {
     console.warn("Speech error or cancelled:", err);
     setVoiceIntroState(false);
+    window._dexterActiveUtterance = null;
   };
 
   speechSynthesis.speak(utterance);
+
+  // Resume immediately if browser paused the speech stream
+  try {
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    }
+  } catch (e) {}
 }
 
 // Automatic Voice Playback on Opening the App (Rock-Solid Multi-Trigger)
@@ -878,9 +897,10 @@ function tryResumeAudioPipeline() {
   }
 }
 
+const AUTOPLAY_UNLOCK_EVENTS = ["pointerdown", "click", "touchstart", "keydown", "wheel", "mousemove", "scroll", "focus"];
+
 function removeAutoplayUnlockListeners() {
-  const events = ["pointerdown", "click", "touchstart", "keydown", "wheel"];
-  events.forEach(evt => {
+  AUTOPLAY_UNLOCK_EVENTS.forEach(evt => {
     window.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
     document.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
   });
@@ -893,8 +913,7 @@ function unlockAndAutoPlay() {
 }
 
 function setupAutoplayUnlockListeners() {
-  const events = ["pointerdown", "click", "touchstart", "keydown", "wheel"];
-  events.forEach(evt => {
+  AUTOPLAY_UNLOCK_EVENTS.forEach(evt => {
     window.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
     document.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
   });
@@ -910,12 +929,12 @@ function autoPlayVoiceOnOpen() {
         if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
           playJarvisVoiceIntro(true);
         }
-      }, 150);
+      }, 120);
     } else {
       const onVoicesReady = () => {
         speechSynthesis.removeEventListener("voiceschanged", onVoicesReady);
         if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
-          setTimeout(() => playJarvisVoiceIntro(true), 150);
+          setTimeout(() => playJarvisVoiceIntro(true), 120);
         }
       };
       speechSynthesis.addEventListener("voiceschanged", onVoicesReady);
@@ -923,7 +942,7 @@ function autoPlayVoiceOnOpen() {
         if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
           playJarvisVoiceIntro(true);
         }
-      }, 450);
+      }, 400);
     }
   }
 }
