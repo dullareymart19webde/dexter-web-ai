@@ -214,6 +214,18 @@ function isDesktop() {
   return window.innerWidth >= 768;
 }
 
+function updateHeaderBrandVisibility(isSidebarOpen) {
+  const headerBrand = document.getElementById("header-brand");
+  if (!headerBrand) return;
+  if (isDesktop()) {
+    headerBrand.classList.toggle("hidden", isSidebarOpen);
+    headerBrand.classList.toggle("flex", !isSidebarOpen);
+  } else {
+    headerBrand.classList.remove("hidden");
+    headerBrand.classList.add("flex");
+  }
+}
+
 function toggleSidebar(forceState) {
   if (isDesktop()) {
     const isCurrentlyCollapsed = sidebar.classList.contains("collapsed");
@@ -223,6 +235,7 @@ function toggleSidebar(forceState) {
     sidebar.classList.toggle("collapsed", !shouldOpen);
     sidebar.classList.toggle("drawer-open", shouldOpen);
     if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+    updateHeaderBrandVisibility(shouldOpen);
 
     // On desktop, never display the blocking backdrop overlay
     if (sidebarBackdrop) {
@@ -269,6 +282,7 @@ function initSidebarState() {
     sidebar.classList.toggle("drawer-open", shouldOpen);
     sidebar.classList.remove("-translate-x-full");
     if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+    updateHeaderBrandVisibility(shouldOpen);
     if (sidebarBackdrop) {
       sidebarBackdrop.classList.add("hidden");
       sidebarBackdrop.classList.remove("opacity-100");
@@ -276,6 +290,7 @@ function initSidebarState() {
   } else {
     sidebar.classList.add("-translate-x-full", "collapsed");
     sidebar.classList.remove("drawer-open");
+    updateHeaderBrandVisibility(false);
     if (sidebarBackdrop) {
       sidebarBackdrop.classList.add("hidden");
       sidebarBackdrop.classList.remove("opacity-100");
@@ -300,11 +315,13 @@ window.addEventListener("resize", () => {
     sidebar.classList.toggle("collapsed", !shouldOpen);
     sidebar.classList.toggle("drawer-open", shouldOpen);
     if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+    updateHeaderBrandVisibility(shouldOpen);
   } else {
     if (!sidebar.classList.contains("drawer-open")) {
       sidebar.classList.add("-translate-x-full", "collapsed");
       if (sidebarBackdrop) sidebarBackdrop.classList.add("hidden");
     }
+    updateHeaderBrandVisibility(false);
   }
 });
 

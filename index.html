@@ -72,40 +72,27 @@
 
     <!-- JARVIS Left 64px Icon Rail (Desktop Workstation) -->
     <aside id="jarvis-rail" class="hidden md:flex flex-col items-center justify-between py-3.5 z-40 shrink-0 select-none">
-      <!-- Top Brand / Logo -->
-      <div class="flex flex-col items-center gap-3.5 w-full">
-        <button id="rail-logo-btn" class="relative group cursor-pointer focus:outline-none" title="Dexter AI • Autonomous Neural Deck">
-          <div class="w-10 h-10 rounded-2xl p-[1.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-md shadow-cyan-500/20 group-hover:shadow-cyan-400/40 group-hover:scale-105 transition-all duration-300">
-            <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[14px]" />
-          </div>
-          <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-cyan-400 ring-2 ring-background animate-pulse"></span>
+      <!-- Navigation Action Buttons -->
+      <div class="flex flex-col items-center gap-2 w-full px-2">
+        <button id="rail-new-chat-btn" class="rail-btn" title="New Session">
+          <i class="ph-bold ph-plus text-base"></i>
+        </button>
+        
+        <button id="rail-sessions-btn" class="rail-btn" title="Chat History & Sessions (Ctrl+B)">
+          <i class="ph-bold ph-chats-circle text-base"></i>
         </button>
 
-        <!-- Divider -->
-        <div class="w-8 h-[1px] bg-cyan-500/20"></div>
+        <button id="rail-canvas-btn" class="rail-btn" title="Toggle Studio Canvas">
+          <i class="ph-bold ph-browsers text-base"></i>
+        </button>
 
-        <!-- Navigation Action Buttons -->
-        <div class="flex flex-col items-center gap-2 w-full px-2">
-          <button id="rail-new-chat-btn" class="rail-btn" title="New Session">
-            <i class="ph-bold ph-plus text-base"></i>
-          </button>
-          
-          <button id="rail-sessions-btn" class="rail-btn" title="Chat History & Sessions (Ctrl+B)">
-            <i class="ph-bold ph-chats-circle text-base"></i>
-          </button>
+        <button id="rail-image-btn" class="rail-btn" title="FLUX.1 Image Studio">
+          <i class="ph-bold ph-paint-brush-broad text-base"></i>
+        </button>
 
-          <button id="rail-canvas-btn" class="rail-btn" title="Toggle Studio Canvas">
-            <i class="ph-bold ph-browsers text-base"></i>
-          </button>
-
-          <button id="rail-image-btn" class="rail-btn" title="FLUX.1 Image Studio">
-            <i class="ph-bold ph-paint-brush-broad text-base"></i>
-          </button>
-
-          <button id="rail-sandbox-btn" class="rail-btn" title="Live Code Sandbox">
-            <i class="ph-bold ph-code-block text-base"></i>
-          </button>
-        </div>
+        <button id="rail-sandbox-btn" class="rail-btn" title="Live Code Sandbox">
+          <i class="ph-bold ph-code-block text-base"></i>
+        </button>
       </div>
 
       <!-- Bottom System Controls -->
@@ -127,13 +114,33 @@
     <!-- Slide-Out Frosted Glass Sessions Drawer (Docked on Desktop, Drawer on Mobile) -->
     <aside id="sidebar" class="h-full border-r border-border/80 bg-card/95 backdrop-blur-2xl flex flex-col z-40 shrink-0 overflow-hidden fixed top-0 bottom-0 left-0 w-72 max-w-[85vw] -translate-x-full md:relative md:top-auto md:bottom-auto md:left-auto md:translate-x-0 md:w-[280px] md:max-w-[280px] md:z-30 shadow-2xl md:shadow-none">
       <div class="w-[280px] h-full flex flex-col shrink-0">
-        <div class="p-3.5 sm:p-4 border-b border-border/60 flex items-center justify-between gap-2">
-          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98]">
+        <!-- Sidebar Brand Header (Shown when sidebar is open) -->
+        <div class="p-3.5 sm:p-4 border-b border-border/60 flex items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="relative w-8 h-8 rounded-xl p-[1px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-sm shrink-0">
+              <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px]" />
+              <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-cyan-400 ring-2 ring-background"></span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-sm font-bold tracking-tight text-foreground truncate">Dexter</h2>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 whitespace-nowrap shrink-0">JARVIS 2.5</span>
+              </div>
+              <p class="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Autonomous Neural Deck
+              </p>
+            </div>
+          </div>
+          <button id="close-sidebar" class="p-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center shrink-0" title="Collapse sidebar (Ctrl+B)">
+            <i class="ph ph-sidebar-simple text-lg"></i>
+          </button>
+        </div>
+
+        <!-- New Chat Button -->
+        <div class="p-3 border-b border-border/60">
+          <button id="new-chat-btn" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98]">
             <i class="ph-bold ph-plus text-sm sm:text-base"></i>
             <span>New Chat</span>
-          </button>
-          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center" title="Close drawer">
-            <i class="ph ph-x text-lg"></i>
           </button>
         </div>
 
@@ -177,19 +184,22 @@
             <i class="ph ph-sidebar-simple text-xl"></i>
           </button>
           
-          <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl p-[1.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-sm shadow-cyan-500/20 shrink-0">
-            <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px] sm:rounded-[14px]" />
-            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-cyan-400 ring-2 ring-background"></span>
-          </div>
-          
-          <div class="min-w-0">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <h1 class="text-sm sm:text-lg font-bold tracking-tight truncate">Dexter</h1>
-              <span class="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 whitespace-nowrap shrink-0">JARVIS 2.5</span>
+          <!-- Header Brand (Shown only when sidebar is collapsed to prevent duplicate logos) -->
+          <div id="header-brand" class="flex items-center gap-2 sm:gap-3 min-w-0 transition-opacity duration-200">
+            <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl p-[1.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-sm shadow-cyan-500/20 shrink-0">
+              <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px] sm:rounded-[14px]" />
+              <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-cyan-400 ring-2 ring-background"></span>
             </div>
-            <p class="text-[11px] text-muted-foreground font-medium hidden sm:flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Autonomous Neural Deck
-            </p>
+            
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <h1 class="text-sm sm:text-lg font-bold tracking-tight truncate">Dexter</h1>
+                <span class="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 whitespace-nowrap shrink-0">JARVIS 2.5</span>
+              </div>
+              <p class="text-[11px] text-muted-foreground font-medium hidden sm:flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Autonomous Neural Deck
+              </p>
+            </div>
           </div>
         </div>
 

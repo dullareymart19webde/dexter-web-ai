@@ -506,6 +506,14 @@ button:active:not(:disabled) {
     display: none !important;
     pointer-events: none !important;
   }
+
+  /* When desktop sidebar is open, hide duplicate logo & name in header */
+  #sidebar:not(.collapsed) ~ div #header-brand {
+    display: none !important;
+  }
+  #sidebar.collapsed ~ div #header-brand {
+    display: flex !important;
+  }
 }
 
 @media (max-width: 767px) {
