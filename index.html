@@ -94,10 +94,6 @@
           <button id="rail-sandbox-btn" class="rail-btn" title="Live Code Sandbox">
             <i class="ph-bold ph-code-block text-base"></i>
           </button>
-
-          <button id="rail-voice-btn" class="rail-btn" title="JARVIS Voice Briefing">
-            <i class="ph-bold ph-waveform text-base"></i>
-          </button>
         </div>
       </div>
 
@@ -799,6 +795,9 @@
 
     <!-- Sidebar Backdrop -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity opacity-0"></div>
+
+    <!-- Autonomous Voice Audio Source -->
+    <audio id="dexter-voice-audio" src="/audio/dexter-greeting.mp3" preload="auto"></audio>
 
     <script type="module" src="./main.js"></script>
   </body>

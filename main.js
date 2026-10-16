@@ -29,7 +29,7 @@ if ('serviceWorker' in navigator) {
 
 // AI Personas Definition
 const PERSONAS = {
-  default: "You are Dexter, an intelligent, friendly, and highly capable AI assistant. Provide insightful, structured, clear, and accurate answers.",
+  default: "You are Dexter, an elite autonomous intelligence companion and cognitive workspace partner with JARVIS-level technological sophistication, razor-sharp logic, and proactive clarity. Provide structured, insightful, clear, and highly accurate answers with production-ready execution.",
   architect: "You are a Principal Software Architect and elite engineer. You write clean, modular, scalable, type-safe, production-grade code. You anticipate edge cases, recommend design patterns, and explain architectural decisions concisely.",
   tutor: "You are an elite academic professor and patient tutor. You break down complex STEM and general topics into intuitive, step-by-step explanations, utilizing analogies, real-world examples, and clear mathematical proofs where relevant.",
   writer: "You are an award-winning executive communications strategist and senior copywriter. You write crisp, compelling, polished, and persuasive prose with immaculate tone, clarity, and formatting.",
@@ -79,7 +79,6 @@ const railSessionsBtn = document.getElementById("rail-sessions-btn");
 const railCanvasBtn = document.getElementById("rail-canvas-btn");
 const railImageBtn = document.getElementById("rail-image-btn");
 const railSandboxBtn = document.getElementById("rail-sandbox-btn");
-const railVoiceBtn = document.getElementById("rail-voice-btn");
 const railShortcutsBtn = document.getElementById("rail-shortcuts-btn");
 const railSettingsBtn = document.getElementById("rail-settings-btn");
 const railThemeBtn = document.getElementById("rail-theme-btn");
@@ -259,7 +258,8 @@ if (railSettingsBtn) {
 
 if (railLogoBtn) {
   railLogoBtn.addEventListener("click", () => {
-    playJarvisVoiceIntro();
+    const newChatBtn = document.getElementById("new-chat-btn");
+    newChatBtn?.click();
   });
 }
 
@@ -671,87 +671,87 @@ if (canvasGenerateSampleBtn) {
 }
 
 // ==========================================
-// JARVIS VOICE BRIEFING & AUDIO WAVEFORM (REACTIVE MOTION)
+// AUTONOMOUS DEXTER VOICE ENGINE & REAL-TIME AUDIO SPECTRUM
 // ==========================================
-const JARVIS_INTRO_SPEECH = "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?";
-let isVoiceIntroPlaying = false;
-let speechAnimFrameId = null;
-let speechBeatTimeout = null;
-let acousticCadenceInterval = null;
-let lastBoundaryTime = 0;
+const dexterVoiceAudio = document.getElementById("dexter-voice-audio");
+let hasVoicePlayed = false;
+let audioVisualizerFrame = null;
+let audioContext = null;
+let audioAnalyser = null;
+let audioSource = null;
+let audioBeatTimeout = null;
 
-// Acoustic Punch / Beat motion for syllables & word boundaries
-function triggerAcousticBeat() {
-  if (neuralCoreHero) {
-    neuralCoreHero.classList.add("beat-punch");
-    if (speechBeatTimeout) clearTimeout(speechBeatTimeout);
-    speechBeatTimeout = setTimeout(() => {
-      if (neuralCoreHero) neuralCoreHero.classList.remove("beat-punch");
-    }, 110);
-  }
-
-  // Jitter and flare frequency bars on acoustic beat
-  if (jarvisWaveform) {
-    const bars = jarvisWaveform.querySelectorAll(".bar");
-    bars.forEach((bar) => {
-      const punchHeight = Math.min(26, Math.floor(10 + Math.random() * 16));
-      bar.style.height = `${punchHeight}px`;
-    });
+function setupAudioSpectrumAnalyser() {
+  if (audioContext || !dexterVoiceAudio) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    audioContext = new AudioContextClass();
+    audioSource = audioContext.createMediaElementSource(dexterVoiceAudio);
+    audioAnalyser = audioContext.createAnalyser();
+    audioAnalyser.fftSize = 64;
+    audioSource.connect(audioAnalyser);
+    audioAnalyser.connect(audioContext.destination);
+  } catch (err) {
+    console.warn("AudioContext setup notice:", err);
   }
 }
 
-// Real-Time Audio Frequency Spectrum Animator
-function startAudioWaveSimulation() {
-  if (speechAnimFrameId) cancelAnimationFrame(speechAnimFrameId);
-  if (acousticCadenceInterval) clearInterval(acousticCadenceInterval);
+function startRealAudioVisualizer() {
+  if (!jarvisWaveform) return;
+  const bars = jarvisWaveform.querySelectorAll(".bar");
+  const dataArray = audioAnalyser ? new Uint8Array(audioAnalyser.frequencyBinCount) : null;
 
-  const bars = jarvisWaveform ? jarvisWaveform.querySelectorAll(".bar") : [];
-  const startTime = performance.now();
-
-  function animateWave(now) {
-    const elapsed = (now - startTime) / 1000;
-    bars.forEach((bar, idx) => {
-      // Harmonic wave superposition for organic audio spectrum analyzer visuals
-      const wave1 = Math.sin(elapsed * 8.5 + idx * 0.65);
-      const wave2 = Math.cos(elapsed * 4.2 + idx * 1.15);
-      const wave3 = Math.sin(elapsed * 12.0 + idx * 0.4);
-      const composite = (wave1 + wave2 * 0.6 + wave3 * 0.3 + 2.5) / 4.4;
-      const height = Math.round(4 + composite * 22);
-      bar.style.height = `${height}px`;
-    });
-    speechAnimFrameId = requestAnimationFrame(animateWave);
-  }
-
-  if (bars.length > 0) {
-    speechAnimFrameId = requestAnimationFrame(animateWave);
-  }
-
-  // Periodic acoustic cadence pulse in case browser TTS boundary events are delayed
-  lastBoundaryTime = Date.now();
-  acousticCadenceInterval = setInterval(() => {
-    if (Date.now() - lastBoundaryTime > 240) {
-      triggerAcousticBeat();
+  function renderFrame() {
+    if (audioAnalyser && dataArray) {
+      audioAnalyser.getByteFrequencyData(dataArray);
+      let totalEnergy = 0;
+      bars.forEach((bar, idx) => {
+        const binIndex = Math.min(idx * 2, dataArray.length - 1);
+        const val = dataArray[binIndex] || 0;
+        totalEnergy += val;
+        const height = Math.max(4, Math.min(26, Math.round((val / 255) * 26)));
+        bar.style.height = `${height}px`;
+      });
+      // Word / Syllable Cadence Punch on vocal energy peaks
+      if (bars.length > 0 && (totalEnergy / bars.length) > 115 && neuralCoreHero && !neuralCoreHero.classList.contains("beat-punch")) {
+        neuralCoreHero.classList.add("beat-punch");
+        if (audioBeatTimeout) clearTimeout(audioBeatTimeout);
+        audioBeatTimeout = setTimeout(() => {
+          if (neuralCoreHero) neuralCoreHero.classList.remove("beat-punch");
+        }, 120);
+      }
+    } else {
+      // Harmonic wave superposition fallback
+      const elapsed = performance.now() / 1000;
+      bars.forEach((bar, idx) => {
+        const wave = (Math.sin(elapsed * 9 + idx * 0.7) + Math.cos(elapsed * 4.5 + idx * 1.2) + 2) / 4;
+        bar.style.height = `${Math.round(4 + wave * 22)}px`;
+      });
     }
-  }, 220);
+    audioVisualizerFrame = requestAnimationFrame(renderFrame);
+  }
+
+  if (audioVisualizerFrame) cancelAnimationFrame(audioVisualizerFrame);
+  audioVisualizerFrame = requestAnimationFrame(renderFrame);
 }
 
-function stopAudioWaveSimulation() {
-  if (speechAnimFrameId) {
-    cancelAnimationFrame(speechAnimFrameId);
-    speechAnimFrameId = null;
+function stopRealAudioVisualizer() {
+  if (audioVisualizerFrame) {
+    cancelAnimationFrame(audioVisualizerFrame);
+    audioVisualizerFrame = null;
   }
-  if (acousticCadenceInterval) {
-    clearInterval(acousticCadenceInterval);
-    acousticCadenceInterval = null;
-  }
-  if (speechBeatTimeout) {
-    clearTimeout(speechBeatTimeout);
-    speechBeatTimeout = null;
+  if (audioBeatTimeout) {
+    clearTimeout(audioBeatTimeout);
+    audioBeatTimeout = null;
   }
   if (neuralCoreHero) {
     neuralCoreHero.classList.remove("beat-punch");
+    neuralCoreHero.classList.remove("speaking");
+    neuralCoreHero.classList.remove("thinking");
   }
   if (jarvisWaveform) {
+    jarvisWaveform.classList.remove("speaking");
     const bars = jarvisWaveform.querySelectorAll(".bar");
     bars.forEach((b) => {
       b.style.height = "";
@@ -759,204 +759,88 @@ function stopAudioWaveSimulation() {
   }
 }
 
-function setVoiceIntroState(isPlaying) {
-  isVoiceIntroPlaying = isPlaying;
-  if (jarvisWaveform) {
-    jarvisWaveform.classList.toggle("speaking", isPlaying);
-  }
-  if (neuralCoreHero) {
-    neuralCoreHero.classList.toggle("speaking", isPlaying);
-    neuralCoreHero.classList.toggle("thinking", isPlaying);
-  }
-  if (jarvisSpeechBox) {
-    jarvisSpeechBox.classList.toggle("speaking", isPlaying);
+function playDexterGreeting() {
+  if (!dexterVoiceAudio) return;
+
+  setupAudioSpectrumAnalyser();
+  if (audioContext && audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
   }
 
-  if (jarvisVoiceStatus) {
-    if (isPlaying) {
-      jarvisVoiceStatus.className = "w-2 h-2 rounded-full bg-cyan-400 animate-ping ml-0.5";
-    } else {
-      jarvisVoiceStatus.className = "w-2 h-2 rounded-full bg-cyan-400/80 animate-pulse ml-0.5";
-    }
-  }
+  dexterVoiceAudio.currentTime = 0;
+  const playPromise = dexterVoiceAudio.play();
 
-  if (isPlaying) {
-    startAudioWaveSimulation();
-  } else {
-    stopAudioWaveSimulation();
-  }
-
-  if (playVoiceIntroBtn) {
-    if (isPlaying) {
-      playVoiceIntroBtn.classList.replace("bg-cyan-500/10", "bg-rose-500/20");
-      playVoiceIntroBtn.classList.replace("border-cyan-500/30", "border-rose-500/50");
-      playVoiceIntroBtn.classList.replace("text-cyan-400", "text-rose-400");
-      if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-stop text-xs animate-pulse";
-      if (voiceIntroText) voiceIntroText.textContent = "Stop Voice";
-    } else {
-      playVoiceIntroBtn.classList.replace("bg-rose-500/20", "bg-cyan-500/10");
-      playVoiceIntroBtn.classList.replace("border-rose-500/50", "border-cyan-500/30");
-      playVoiceIntroBtn.classList.replace("text-rose-400", "text-cyan-400");
-      if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-play text-xs";
-      if (voiceIntroText) voiceIntroText.textContent = "Dexter Voice";
-    }
-  }
-  if (railVoiceBtn) {
-    railVoiceBtn.classList.toggle("active", isPlaying);
-  }
-}
-
-function playJarvisVoiceIntro(isAuto = false) {
-  if (!window.speechSynthesis) {
-    if (!isAuto) alert("Speech synthesis is not supported on this browser or device.");
-    return;
-  }
-
-  // If already speaking or currently playing voice intro:
-  if (isVoiceIntroPlaying) {
-    if (isAuto) return; // Do not cancel on automated re-triggers
-    speechSynthesis.cancel();
-    setVoiceIntroState(false);
-    return;
-  }
-
-  if (speechSynthesis.speaking) {
-    if (isAuto) return; // If already speaking something, let it continue
-    speechSynthesis.cancel();
-  }
-
-  // Resume paused synthesis queue in Chromium/Brave
-  try {
-    if (speechSynthesis.paused) {
-      speechSynthesis.resume();
-    }
-  } catch (e) {}
-
-  setVoiceIntroState(true);
-
-  const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
-  window._dexterActiveUtterance = utterance; // Prevent garbage collection in Chromium/Brave
-  utterance.lang = "en-US";
-
-  const voices = speechSynthesis.getVoices();
-  if (voices && voices.length > 0) {
-    const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
-    if (savedVoiceUri) {
-      const voice = voices.find(v => v.voiceURI === savedVoiceUri);
-      if (voice) utterance.voice = voice;
-    } else {
-      const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Daniel") || v.name.includes("David") || v.name.includes("Guy") || v.name.includes("Zira")));
-      if (preferred) utterance.voice = preferred;
-    }
-  }
-
-  const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
-  utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
-  utterance.pitch = 1.0;
-
-  utterance.onstart = () => {
-    speechHasSuccessfullySpoken = true;
-    removeAutoplayUnlockListeners();
-  };
-
-  utterance.onboundary = (e) => {
-    lastBoundaryTime = Date.now();
-    triggerAcousticBeat();
-  };
-
-  utterance.onend = () => {
-    setVoiceIntroState(false);
-    window._dexterActiveUtterance = null;
-  };
-  utterance.onerror = (err) => {
-    console.warn("Speech error or cancelled:", err);
-    setVoiceIntroState(false);
-    window._dexterActiveUtterance = null;
-  };
-
-  speechSynthesis.speak(utterance);
-
-  // Resume immediately if browser paused the speech stream
-  try {
-    if (speechSynthesis.paused) {
-      speechSynthesis.resume();
-    }
-  } catch (e) {}
-}
-
-// Automatic Voice Playback on Opening the App (Rock-Solid Multi-Trigger)
-let speechHasSuccessfullySpoken = false;
-
-function tryResumeAudioPipeline() {
-  if (window.speechSynthesis) {
-    try {
-      if (speechSynthesis.paused) {
-        speechSynthesis.resume();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      hasVoicePlayed = true;
+      removeAutoPlayUnlockListeners();
+      if (neuralCoreHero) {
+        neuralCoreHero.classList.add("speaking");
+        neuralCoreHero.classList.add("thinking");
       }
-    } catch (e) {}
+      if (jarvisWaveform) jarvisWaveform.classList.add("speaking");
+      startRealAudioVisualizer();
+    }).catch((err) => {
+      console.log("Autonomous audio waiting for user activation:", err);
+    });
   }
+
+  dexterVoiceAudio.onended = () => {
+    stopRealAudioVisualizer();
+  };
+
+  dexterVoiceAudio.onerror = (e) => {
+    console.warn("Audio playback error:", e);
+    stopRealAudioVisualizer();
+  };
 }
 
-const AUTOPLAY_UNLOCK_EVENTS = ["pointerdown", "click", "touchstart", "keydown", "wheel", "mousemove", "scroll", "focus"];
+// Automatic Voice Playback on Opening the App (Zero Buttons)
+const AUTOPLAY_EVENTS = ["pointerdown", "click", "touchstart", "keydown", "wheel", "mousemove", "scroll", "focus"];
 
-function removeAutoplayUnlockListeners() {
-  AUTOPLAY_UNLOCK_EVENTS.forEach(evt => {
-    window.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
-    document.removeEventListener(evt, unlockAndAutoPlay, { capture: true });
+function unlockAndPlayVoice() {
+  if (hasVoicePlayed) return;
+  playDexterGreeting();
+}
+
+function setupAutoPlayUnlockListeners() {
+  AUTOPLAY_EVENTS.forEach((evt) => {
+    window.addEventListener(evt, unlockAndPlayVoice, { capture: true, passive: true });
+    document.addEventListener(evt, unlockAndPlayVoice, { capture: true, passive: true });
   });
 }
 
-function unlockAndAutoPlay() {
-  if (speechHasSuccessfullySpoken || isVoiceIntroPlaying) return;
-  tryResumeAudioPipeline();
-  playJarvisVoiceIntro(true);
-}
-
-function setupAutoplayUnlockListeners() {
-  AUTOPLAY_UNLOCK_EVENTS.forEach(evt => {
-    window.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
-    document.addEventListener(evt, unlockAndAutoPlay, { capture: true, once: true });
+function removeAutoPlayUnlockListeners() {
+  AUTOPLAY_EVENTS.forEach((evt) => {
+    window.removeEventListener(evt, unlockAndPlayVoice, { capture: true });
+    document.removeEventListener(evt, unlockAndPlayVoice, { capture: true });
   });
 }
 
 function autoPlayVoiceOnOpen() {
-  if (speechHasSuccessfullySpoken || isVoiceIntroPlaying) return;
-  tryResumeAudioPipeline();
-
-  if (window.speechSynthesis) {
-    if (speechSynthesis.getVoices().length > 0) {
-      setTimeout(() => {
-        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
-          playJarvisVoiceIntro(true);
-        }
-      }, 120);
-    } else {
-      const onVoicesReady = () => {
-        speechSynthesis.removeEventListener("voiceschanged", onVoicesReady);
-        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
-          setTimeout(() => playJarvisVoiceIntro(true), 120);
-        }
-      };
-      speechSynthesis.addEventListener("voiceschanged", onVoicesReady);
-      setTimeout(() => {
-        if (!speechHasSuccessfullySpoken && !isVoiceIntroPlaying) {
-          playJarvisVoiceIntro(true);
-        }
-      }, 400);
+  if (hasVoicePlayed) return;
+  setTimeout(() => {
+    if (!hasVoicePlayed) {
+      playDexterGreeting();
     }
-  }
+  }, 100);
 }
 
-setupAutoplayUnlockListeners();
+setupAutoPlayUnlockListeners();
 
-if (playVoiceIntroBtn) {
-  playVoiceIntroBtn.addEventListener("click", () => playJarvisVoiceIntro(false));
-}
-if (railVoiceBtn) {
-  railVoiceBtn.addEventListener("click", () => playJarvisVoiceIntro(false));
-}
+// Replay or pause voice greeting by tapping the Arc Reactor directly
 if (neuralCoreHero) {
-  neuralCoreHero.addEventListener("click", () => playJarvisVoiceIntro(false));
+  neuralCoreHero.addEventListener("click", () => {
+    if (!dexterVoiceAudio) return;
+    if (!dexterVoiceAudio.paused) {
+      dexterVoiceAudio.pause();
+      dexterVoiceAudio.currentTime = 0;
+      stopRealAudioVisualizer();
+    } else {
+      hasVoicePlayed = false;
+      playDexterGreeting();
+    }
+  });
 }
 
 // Multi-Format File Upload & Drag-and-Drop Handling
@@ -1630,15 +1514,7 @@ function speakText(rawText, btn = null) {
   }
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
-    stopAudioWaveSimulation();
-    if (neuralCoreHero) {
-      neuralCoreHero.classList.remove("speaking");
-      neuralCoreHero.classList.remove("thinking");
-      neuralCoreHero.classList.remove("beat-punch");
-    }
-    if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-    if (jarvisSpeechBox) jarvisSpeechBox.classList.remove("speaking");
-    if (railVoiceBtn) railVoiceBtn.classList.remove("active");
+    stopRealAudioVisualizer();
     if (btn && btn.dataset.speaking === "true") {
       btn.dataset.speaking = "false";
       btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
@@ -1660,6 +1536,7 @@ function speakText(rawText, btn = null) {
   if (!clean) return;
 
   const utterance = new SpeechSynthesisUtterance(clean);
+  window._dexterTtsUtterance = utterance;
   const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
   if (savedVoiceUri) {
     const voices = speechSynthesis.getVoices();
@@ -1675,13 +1552,13 @@ function speakText(rawText, btn = null) {
     neuralCoreHero.classList.add("speaking");
     neuralCoreHero.classList.add("thinking");
   }
-  if (jarvisSpeechBox) jarvisSpeechBox.classList.add("speaking");
-  if (railVoiceBtn) railVoiceBtn.classList.add("active");
-  startAudioWaveSimulation();
+  startRealAudioVisualizer();
 
   utterance.onboundary = (e) => {
-    lastBoundaryTime = Date.now();
-    triggerAcousticBeat();
+    if (neuralCoreHero && !neuralCoreHero.classList.contains("beat-punch")) {
+      neuralCoreHero.classList.add("beat-punch");
+      setTimeout(() => neuralCoreHero.classList.remove("beat-punch"), 110);
+    }
   };
 
   const cleanupSpeak = () => {
@@ -1689,15 +1566,8 @@ function speakText(rawText, btn = null) {
       btn.dataset.speaking = "false";
       btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
     }
-    if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-    if (neuralCoreHero) {
-      neuralCoreHero.classList.remove("speaking");
-      neuralCoreHero.classList.remove("thinking");
-      neuralCoreHero.classList.remove("beat-punch");
-    }
-    if (jarvisSpeechBox) jarvisSpeechBox.classList.remove("speaking");
-    if (railVoiceBtn) railVoiceBtn.classList.remove("active");
-    stopAudioWaveSimulation();
+    stopRealAudioVisualizer();
+    window._dexterTtsUtterance = null;
   };
 
   if (btn) {
