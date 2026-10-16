@@ -699,9 +699,9 @@ function setVoiceIntroState(isPlaying) {
   }
 }
 
-function playJarvisVoiceIntro() {
+function playJarvisVoiceIntro(isAuto = false) {
   if (!window.speechSynthesis) {
-    alert("Speech synthesis is not supported on this browser or device.");
+    if (!isAuto) alert("Speech synthesis is not supported on this browser or device.");
     return;
   }
 
@@ -716,30 +716,70 @@ function playJarvisVoiceIntro() {
   setVoiceIntroState(true);
 
   const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
+  
+  const voices = speechSynthesis.getVoices();
   const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
   if (savedVoiceUri) {
-    const voices = speechSynthesis.getVoices();
     const voice = voices.find(v => v.voiceURI === savedVoiceUri);
     if (voice) utterance.voice = voice;
+  } else if (voices.length > 0) {
+    // Prefer clean English voice if available
+    const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Daniel") || v.name.includes("David") || v.name.includes("Guy")));
+    if (preferred) utterance.voice = preferred;
   }
+
   const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
   utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
-  utterance.pitch = 1.05;
+  utterance.pitch = 1.0;
 
   utterance.onend = () => setVoiceIntroState(false);
-  utterance.onerror = () => setVoiceIntroState(false);
+  utterance.onerror = (err) => {
+    console.warn("Speech error or cancelled:", err);
+    setVoiceIntroState(false);
+  };
 
   speechSynthesis.speak(utterance);
 }
 
+// Automatic Voice Playback on Opening the App
+let hasAutoPlayedVoice = false;
+
+function autoPlayVoiceOnOpen() {
+  if (hasAutoPlayedVoice) return;
+  hasAutoPlayedVoice = true;
+
+  if (window.speechSynthesis) {
+    if (speechSynthesis.getVoices().length > 0) {
+      setTimeout(() => playJarvisVoiceIntro(true), 350);
+    } else {
+      const onVoicesReady = () => {
+        speechSynthesis.removeEventListener("voiceschanged", onVoicesReady);
+        setTimeout(() => playJarvisVoiceIntro(true), 350);
+      };
+      speechSynthesis.addEventListener("voiceschanged", onVoicesReady);
+      setTimeout(() => playJarvisVoiceIntro(true), 800);
+    }
+  }
+}
+
+// Browser Autoplay Policy unlock fallback
+const unlockAndAutoPlay = () => {
+  if (!hasAutoPlayedVoice || !isVoiceIntroPlaying) {
+    autoPlayVoiceOnOpen();
+  }
+};
+window.addEventListener("pointerdown", unlockAndAutoPlay, { once: true });
+window.addEventListener("keydown", unlockAndAutoPlay, { once: true });
+window.addEventListener("click", unlockAndAutoPlay, { once: true });
+
 if (playVoiceIntroBtn) {
-  playVoiceIntroBtn.addEventListener("click", playJarvisVoiceIntro);
+  playVoiceIntroBtn.addEventListener("click", () => playJarvisVoiceIntro(false));
 }
 if (railVoiceBtn) {
-  railVoiceBtn.addEventListener("click", playJarvisVoiceIntro);
+  railVoiceBtn.addEventListener("click", () => playJarvisVoiceIntro(false));
 }
 if (neuralCoreHero) {
-  neuralCoreHero.addEventListener("click", playJarvisVoiceIntro);
+  neuralCoreHero.addEventListener("click", () => playJarvisVoiceIntro(false));
 }
 
 // Multi-Format File Upload & Drag-and-Drop Handling
@@ -2011,8 +2051,13 @@ function dismissLoadingScreen() {
   if (loadingScreen && !loadingScreen.classList.contains("fade-out")) {
     setTimeout(() => {
       loadingScreen.classList.add("fade-out");
-      setTimeout(() => loadingScreen.remove(), 800);
-    }, 1200);
+      setTimeout(() => {
+        loadingScreen.remove();
+        autoPlayVoiceOnOpen();
+      }, 700);
+    }, 450);
+  } else {
+    autoPlayVoiceOnOpen();
   }
 }
 
@@ -2255,12 +2300,7 @@ chatForm.addEventListener("submit", async (e) => {
 window.addEventListener("DOMContentLoaded", () => {
   initSidebarSessionsListener();
   
-  
   setTimeout(() => {
-    const loadingScreen = document.getElementById("loading-screen");
-    if (loadingScreen && !loadingScreen.classList.contains("fade-out")) {
-      loadingScreen.classList.add("fade-out");
-      setTimeout(() => loadingScreen.remove(), 800);
-    }
-  }, 3500);
+    dismissLoadingScreen();
+  }, 1600);
 });

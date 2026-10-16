@@ -232,11 +232,11 @@
           
           <!-- Main Chat Area -->
           <main id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 scroll-smooth bg-transparent relative">
-            <div id="messages-area" class="max-w-3xl mx-auto flex flex-col gap-6 pb-24">
+            <div id="messages-area" class="max-w-3xl mx-auto flex flex-col gap-5 pb-6 sm:pb-10">
               
               <!-- JARVIS Cyber-Organic Welcome HUD -->
-              <div class="flex flex-col items-center justify-center min-h-[58vh] sm:min-h-[72vh] text-center gap-4 sm:gap-6 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-4 sm:py-6" id="welcome-screen">
-                <div class="flex flex-col items-center gap-3 sm:gap-4 max-w-xl px-2">
+              <div class="flex flex-col items-center justify-center text-center gap-2.5 sm:gap-3.5 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-1 sm:py-2" id="welcome-screen">
+                <div class="flex flex-col items-center gap-2 max-w-xl px-2">
                   
                   <!-- Telemetry Status Chip -->
                   <div class="telemetry-chip">
@@ -250,7 +250,7 @@
                   </div>
 
                   <!-- Animated JARVIS Arc Reactor Talking Core -->
-                  <div class="jarvis-reactor my-2 group cursor-pointer" id="neural-core-hero" title="Click to play JARVIS Voice Briefing">
+                  <div class="jarvis-reactor my-1 group cursor-pointer" id="neural-core-hero" title="Click to play JARVIS Voice Briefing">
                     <div class="reactor-ring-outer"></div>
                     <div class="reactor-ring-mid"></div>
                     <div class="reactor-ring-inner"></div>
@@ -260,7 +260,7 @@
                   </div>
 
                   <!-- Audio Waveform Visualizer -->
-                  <div class="jarvis-audio-wave" id="jarvis-waveform" title="Audio Waveform Visualizer">
+                  <div class="jarvis-audio-wave my-0.5" id="jarvis-waveform" title="Audio Waveform Visualizer">
                     <span class="bar"></span>
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -272,99 +272,95 @@
                   </div>
 
                   <!-- Interactive Talking JARVIS Speech Box -->
-                  <div class="jarvis-speech-box rounded-2xl p-4 sm:p-5 max-w-lg mx-auto w-full text-left relative group">
-                    <div class="flex items-start gap-3">
+                  <div class="jarvis-speech-box rounded-2xl p-3 sm:p-3.5 max-w-lg mx-auto w-full text-left relative group">
+                    <div class="flex items-start gap-2.5">
                       <div class="w-7 h-7 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
                         <i class="ph-bold ph-waveform text-sm"></i>
                       </div>
-                      <div class="flex-1">
-                        <div class="flex items-center justify-between mb-1">
-                          <span class="text-[10px] font-mono font-bold tracking-wider uppercase text-cyan-400">JARVIS Core Voice Briefing</span>
-                          <span class="text-[10px] text-muted-foreground/80 font-mono">Autonomous TTS</span>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-0.5">
+                          <span class="text-[9px] font-mono font-bold tracking-wider uppercase text-cyan-400">JARVIS Core Voice Briefing</span>
+                          <span class="text-[9px] text-muted-foreground/80 font-mono">Autonomous Voice</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-foreground/95 leading-relaxed font-medium" id="jarvis-speech-text">
+                        <p class="text-xs sm:text-[13px] text-foreground/95 leading-relaxed font-medium" id="jarvis-speech-text">
                           "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?"
                         </p>
                       </div>
                     </div>
-                    <div class="mt-3 pt-2.5 border-t border-cyan-500/15 flex items-center justify-between">
+                    <div class="mt-2 pt-2 border-t border-cyan-500/15 flex items-center justify-between">
                       <span class="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <i class="ph ph-headphones text-xs text-cyan-400"></i> Click below to listen
+                        <i class="ph ph-headphones text-xs text-cyan-400"></i> Automatic briefing · Tap to replay
                       </span>
-                      <button id="play-voice-intro-btn" type="button" class="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-500/30 hover:scale-105 active:scale-95 cursor-pointer">
+                      <button id="play-voice-intro-btn" type="button" class="px-2.5 py-1 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-500/30 hover:scale-105 active:scale-95 cursor-pointer">
                         <i class="ph-bold ph-play text-xs" id="voice-intro-icon"></i>
                         <span id="voice-intro-text">Voice Briefing</span>
                       </button>
                     </div>
                   </div>
-
-                  <p class="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    Autonomous AI workspace companion. Generate FLUX art, architect code, analyze documents, and converse with adaptive personas.
-                  </p>
                 </div>
                 
                 <!-- HUD Bento Grid Command Center -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 w-full max-w-2xl px-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-2xl px-2">
                   
                   <!-- Bento Card 1: FLUX.1 AI Image Synthesis -->
-                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="/image Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic">
-                    <div class="flex items-center justify-between w-full mb-2.5">
-                      <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center ring-1 ring-cyan-500/20 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-paint-brush-broad text-base"></i>
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-3 sm:p-3.5 text-left group" data-prompt="/image Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic">
+                    <div class="flex items-center justify-between w-full mb-1.5">
+                      <div class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center ring-1 ring-cyan-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-paint-brush-broad text-sm"></i>
                       </div>
-                      <span class="text-[9px] font-bold tracking-wider uppercase text-cyan-400 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">FLUX.1 Studio</span>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-cyan-400 px-1.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">FLUX.1 Art</span>
                     </div>
-                    <span class="font-bold text-foreground text-sm group-hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-                      FLUX Image Studio <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    <span class="font-bold text-foreground text-xs sm:text-sm group-hover:text-cyan-400 transition-colors flex items-center gap-1">
+                      FLUX Image Studio <i class="ph ph-arrow-up-right text-[10px] opacity-60"></i>
                     </span>
-                    <span class="text-xs text-muted-foreground mt-1">Generate high-res 1024px art instantly with /image</span>
+                    <span class="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Generate 1024px art instantly with /image</span>
                   </button>
 
                   <!-- Bento Card 2: Code Architecture -->
-                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Architect a real-time reactive WebSocket cache manager in TypeScript with memory optimization">
-                    <div class="flex items-center justify-between w-full mb-2.5">
-                      <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-code-block text-base"></i>
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-3 sm:p-3.5 text-left group" data-prompt="Architect a real-time reactive WebSocket cache manager in TypeScript with memory optimization">
+                    <div class="flex items-center justify-between w-full mb-1.5">
+                      <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-code-block text-sm"></i>
                       </div>
-                      <span class="text-[9px] font-bold tracking-wider uppercase text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Dev Studio</span>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-emerald-400 px-1.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Dev Studio</span>
                     </div>
-                    <span class="font-bold text-foreground text-sm group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
-                      Full-Stack Architecture <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    <span class="font-bold text-foreground text-xs sm:text-sm group-hover:text-emerald-400 transition-colors flex items-center gap-1">
+                      Full-Stack Architecture <i class="ph ph-arrow-up-right text-[10px] opacity-60"></i>
                     </span>
-                    <span class="text-xs text-muted-foreground mt-1">Build type-safe systems, sandbox code & fix bugs</span>
+                    <span class="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Build type-safe systems & live sandbox code</span>
                   </button>
 
                   <!-- Bento Card 3: Multimodal Vision -->
-                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Explain Quantum Superposition using everyday visual metaphors and real-world intuition">
-                    <div class="flex items-center justify-between w-full mb-2.5">
-                      <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center ring-1 ring-indigo-500/20 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-atom text-base"></i>
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-3 sm:p-3.5 text-left group" data-prompt="Explain Quantum Superposition using everyday visual metaphors and real-world intuition">
+                    <div class="flex items-center justify-between w-full mb-1.5">
+                      <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center ring-1 ring-indigo-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-atom text-sm"></i>
                       </div>
-                      <span class="text-[9px] font-bold tracking-wider uppercase text-indigo-400 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">Reasoning</span>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-indigo-400 px-1.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">Reasoning</span>
                     </div>
-                    <span class="font-bold text-foreground text-sm group-hover:text-indigo-400 transition-colors flex items-center gap-1.5">
-                      Quantum Reasoning <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    <span class="font-bold text-foreground text-xs sm:text-sm group-hover:text-indigo-400 transition-colors flex items-center gap-1">
+                      Quantum Reasoning <i class="ph ph-arrow-up-right text-[10px] opacity-60"></i>
                     </span>
-                    <span class="text-xs text-muted-foreground mt-1">Deconstruct STEM theorems, math formulas & logic</span>
+                    <span class="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Deconstruct STEM theorems & math formulas</span>
                   </button>
 
                   <!-- Bento Card 4: Executive Strategy -->
-                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Draft a high-impact executive pitch deck outline for an autonomous AI platform to tier-1 VCs">
-                    <div class="flex items-center justify-between w-full mb-2.5">
-                      <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-lightning text-base"></i>
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-3 sm:p-3.5 text-left group" data-prompt="Draft a high-impact executive pitch deck outline for an autonomous AI platform to tier-1 VCs">
+                    <div class="flex items-center justify-between w-full mb-1.5">
+                      <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-lightning text-sm"></i>
                       </div>
-                      <span class="text-[9px] font-bold tracking-wider uppercase text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">Executive</span>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-amber-400 px-1.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">Executive</span>
                     </div>
-                    <span class="font-bold text-foreground text-sm group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                      Strategic Synthesis <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    <span class="font-bold text-foreground text-xs sm:text-sm group-hover:text-amber-400 transition-colors flex items-center gap-1">
+                      Strategic Synthesis <i class="ph ph-arrow-up-right text-[10px] opacity-60"></i>
                     </span>
-                    <span class="text-xs text-muted-foreground mt-1">Craft investor memos, pitch decks & executive copy</span>
+                    <span class="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">Craft investor memos, pitch decks & copy</span>
                   </button>
                 </div>
 
                 <!-- Quick Command Deck Chips -->
-                <div class="flex items-center justify-center gap-2 flex-wrap max-w-xl px-2 pt-1 text-[11px]">
+                <div class="flex items-center justify-center gap-2 flex-wrap max-w-xl px-2 pt-0.5 text-[11px]">
                   <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/image ">
                     <i class="ph-bold ph-sparkle text-cyan-400"></i>
                     <span class="font-mono font-bold text-foreground">/image</span>
