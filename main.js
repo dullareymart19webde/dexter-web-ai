@@ -114,6 +114,9 @@ const jarvisWaveform = document.getElementById("jarvis-waveform");
 const playVoiceIntroBtn = document.getElementById("play-voice-intro-btn");
 const voiceIntroIcon = document.getElementById("voice-intro-icon");
 const voiceIntroText = document.getElementById("voice-intro-text");
+const jarvisSpeechBox = document.querySelector(".jarvis-speech-box");
+const jarvisSpeechText = document.getElementById("jarvis-speech-text");
+const jarvisVoiceStatus = document.getElementById("jarvis-voice-status");
 
 const slashCommandsMenu = document.getElementById("slash-commands-menu");
 const shortcutsBtn = document.getElementById("shortcuts-btn");
@@ -668,10 +671,116 @@ if (canvasGenerateSampleBtn) {
 }
 
 // ==========================================
-// JARVIS VOICE BRIEFING & AUDIO WAVEFORM
+// JARVIS VOICE BRIEFING & AUDIO WAVEFORM (REACTIVE MOTION)
 // ==========================================
 const JARVIS_INTRO_SPEECH = "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?";
 let isVoiceIntroPlaying = false;
+let speechAnimFrameId = null;
+let speechBeatTimeout = null;
+let acousticCadenceInterval = null;
+let lastBoundaryTime = 0;
+
+// Acoustic Punch / Beat motion for syllables & word boundaries
+function triggerAcousticBeat() {
+  if (neuralCoreHero) {
+    neuralCoreHero.classList.add("beat-punch");
+    if (speechBeatTimeout) clearTimeout(speechBeatTimeout);
+    speechBeatTimeout = setTimeout(() => {
+      if (neuralCoreHero) neuralCoreHero.classList.remove("beat-punch");
+    }, 110);
+  }
+
+  // Jitter and flare frequency bars on acoustic beat
+  if (jarvisWaveform) {
+    const bars = jarvisWaveform.querySelectorAll(".bar");
+    bars.forEach((bar) => {
+      const punchHeight = Math.min(26, Math.floor(10 + Math.random() * 16));
+      bar.style.height = `${punchHeight}px`;
+    });
+  }
+}
+
+// Real-Time Audio Frequency Spectrum Animator
+function startAudioWaveSimulation() {
+  if (speechAnimFrameId) cancelAnimationFrame(speechAnimFrameId);
+  if (acousticCadenceInterval) clearInterval(acousticCadenceInterval);
+
+  const bars = jarvisWaveform ? jarvisWaveform.querySelectorAll(".bar") : [];
+  const startTime = performance.now();
+
+  function animateWave(now) {
+    const elapsed = (now - startTime) / 1000;
+    bars.forEach((bar, idx) => {
+      // Harmonic wave superposition for organic audio spectrum analyzer visuals
+      const wave1 = Math.sin(elapsed * 8.5 + idx * 0.65);
+      const wave2 = Math.cos(elapsed * 4.2 + idx * 1.15);
+      const wave3 = Math.sin(elapsed * 12.0 + idx * 0.4);
+      const composite = (wave1 + wave2 * 0.6 + wave3 * 0.3 + 2.5) / 4.4;
+      const height = Math.round(4 + composite * 22);
+      bar.style.height = `${height}px`;
+    });
+    speechAnimFrameId = requestAnimationFrame(animateWave);
+  }
+
+  if (bars.length > 0) {
+    speechAnimFrameId = requestAnimationFrame(animateWave);
+  }
+
+  // Periodic acoustic cadence pulse in case browser TTS boundary events are delayed
+  lastBoundaryTime = Date.now();
+  acousticCadenceInterval = setInterval(() => {
+    if (Date.now() - lastBoundaryTime > 240) {
+      triggerAcousticBeat();
+    }
+  }, 220);
+}
+
+function stopAudioWaveSimulation() {
+  if (speechAnimFrameId) {
+    cancelAnimationFrame(speechAnimFrameId);
+    speechAnimFrameId = null;
+  }
+  if (acousticCadenceInterval) {
+    clearInterval(acousticCadenceInterval);
+    acousticCadenceInterval = null;
+  }
+  if (speechBeatTimeout) {
+    clearTimeout(speechBeatTimeout);
+    speechBeatTimeout = null;
+  }
+  if (neuralCoreHero) {
+    neuralCoreHero.classList.remove("beat-punch");
+  }
+  if (jarvisWaveform) {
+    const bars = jarvisWaveform.querySelectorAll(".bar");
+    bars.forEach((b) => {
+      b.style.height = "";
+    });
+  }
+}
+
+// Real-time Karaoke Word Highlighting in Speech Box
+function highlightSpokenWord(charIndex, charLength) {
+  if (!jarvisSpeechText) return;
+  const fullText = JARVIS_INTRO_SPEECH;
+  if (typeof charIndex !== "number" || charIndex < 0 || charIndex >= fullText.length) return;
+
+  let len = charLength;
+  if (!len || len <= 0) {
+    const nextSpace = fullText.slice(charIndex).search(/[\s.,!?]/);
+    len = nextSpace > 0 ? nextSpace : 5;
+  }
+  const before = fullText.substring(0, charIndex);
+  const current = fullText.substring(charIndex, charIndex + len);
+  const after = fullText.substring(charIndex + len);
+
+  jarvisSpeechText.innerHTML = `"${before}<span class="spoken-word-highlight">${current}</span>${after}"`;
+}
+
+function resetSpokenWordHighlight() {
+  if (!jarvisSpeechText) return;
+  jarvisSpeechText.textContent = `"${JARVIS_INTRO_SPEECH}"`;
+}
 
 function setVoiceIntroState(isPlaying) {
   isVoiceIntroPlaying = isPlaying;
@@ -679,8 +788,32 @@ function setVoiceIntroState(isPlaying) {
     jarvisWaveform.classList.toggle("speaking", isPlaying);
   }
   if (neuralCoreHero) {
+    neuralCoreHero.classList.toggle("speaking", isPlaying);
     neuralCoreHero.classList.toggle("thinking", isPlaying);
   }
+  if (jarvisSpeechBox) {
+    jarvisSpeechBox.classList.toggle("speaking", isPlaying);
+  }
+
+  if (jarvisVoiceStatus) {
+    if (isPlaying) {
+      jarvisVoiceStatus.innerHTML = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 mr-1 animate-ping"></span>TRANSMITTING';
+      jarvisVoiceStatus.classList.add("text-cyan-400", "font-bold");
+      jarvisVoiceStatus.classList.remove("text-muted-foreground/80");
+    } else {
+      jarvisVoiceStatus.textContent = "Autonomous Voice";
+      jarvisVoiceStatus.classList.remove("text-cyan-400", "font-bold");
+      jarvisVoiceStatus.classList.add("text-muted-foreground/80");
+    }
+  }
+
+  if (isPlaying) {
+    startAudioWaveSimulation();
+  } else {
+    stopAudioWaveSimulation();
+    resetSpokenWordHighlight();
+  }
+
   if (playVoiceIntroBtn) {
     if (isPlaying) {
       playVoiceIntroBtn.classList.replace("bg-cyan-500", "bg-rose-500");
@@ -714,6 +847,7 @@ function playJarvisVoiceIntro(isAuto = false) {
   }
 
   setVoiceIntroState(true);
+  resetSpokenWordHighlight();
 
   const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
   
@@ -731,6 +865,14 @@ function playJarvisVoiceIntro(isAuto = false) {
   const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
   utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
   utterance.pitch = 1.0;
+
+  utterance.onboundary = (e) => {
+    lastBoundaryTime = Date.now();
+    triggerAcousticBeat();
+    if (typeof e.charIndex === "number") {
+      highlightSpokenWord(e.charIndex, e.charLength);
+    }
+  };
 
   utterance.onend = () => setVoiceIntroState(false);
   utterance.onerror = (err) => {
@@ -1445,7 +1587,7 @@ function renderMermaid(element) {
   }
 }
 
-// Text-to-Speech Helper with Customized Voice & Rate
+// Text-to-Speech Helper with Customized Voice, Rate, and Reactive Motion
 function speakText(rawText, btn = null) {
   if (!window.speechSynthesis) {
     alert("Speech synthesis is not supported in this browser.");
@@ -1453,6 +1595,15 @@ function speakText(rawText, btn = null) {
   }
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
+    stopAudioWaveSimulation();
+    if (neuralCoreHero) {
+      neuralCoreHero.classList.remove("speaking");
+      neuralCoreHero.classList.remove("thinking");
+      neuralCoreHero.classList.remove("beat-punch");
+    }
+    if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+    if (jarvisSpeechBox) jarvisSpeechBox.classList.remove("speaking");
+    if (railVoiceBtn) railVoiceBtn.classList.remove("active");
     if (btn && btn.dataset.speaking === "true") {
       btn.dataset.speaking = "false";
       btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
@@ -1483,34 +1634,47 @@ function speakText(rawText, btn = null) {
   const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
   utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
 
+  // Real-time reactive motion activation
   if (jarvisWaveform) jarvisWaveform.classList.add("speaking");
-  if (neuralCoreHero) neuralCoreHero.classList.add("thinking");
+  if (neuralCoreHero) {
+    neuralCoreHero.classList.add("speaking");
+    neuralCoreHero.classList.add("thinking");
+  }
+  if (jarvisSpeechBox) jarvisSpeechBox.classList.add("speaking");
+  if (railVoiceBtn) railVoiceBtn.classList.add("active");
+  startAudioWaveSimulation();
+
+  utterance.onboundary = (e) => {
+    lastBoundaryTime = Date.now();
+    triggerAcousticBeat();
+  };
+
+  const cleanupSpeak = () => {
+    if (btn) {
+      btn.dataset.speaking = "false";
+      btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+    }
+    if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+    if (neuralCoreHero) {
+      neuralCoreHero.classList.remove("speaking");
+      neuralCoreHero.classList.remove("thinking");
+      neuralCoreHero.classList.remove("beat-punch");
+    }
+    if (jarvisSpeechBox) jarvisSpeechBox.classList.remove("speaking");
+    if (railVoiceBtn) railVoiceBtn.classList.remove("active");
+    stopAudioWaveSimulation();
+  };
 
   if (btn) {
     btn.dataset.speaking = "true";
     btn.innerHTML = '<i class="ph ph-stop-circle text-sm text-cyan-400 animate-pulse"></i>';
-    utterance.onend = () => {
-      btn.dataset.speaking = "false";
-      btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
-      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
-    };
-    utterance.onerror = () => {
-      btn.dataset.speaking = "false";
-      btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
-      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
-    };
-  } else {
-    utterance.onend = () => {
-      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
-    };
-    utterance.onerror = () => {
-      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
-      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
-    };
   }
+
+  utterance.onend = cleanupSpeak;
+  utterance.onerror = (err) => {
+    console.warn("TTS error:", err);
+    cleanupSpeak();
+  };
 
   speechSynthesis.speak(utterance);
 }

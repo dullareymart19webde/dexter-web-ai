@@ -388,6 +388,15 @@ button:active:not(:disabled) {
   box-shadow: 0 0 22px rgba(0, 240, 255, 0.65);
 }
 
+#rail-voice-btn.active {
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.85) !important;
+  border-color: #00f0ff !important;
+}
+
+#rail-voice-btn.active i {
+  animation: pulse 0.75s ease-in-out infinite alternate;
+}
+
 /* Slide-Out Sessions Drawer */
 #sidebar {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -505,6 +514,42 @@ button:active:not(:disabled) {
   }
 }
 
+/* Acoustic Shockwave Ripples */
+.reactor-ripple {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 240, 255, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.7);
+}
+
+.jarvis-reactor.speaking .reactor-ripple-1 {
+  animation: reactor-acoustic-pulse 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.jarvis-reactor.speaking .reactor-ripple-2 {
+  animation: reactor-acoustic-pulse 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite 0.6s;
+}
+.jarvis-reactor.speaking .reactor-ripple-3 {
+  animation: reactor-acoustic-pulse 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite 1.2s;
+}
+
+@keyframes reactor-acoustic-pulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+    border-color: rgba(0, 240, 255, 0.9);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.7);
+  }
+  100% {
+    transform: scale(1.68);
+    opacity: 0;
+    border-color: rgba(0, 140, 255, 0);
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0);
+  }
+}
+
 .reactor-ring-outer {
   position: absolute;
   inset: 0;
@@ -512,6 +557,7 @@ button:active:not(:disabled) {
   border: 2px dashed rgba(0, 240, 255, 0.35);
   animation: reactor-spin-cw 20s linear infinite;
   box-shadow: 0 0 24px rgba(0, 240, 255, 0.2);
+  transition: all 0.3s ease;
 }
 
 .reactor-ring-mid {
@@ -522,6 +568,7 @@ button:active:not(:disabled) {
   border-top-color: transparent;
   border-bottom-color: transparent;
   animation: reactor-spin-ccw 10s linear infinite;
+  transition: all 0.3s ease;
 }
 
 .reactor-ring-inner {
@@ -530,6 +577,7 @@ button:active:not(:disabled) {
   border-radius: 50%;
   border: 1px dotted rgba(0, 240, 255, 0.75);
   animation: reactor-spin-cw 6s linear infinite;
+  transition: all 0.3s ease;
 }
 
 .reactor-core {
@@ -585,40 +633,96 @@ button:active:not(:disabled) {
   100% { transform: scale(1.05); box-shadow: 0 0 55px #00f0ff, 0 0 95px rgba(0, 240, 255, 0.5); }
 }
 
+/* Real-Time Reactive Speaking Mode */
+.jarvis-reactor.speaking .reactor-ring-outer {
+  animation: reactor-spin-cw 2.4s linear infinite !important;
+  border-color: #00f0ff !important;
+  box-shadow: 0 0 32px rgba(0, 240, 255, 0.6) !important;
+}
+
+.jarvis-reactor.speaking .reactor-ring-mid {
+  animation: reactor-spin-ccw 1.4s linear infinite !important;
+  border-color: #38bdf8 !important;
+  border-width: 2px !important;
+}
+
+.jarvis-reactor.speaking .reactor-ring-inner {
+  animation: reactor-spin-cw 0.8s linear infinite !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 20px #00f0ff !important;
+}
+
+.jarvis-reactor.speaking .reactor-core {
+  animation: reactor-speaking-pulse 0.45s ease-in-out infinite alternate !important;
+  box-shadow: 0 0 45px #00f0ff, 0 0 95px rgba(0, 240, 255, 0.65), inset 0 0 20px #ffffff !important;
+}
+
+@keyframes reactor-speaking-pulse {
+  0% {
+    transform: scale(0.96);
+    filter: brightness(1.1) drop-shadow(0 0 15px rgba(0, 240, 255, 0.8));
+  }
+  100% {
+    transform: scale(1.12);
+    filter: brightness(1.45) drop-shadow(0 0 35px #00f0ff);
+  }
+}
+
+/* Word Cadence Punch on each spoken syllable */
+.jarvis-reactor.beat-punch .reactor-core {
+  transform: scale(1.24) !important;
+  filter: brightness(1.7) drop-shadow(0 0 45px #00f0ff) !important;
+  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1), filter 0.08s ease;
+}
+
+.jarvis-reactor.beat-punch .reactor-ring-inner {
+  transform: scale(1.1);
+  border-color: #ffffff;
+  transition: transform 0.08s ease;
+}
+
 /* Audio Visualizer Waves */
 .jarvis-audio-wave {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  height: 24px;
+  gap: 3.5px;
+  height: 26px;
 }
 
 .jarvis-audio-wave .bar {
-  width: 3px;
-  height: 6px;
-  background: #00f0ff;
+  width: 3.5px;
+  height: 5px;
+  background: rgba(0, 240, 255, 0.45);
   border-radius: 9999px;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
-  transition: height 0.15s ease;
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.35);
+  transition: height 0.08s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, opacity 0.15s ease;
 }
 
 .jarvis-audio-wave.speaking .bar {
-  animation: wave-bounce 0.8s ease-in-out infinite alternate;
+  animation: wave-frequency 0.55s ease-in-out infinite alternate;
+  background: linear-gradient(to top, #0088ff 0%, #00f0ff 60%, #ffffff 100%);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.85);
+  opacity: 1;
 }
 
-.jarvis-audio-wave.speaking .bar:nth-child(1) { animation-delay: 0.1s; }
-.jarvis-audio-wave.speaking .bar:nth-child(2) { animation-delay: 0.35s; }
-.jarvis-audio-wave.speaking .bar:nth-child(3) { animation-delay: 0.15s; }
-.jarvis-audio-wave.speaking .bar:nth-child(4) { animation-delay: 0.45s; }
-.jarvis-audio-wave.speaking .bar:nth-child(5) { animation-delay: 0.25s; }
-.jarvis-audio-wave.speaking .bar:nth-child(6) { animation-delay: 0.55s; }
-.jarvis-audio-wave.speaking .bar:nth-child(7) { animation-delay: 0.2s; }
-.jarvis-audio-wave.speaking .bar:nth-child(8) { animation-delay: 0.4s; }
+.jarvis-audio-wave.speaking .bar:nth-child(1)  { animation-delay: 0.05s; }
+.jarvis-audio-wave.speaking .bar:nth-child(2)  { animation-delay: 0.22s; }
+.jarvis-audio-wave.speaking .bar:nth-child(3)  { animation-delay: 0.12s; }
+.jarvis-audio-wave.speaking .bar:nth-child(4)  { animation-delay: 0.38s; }
+.jarvis-audio-wave.speaking .bar:nth-child(5)  { animation-delay: 0.18s; }
+.jarvis-audio-wave.speaking .bar:nth-child(6)  { animation-delay: 0.48s; }
+.jarvis-audio-wave.speaking .bar:nth-child(7)  { animation-delay: 0.15s; }
+.jarvis-audio-wave.speaking .bar:nth-child(8)  { animation-delay: 0.32s; }
+.jarvis-audio-wave.speaking .bar:nth-child(9)  { animation-delay: 0.08s; }
+.jarvis-audio-wave.speaking .bar:nth-child(10) { animation-delay: 0.42s; }
+.jarvis-audio-wave.speaking .bar:nth-child(11) { animation-delay: 0.25s; }
+.jarvis-audio-wave.speaking .bar:nth-child(12) { animation-delay: 0.14s; }
 
-@keyframes wave-bounce {
-  0% { height: 4px; opacity: 0.4; }
-  100% { height: 22px; opacity: 1; }
+@keyframes wave-frequency {
+  0% { height: 4px; opacity: 0.5; }
+  50% { height: 16px; opacity: 0.9; }
+  100% { height: 26px; opacity: 1; filter: brightness(1.25); }
 }
 
 /* Thinking Pulse */
@@ -648,6 +752,36 @@ button:active:not(:disabled) {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px -4px rgba(0, 240, 255, 0.12), inset 0 0 24px rgba(0, 240, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.jarvis-speech-box.speaking {
+  border-color: rgba(0, 240, 255, 0.65);
+  box-shadow: 0 0 35px -4px rgba(0, 240, 255, 0.3), inset 0 0 28px rgba(0, 240, 255, 0.08);
+  animation: speech-box-aura 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes speech-box-aura {
+  0% {
+    border-color: rgba(0, 240, 255, 0.35);
+    box-shadow: 0 0 20px -4px rgba(0, 240, 255, 0.2);
+  }
+  100% {
+    border-color: rgba(0, 240, 255, 0.8);
+    box-shadow: 0 0 45px -2px rgba(0, 240, 255, 0.45), inset 0 0 20px rgba(0, 240, 255, 0.12);
+  }
+}
+
+.spoken-word-highlight {
+  color: #00f0ff !important;
+  background: rgba(0, 240, 255, 0.18);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  border-radius: 4px;
+  padding: 0 4px;
+  display: inline-block;
+  transform: scale(1.05);
+  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Bento Grid Cyber Deck Styles */
