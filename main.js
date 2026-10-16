@@ -161,26 +161,42 @@ if (marked.use) {
   });
 }
 
-// Unified Theme Toggle
+// Unified Theme Toggle & Persistence
 function applyTheme(isDark) {
   const htmlDoc = document.documentElement;
   htmlDoc.setAttribute("data-theme", isDark ? "dark" : "light");
-  const iconToRemove = isDark ? "ph-moon" : "ph-sun";
+  try {
+    localStorage.setItem("dexter_theme", isDark ? "dark" : "light");
+  } catch (e) {}
+
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.setAttribute("content", isDark ? "#030712" : "#f8fafc");
+  }
+
+  // When dark: show sun icon (click to switch to light)
+  // When light: show moon icon (click to switch to dark)
   const iconToAdd = isDark ? "ph-sun" : "ph-moon";
 
   [themeIcon, railThemeIcon].forEach(icon => {
     if (icon) {
       icon.classList.add("theme-rotate");
       setTimeout(() => icon.classList.remove("theme-rotate"), 400);
-      icon.classList.replace(iconToRemove, iconToAdd);
+      icon.classList.remove("ph-moon", "ph-sun");
+      icon.classList.add(iconToAdd);
     }
   });
 
   const settingsThemeIcon = document.getElementById("settings-theme-icon");
   if (settingsThemeIcon) {
-    settingsThemeIcon.classList.replace(iconToRemove, iconToAdd);
+    settingsThemeIcon.classList.remove("ph-moon", "ph-sun");
+    settingsThemeIcon.classList.add(iconToAdd);
   }
 }
+
+// Initial Theme Sync
+const initialIsDark = document.documentElement.getAttribute("data-theme") !== "light";
+applyTheme(initialIsDark);
 
 themeToggleBtn.addEventListener("click", () => {
   const isCurrentlyDark = document.documentElement.getAttribute("data-theme") === "dark";
@@ -200,41 +216,103 @@ function isDesktop() {
 
 function toggleSidebar(forceState) {
   if (isDesktop()) {
-    const shouldOpen = forceState !== undefined ? forceState : !sidebar.classList.contains("drawer-open");
-    sidebar.classList.toggle("drawer-open", shouldOpen);
+    const isCurrentlyCollapsed = sidebar.classList.contains("collapsed");
+    // Default desktop state is OPEN (not collapsed)
+    const shouldOpen = forceState !== undefined ? forceState : isCurrentlyCollapsed;
+
     sidebar.classList.toggle("collapsed", !shouldOpen);
+    sidebar.classList.toggle("drawer-open", shouldOpen);
     if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+
+    // On desktop, never display the blocking backdrop overlay
     if (sidebarBackdrop) {
-      if (shouldOpen) {
+      sidebarBackdrop.classList.add("hidden");
+      sidebarBackdrop.classList.remove("opacity-100");
+    }
+
+    try {
+      localStorage.setItem("dexter_sidebar_open", shouldOpen ? "true" : "false");
+    } catch (e) {}
+  } else {
+    // Mobile slide-over drawer
+    const isClosed = sidebar.classList.contains("-translate-x-full") || sidebar.classList.contains("collapsed");
+    const shouldOpen = forceState !== undefined ? forceState : isClosed;
+
+    if (shouldOpen) {
+      sidebar.classList.remove("-translate-x-full", "collapsed");
+      sidebar.classList.add("drawer-open");
+      if (sidebarBackdrop) {
         sidebarBackdrop.classList.remove("hidden");
         setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
-      } else {
+      }
+    } else {
+      sidebar.classList.add("-translate-x-full", "collapsed");
+      sidebar.classList.remove("drawer-open");
+      if (sidebarBackdrop) {
         sidebarBackdrop.classList.remove("opacity-100");
         setTimeout(() => sidebarBackdrop.classList.add("hidden"), 200);
       }
     }
-  } else {
-    const shouldOpen = forceState !== undefined ? forceState : sidebar.classList.contains("-translate-x-full");
-    if (shouldOpen) {
-      sidebar.classList.remove("-translate-x-full");
-      sidebarBackdrop.classList.remove("hidden");
-      setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
-    } else {
-      sidebar.classList.add("-translate-x-full");
+  }
+}
+
+// Initialize Sidebar: Default OPEN on desktop, closed drawer on mobile
+function initSidebarState() {
+  if (isDesktop()) {
+    let shouldOpen = true;
+    try {
+      const saved = localStorage.getItem("dexter_sidebar_open");
+      if (saved === "false") shouldOpen = false;
+    } catch (e) {}
+
+    sidebar.classList.toggle("collapsed", !shouldOpen);
+    sidebar.classList.toggle("drawer-open", shouldOpen);
+    sidebar.classList.remove("-translate-x-full");
+    if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.add("hidden");
       sidebarBackdrop.classList.remove("opacity-100");
-      setTimeout(() => sidebarBackdrop.classList.add("hidden"), 200);
+    }
+  } else {
+    sidebar.classList.add("-translate-x-full", "collapsed");
+    sidebar.classList.remove("drawer-open");
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.add("hidden");
+      sidebarBackdrop.classList.remove("opacity-100");
     }
   }
 }
+
+initSidebarState();
+
+window.addEventListener("resize", () => {
+  if (isDesktop()) {
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.add("hidden");
+      sidebarBackdrop.classList.remove("opacity-100");
+    }
+    sidebar.classList.remove("-translate-x-full");
+    let shouldOpen = true;
+    try {
+      const saved = localStorage.getItem("dexter_sidebar_open");
+      if (saved === "false") shouldOpen = false;
+    } catch (e) {}
+    sidebar.classList.toggle("collapsed", !shouldOpen);
+    sidebar.classList.toggle("drawer-open", shouldOpen);
+    if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+  } else {
+    if (!sidebar.classList.contains("drawer-open")) {
+      sidebar.classList.add("-translate-x-full", "collapsed");
+      if (sidebarBackdrop) sidebarBackdrop.classList.add("hidden");
+    }
+  }
+});
 
 // Rail Navigation Hooks
 if (railNewChatBtn) {
   railNewChatBtn.addEventListener("click", () => {
     const newChatBtn = document.getElementById("new-chat-btn");
     newChatBtn?.click();
-    if (isDesktop() && sidebar.classList.contains("drawer-open")) {
-      toggleSidebar(false);
-    }
   });
 }
 
@@ -1238,7 +1316,7 @@ window.addEventListener("keydown", (e) => {
       toggleStudioCanvas(false);
       return;
     }
-    if (sidebar && sidebar.classList.contains("drawer-open")) {
+    if (sidebar && sidebar.classList.contains("drawer-open") && !isDesktop()) {
       toggleSidebar(false);
       return;
     }

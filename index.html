@@ -8,6 +8,17 @@
     <meta name="theme-color" content="#030712">
     <meta name="description" content="Dexter AI - JARVIS-inspired Intelligent Workspace Companion with Studio Canvas, FLUX.1 Art Engine & Multimodal Neural Deck">
     <link rel="manifest" href="/manifest.json">
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('dexter_theme');
+          var isDark = saved ? (saved === 'dark') : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', isDark ? '#030712' : '#f8fafc');
+        } catch(e) {}
+      })();
+    </script>
     <link rel="stylesheet" href="./style.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -113,11 +124,11 @@
       </div>
     </aside>
 
-    <!-- Slide-Out Frosted Glass Sessions Drawer -->
-    <aside id="sidebar" class="w-72 sm:w-80 max-w-[85vw] h-full border-r border-border/80 bg-card/95 md:bg-card/75 backdrop-blur-2xl flex flex-col transition-all duration-300 z-40 transform -translate-x-full fixed shadow-2xl overflow-hidden shrink-0">
-      <div class="w-full h-full flex flex-col shrink-0">
+    <!-- Slide-Out Frosted Glass Sessions Drawer (Docked on Desktop, Drawer on Mobile) -->
+    <aside id="sidebar" class="h-full border-r border-border/80 bg-card/95 backdrop-blur-2xl flex flex-col z-40 shrink-0 overflow-hidden fixed top-0 bottom-0 left-0 w-72 max-w-[85vw] -translate-x-full md:relative md:top-auto md:bottom-auto md:left-auto md:translate-x-0 md:w-[280px] md:max-w-[280px] md:z-30 shadow-2xl md:shadow-none">
+      <div class="w-[280px] h-full flex flex-col shrink-0">
         <div class="p-3.5 sm:p-4 border-b border-border/60 flex items-center justify-between gap-2">
-          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98]">
+          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98]">
             <i class="ph-bold ph-plus text-sm sm:text-base"></i>
             <span>New Chat</span>
           </button>
@@ -793,8 +804,8 @@
       </div>
     </div>
 
-    <!-- Sidebar Backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity opacity-0"></div>
+    <!-- Sidebar Backdrop (Mobile Only) -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity opacity-0 md:hidden pointer-events-auto"></div>
 
     <!-- Autonomous Voice Audio Source -->
     <audio id="dexter-voice-audio" src="/audio/dexter-greeting.mp3" preload="auto"></audio>
