@@ -72,6 +72,49 @@ const sandboxModal = document.getElementById("sandbox-modal");
 const sandboxIframe = document.getElementById("sandbox-iframe");
 const closeSandboxBtn = document.getElementById("close-sandbox-btn");
 
+// JARVIS 64px Icon Rail Elements
+const railLogoBtn = document.getElementById("rail-logo-btn");
+const railNewChatBtn = document.getElementById("rail-new-chat-btn");
+const railSessionsBtn = document.getElementById("rail-sessions-btn");
+const railCanvasBtn = document.getElementById("rail-canvas-btn");
+const railImageBtn = document.getElementById("rail-image-btn");
+const railSandboxBtn = document.getElementById("rail-sandbox-btn");
+const railVoiceBtn = document.getElementById("rail-voice-btn");
+const railShortcutsBtn = document.getElementById("rail-shortcuts-btn");
+const railSettingsBtn = document.getElementById("rail-settings-btn");
+const railThemeBtn = document.getElementById("rail-theme-btn");
+const railThemeIcon = document.getElementById("rail-theme-icon");
+
+// Studio Canvas Workstation Elements
+const headerCanvasToggleBtn = document.getElementById("header-canvas-toggle-btn");
+const rightCanvasPanel = document.getElementById("right-canvas-panel");
+const closeCanvasBtn = document.getElementById("close-canvas-btn");
+const canvasTabArt = document.getElementById("canvas-tab-art");
+const canvasTabSandbox = document.getElementById("canvas-tab-sandbox");
+const canvasArtView = document.getElementById("canvas-art-view");
+const canvasSandboxView = document.getElementById("canvas-sandbox-view");
+const canvasRatioButtons = document.querySelectorAll("#canvas-ratio-buttons .ratio-btn");
+const canvasArtContainer = document.getElementById("canvas-art-container");
+const canvasArtEmpty = document.getElementById("canvas-art-empty");
+const canvasArtLoader = document.getElementById("canvas-art-loader");
+const canvasArtImage = document.getElementById("canvas-art-image");
+const canvasArtDetails = document.getElementById("canvas-art-details");
+const canvasArtPrompt = document.getElementById("canvas-art-prompt");
+const canvasArtDimensions = document.getElementById("canvas-art-dimensions");
+const canvasArtRemixBtn = document.getElementById("canvas-art-remix-btn");
+const canvasArtDownloadBtn = document.getElementById("canvas-art-download-btn");
+const canvasFullscreenBtn = document.getElementById("canvas-fullscreen-btn");
+const canvasGenerateSampleBtn = document.getElementById("canvas-generate-sample-btn");
+const canvasSandboxIframe = document.getElementById("canvas-sandbox-iframe");
+const canvasSandboxReloadBtn = document.getElementById("canvas-sandbox-reload-btn");
+
+// JARVIS Talking Core & Audio Waveform Elements
+const neuralCoreHero = document.getElementById("neural-core-hero");
+const jarvisWaveform = document.getElementById("jarvis-waveform");
+const playVoiceIntroBtn = document.getElementById("play-voice-intro-btn");
+const voiceIntroIcon = document.getElementById("voice-intro-icon");
+const voiceIntroText = document.getElementById("voice-intro-text");
+
 const slashCommandsMenu = document.getElementById("slash-commands-menu");
 const shortcutsBtn = document.getElementById("shortcuts-btn");
 const shortcutsModal = document.getElementById("shortcuts-modal");
@@ -95,6 +138,14 @@ let isRecording = false;
 let activeRenamingSessionId = null;
 let activeSessionHistory = [];
 
+// Studio Canvas Image State
+let currentStudioImage = {
+  prompt: "Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic",
+  ratio: "1:1",
+  seed: 4291823,
+  url: ""
+};
+let currentStudioView = "art";
 
 if (marked.use) {
   marked.use({
@@ -108,53 +159,110 @@ if (marked.use) {
   });
 }
 
+// Unified Theme Toggle
+function applyTheme(isDark) {
+  const htmlDoc = document.documentElement;
+  htmlDoc.setAttribute("data-theme", isDark ? "dark" : "light");
+  const iconToRemove = isDark ? "ph-moon" : "ph-sun";
+  const iconToAdd = isDark ? "ph-sun" : "ph-moon";
+
+  [themeIcon, railThemeIcon].forEach(icon => {
+    if (icon) {
+      icon.classList.add("theme-rotate");
+      setTimeout(() => icon.classList.remove("theme-rotate"), 400);
+      icon.classList.replace(iconToRemove, iconToAdd);
+    }
+  });
+
+  const settingsThemeIcon = document.getElementById("settings-theme-icon");
+  if (settingsThemeIcon) {
+    settingsThemeIcon.classList.replace(iconToRemove, iconToAdd);
+  }
+}
 
 themeToggleBtn.addEventListener("click", () => {
-  const htmlDoc = document.documentElement;
-  themeIcon.classList.add("theme-rotate");
-  setTimeout(() => themeIcon.classList.remove("theme-rotate"), 400);
-  if (htmlDoc.getAttribute("data-theme") === "dark") {
-    htmlDoc.setAttribute("data-theme", "light");
-    themeIcon.classList.replace("ph-sun", "ph-moon");
-  } else {
-    htmlDoc.setAttribute("data-theme", "dark");
-    themeIcon.classList.replace("ph-moon", "ph-sun");
-  }
+  const isCurrentlyDark = document.documentElement.getAttribute("data-theme") === "dark";
+  applyTheme(!isCurrentlyDark);
 });
 
+if (railThemeBtn) {
+  railThemeBtn.addEventListener("click", () => {
+    const isCurrentlyDark = document.documentElement.getAttribute("data-theme") === "dark";
+    applyTheme(!isCurrentlyDark);
+  });
+}
 
 function isDesktop() {
   return window.innerWidth >= 768;
 }
 
-function toggleSidebar() {
+function toggleSidebar(forceState) {
   if (isDesktop()) {
-    sidebar.classList.toggle("collapsed");
-    const isCollapsed = sidebar.classList.contains("collapsed");
-    localStorage.setItem("dexter_sidebar_collapsed", isCollapsed ? "true" : "false");
+    const shouldOpen = forceState !== undefined ? forceState : !sidebar.classList.contains("drawer-open");
+    sidebar.classList.toggle("drawer-open", shouldOpen);
+    sidebar.classList.toggle("collapsed", !shouldOpen);
+    if (railSessionsBtn) railSessionsBtn.classList.toggle("active", shouldOpen);
+    if (sidebarBackdrop) {
+      if (shouldOpen) {
+        sidebarBackdrop.classList.remove("hidden");
+        setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
+      } else {
+        sidebarBackdrop.classList.remove("opacity-100");
+        setTimeout(() => sidebarBackdrop.classList.add("hidden"), 200);
+      }
+    }
   } else {
-    sidebar.classList.toggle("-translate-x-full");
-    if (sidebar.classList.contains("-translate-x-full")) {
-      sidebarBackdrop.classList.add("hidden");
-      sidebarBackdrop.classList.remove("opacity-100");
-    } else {
+    const shouldOpen = forceState !== undefined ? forceState : sidebar.classList.contains("-translate-x-full");
+    if (shouldOpen) {
+      sidebar.classList.remove("-translate-x-full");
       sidebarBackdrop.classList.remove("hidden");
       setTimeout(() => sidebarBackdrop.classList.add("opacity-100"), 10);
+    } else {
+      sidebar.classList.add("-translate-x-full");
+      sidebarBackdrop.classList.remove("opacity-100");
+      setTimeout(() => sidebarBackdrop.classList.add("hidden"), 200);
     }
   }
 }
 
-// Restore desktop sidebar collapsed state on startup
-if (isDesktop() && localStorage.getItem("dexter_sidebar_collapsed") === "true") {
-  sidebar.classList.add("collapsed");
+// Rail Navigation Hooks
+if (railNewChatBtn) {
+  railNewChatBtn.addEventListener("click", () => {
+    const newChatBtn = document.getElementById("new-chat-btn");
+    newChatBtn?.click();
+    if (isDesktop() && sidebar.classList.contains("drawer-open")) {
+      toggleSidebar(false);
+    }
+  });
 }
 
-toggleSidebarBtn.addEventListener("click", toggleSidebar);
-closeSidebarBtn.addEventListener("click", toggleSidebar);
-sidebarBackdrop.addEventListener("click", () => {
-  if (!isDesktop()) toggleSidebar();
-});
+if (railSessionsBtn) {
+  railSessionsBtn.addEventListener("click", () => {
+    toggleSidebar();
+  });
+}
 
+if (railShortcutsBtn) {
+  railShortcutsBtn.addEventListener("click", () => {
+    toggleShortcutsModal();
+  });
+}
+
+if (railSettingsBtn) {
+  railSettingsBtn.addEventListener("click", () => {
+    toggleSettings();
+  });
+}
+
+if (railLogoBtn) {
+  railLogoBtn.addEventListener("click", () => {
+    playJarvisVoiceIntro();
+  });
+}
+
+toggleSidebarBtn.addEventListener("click", () => toggleSidebar());
+closeSidebarBtn.addEventListener("click", () => toggleSidebar(false));
+sidebarBackdrop.addEventListener("click", () => toggleSidebar(false));
 
 const settingsModal = document.getElementById("settings-modal");
 const openSettingsBtn = document.getElementById("open-settings-btn");
@@ -384,7 +492,256 @@ if (sandboxModal) {
   sandboxModal.querySelector(".sandbox-backdrop")?.addEventListener("click", closeSandbox);
 }
 
-// Multi-Format File Upload Handling
+// ==========================================
+// RIGHT STUDIO CANVAS WORKSTATION SYSTEM
+// ==========================================
+function toggleStudioCanvas(forceState) {
+  if (!rightCanvasPanel) return;
+  const isCollapsed = rightCanvasPanel.classList.contains("collapsed");
+  const shouldOpen = forceState !== undefined ? forceState : isCollapsed;
+  
+  if (shouldOpen) {
+    rightCanvasPanel.classList.remove("collapsed");
+  } else {
+    rightCanvasPanel.classList.add("collapsed");
+  }
+  
+  if (railCanvasBtn) railCanvasBtn.classList.toggle("active", shouldOpen);
+  if (headerCanvasToggleBtn) {
+    headerCanvasToggleBtn.classList.toggle("bg-cyan-500/20", shouldOpen);
+    headerCanvasToggleBtn.classList.toggle("border-cyan-400", shouldOpen);
+  }
+}
+
+function switchStudioTab(tab) {
+  currentStudioView = tab;
+  if (tab === "art") {
+    canvasTabArt?.classList.add("bg-primary", "text-primary-foreground", "shadow-sm");
+    canvasTabArt?.classList.remove("text-muted-foreground");
+    canvasTabSandbox?.classList.remove("bg-primary", "text-primary-foreground", "shadow-sm");
+    canvasTabSandbox?.classList.add("text-muted-foreground");
+    canvasArtView?.classList.remove("hidden");
+    canvasSandboxView?.classList.add("hidden");
+  } else {
+    canvasTabSandbox?.classList.add("bg-primary", "text-primary-foreground", "shadow-sm");
+    canvasTabSandbox?.classList.remove("text-muted-foreground");
+    canvasTabArt?.classList.remove("bg-primary", "text-primary-foreground", "shadow-sm");
+    canvasTabArt?.classList.add("text-muted-foreground");
+    canvasSandboxView?.classList.remove("hidden");
+    canvasArtView?.classList.add("hidden");
+  }
+}
+
+function openInStudioSandbox(htmlCode) {
+  if (canvasSandboxIframe) {
+    canvasSandboxIframe.srcdoc = htmlCode;
+  }
+  switchStudioTab("sandbox");
+  toggleStudioCanvas(true);
+}
+
+function updateStudioCanvasImage(prompt, seed = null, ratio = null) {
+  if (!rightCanvasPanel) return;
+  
+  if (prompt) currentStudioImage.prompt = prompt;
+  if (seed !== null && seed !== undefined) currentStudioImage.seed = seed;
+  if (ratio) currentStudioImage.ratio = ratio;
+
+  let width = 1024, height = 1024;
+  switch (currentStudioImage.ratio) {
+    case "16:9":
+      width = 1280; height = 720; break;
+    case "9:16":
+      width = 720; height = 1280; break;
+    case "4:3":
+      width = 1024; height = 768; break;
+    case "1:1":
+    default:
+      width = 1024; height = 1024; break;
+  }
+
+  const generatedUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(currentStudioImage.prompt)}?width=${width}&height=${height}&model=flux&nologo=true&seed=${currentStudioImage.seed}`;
+  currentStudioImage.url = generatedUrl;
+
+  switchStudioTab("art");
+
+  if (canvasArtEmpty) canvasArtEmpty.classList.add("hidden");
+  if (canvasArtLoader) canvasArtLoader.classList.remove("hidden");
+  if (canvasArtImage) {
+    canvasArtImage.classList.add("hidden");
+    canvasArtImage.src = generatedUrl;
+    canvasArtImage.onload = () => {
+      if (canvasArtLoader) canvasArtLoader.classList.add("hidden");
+      canvasArtImage.classList.remove("hidden");
+    };
+    canvasArtImage.onerror = () => {
+      if (canvasArtLoader) canvasArtLoader.classList.add("hidden");
+    };
+  }
+
+  if (canvasArtDetails) {
+    canvasArtDetails.classList.remove("hidden");
+    canvasArtDetails.classList.add("flex");
+  }
+  if (canvasArtPrompt) canvasArtPrompt.textContent = `"${currentStudioImage.prompt}"`;
+  if (canvasArtDimensions) canvasArtDimensions.textContent = `${width} × ${height} · FLUX (${currentStudioImage.ratio})`;
+  if (canvasArtDownloadBtn) {
+    canvasArtDownloadBtn.href = generatedUrl;
+    canvasArtDownloadBtn.download = `dexter-flux-${currentStudioImage.seed}.jpg`;
+  }
+
+  canvasRatioButtons.forEach(btn => {
+    const isBtnRatio = btn.dataset.ratio === currentStudioImage.ratio;
+    btn.className = isBtnRatio 
+      ? "ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold bg-primary text-primary-foreground"
+      : "ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary";
+  });
+}
+
+// Canvas Buttons Event Listeners
+if (headerCanvasToggleBtn) headerCanvasToggleBtn.addEventListener("click", () => toggleStudioCanvas());
+if (closeCanvasBtn) closeCanvasBtn.addEventListener("click", () => toggleStudioCanvas(false));
+if (railCanvasBtn) railCanvasBtn.addEventListener("click", () => toggleStudioCanvas());
+
+if (railImageBtn) {
+  railImageBtn.addEventListener("click", () => {
+    switchStudioTab("art");
+    toggleStudioCanvas(true);
+    expandInput();
+    if (!messageInput.value.startsWith("/image ")) {
+      messageInput.value = "/image " + messageInput.value.replace(/^\/image\s*/, "");
+    }
+    messageInput.focus();
+  });
+}
+
+if (railSandboxBtn) {
+  railSandboxBtn.addEventListener("click", () => {
+    switchStudioTab("sandbox");
+    toggleStudioCanvas(true);
+  });
+}
+
+if (canvasTabArt) canvasTabArt.addEventListener("click", () => switchStudioTab("art"));
+if (canvasTabSandbox) canvasTabSandbox.addEventListener("click", () => switchStudioTab("sandbox"));
+
+canvasRatioButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const newRatio = btn.dataset.ratio;
+    updateStudioCanvasImage(currentStudioImage.prompt, currentStudioImage.seed, newRatio);
+  });
+});
+
+if (canvasArtRemixBtn) {
+  canvasArtRemixBtn.addEventListener("click", () => {
+    const newSeed = Math.floor(Math.random() * 9999999);
+    updateStudioCanvasImage(currentStudioImage.prompt, newSeed, currentStudioImage.ratio);
+  });
+}
+
+if (canvasFullscreenBtn) {
+  canvasFullscreenBtn.addEventListener("click", () => {
+    if (currentStudioView === "art" && currentStudioImage.url) {
+      window.open(currentStudioImage.url, "_blank");
+    } else if (currentStudioView === "sandbox") {
+      openSandbox(canvasSandboxIframe?.srcdoc || "");
+    }
+  });
+}
+
+if (canvasSandboxReloadBtn) {
+  canvasSandboxReloadBtn.addEventListener("click", () => {
+    if (canvasSandboxIframe) {
+      const src = canvasSandboxIframe.srcdoc;
+      canvasSandboxIframe.srcdoc = "";
+      setTimeout(() => { canvasSandboxIframe.srcdoc = src; }, 50);
+    }
+  });
+}
+
+if (canvasGenerateSampleBtn) {
+  canvasGenerateSampleBtn.addEventListener("click", () => {
+    expandInput();
+    messageInput.value = "/image Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic";
+    chatForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+  });
+}
+
+// ==========================================
+// JARVIS VOICE BRIEFING & AUDIO WAVEFORM
+// ==========================================
+const JARVIS_INTRO_SPEECH = "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?";
+let isVoiceIntroPlaying = false;
+
+function setVoiceIntroState(isPlaying) {
+  isVoiceIntroPlaying = isPlaying;
+  if (jarvisWaveform) {
+    jarvisWaveform.classList.toggle("speaking", isPlaying);
+  }
+  if (neuralCoreHero) {
+    neuralCoreHero.classList.toggle("thinking", isPlaying);
+  }
+  if (playVoiceIntroBtn) {
+    if (isPlaying) {
+      playVoiceIntroBtn.classList.replace("bg-cyan-500", "bg-rose-500");
+      playVoiceIntroBtn.classList.replace("text-black", "text-white");
+      if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-stop text-xs animate-pulse";
+      if (voiceIntroText) voiceIntroText.textContent = "Stop Voice";
+    } else {
+      playVoiceIntroBtn.classList.replace("bg-rose-500", "bg-cyan-500");
+      playVoiceIntroBtn.classList.replace("text-white", "text-black");
+      if (voiceIntroIcon) voiceIntroIcon.className = "ph-bold ph-play text-xs";
+      if (voiceIntroText) voiceIntroText.textContent = "Voice Briefing";
+    }
+  }
+  if (railVoiceBtn) {
+    railVoiceBtn.classList.toggle("active", isPlaying);
+  }
+}
+
+function playJarvisVoiceIntro() {
+  if (!window.speechSynthesis) {
+    alert("Speech synthesis is not supported on this browser or device.");
+    return;
+  }
+
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    if (isVoiceIntroPlaying) {
+      setVoiceIntroState(false);
+      return;
+    }
+  }
+
+  setVoiceIntroState(true);
+
+  const utterance = new SpeechSynthesisUtterance(JARVIS_INTRO_SPEECH);
+  const savedVoiceUri = localStorage.getItem("dexter_tts_voice");
+  if (savedVoiceUri) {
+    const voices = speechSynthesis.getVoices();
+    const voice = voices.find(v => v.voiceURI === savedVoiceUri);
+    if (voice) utterance.voice = voice;
+  }
+  const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
+  utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
+  utterance.pitch = 1.05;
+
+  utterance.onend = () => setVoiceIntroState(false);
+  utterance.onerror = () => setVoiceIntroState(false);
+
+  speechSynthesis.speak(utterance);
+}
+
+if (playVoiceIntroBtn) {
+  playVoiceIntroBtn.addEventListener("click", playJarvisVoiceIntro);
+}
+if (railVoiceBtn) {
+  railVoiceBtn.addEventListener("click", playJarvisVoiceIntro);
+}
+if (neuralCoreHero) {
+  neuralCoreHero.addEventListener("click", playJarvisVoiceIntro);
+}
+
 // Multi-Format File Upload & Drag-and-Drop Handling
 function handleSelectedFile(file) {
   if (!file) return;
@@ -760,6 +1117,11 @@ window.addEventListener("keydown", (e) => {
     toggleSidebar();
   }
 
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
+    e.preventDefault();
+    toggleStudioCanvas();
+  }
+
   if ((e.ctrlKey || e.metaKey) && e.key === '/') {
     e.preventDefault();
     toggleShortcutsModal();
@@ -771,6 +1133,14 @@ window.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "Escape") {
+    if (rightCanvasPanel && !rightCanvasPanel.classList.contains("collapsed") && window.innerWidth < 1024) {
+      toggleStudioCanvas(false);
+      return;
+    }
+    if (sidebar && sidebar.classList.contains("drawer-open")) {
+      toggleSidebar(false);
+      return;
+    }
     if (shortcutsModal && !shortcutsModal.classList.contains("hidden")) {
       toggleShortcutsModal();
       return;
@@ -948,11 +1318,11 @@ function appendMessage(role, text, fileInfo = null) {
     updateText: (newText) => {
       contentElement.dataset.rawText = newText;
       contentElement.innerHTML = marked.parse(newText) + `
-        <div class="mt-2 text-indigo-500">
+        <div class="mt-2 text-cyan-400">
           <div class="typing-indicator flex items-center gap-1.5 py-1">
-            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
-            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
-            <span class="w-2 h-2 bg-indigo-500 rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-cyan-400 rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-cyan-400 rounded-full typing-dot inline-block"></span>
+            <span class="w-2 h-2 bg-cyan-400 rounded-full typing-dot inline-block"></span>
           </div>
         </div>
       `;
@@ -1073,16 +1443,32 @@ function speakText(rawText, btn = null) {
   const savedRate = parseFloat(localStorage.getItem("dexter_tts_speed") || "1.0");
   utterance.rate = isNaN(savedRate) ? 1.0 : savedRate;
 
+  if (jarvisWaveform) jarvisWaveform.classList.add("speaking");
+  if (neuralCoreHero) neuralCoreHero.classList.add("thinking");
+
   if (btn) {
     btn.dataset.speaking = "true";
-    btn.innerHTML = '<i class="ph ph-stop-circle text-sm text-indigo-500 animate-pulse"></i>';
+    btn.innerHTML = '<i class="ph ph-stop-circle text-sm text-cyan-400 animate-pulse"></i>';
     utterance.onend = () => {
       btn.dataset.speaking = "false";
       btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
     };
     utterance.onerror = () => {
       btn.dataset.speaking = "false";
       btn.innerHTML = '<i class="ph ph-speaker-high text-sm"></i>';
+      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
+    };
+  } else {
+    utterance.onend = () => {
+      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
+    };
+    utterance.onerror = () => {
+      if (jarvisWaveform) jarvisWaveform.classList.remove("speaking");
+      if (neuralCoreHero) neuralCoreHero.classList.remove("thinking");
     };
   }
 
@@ -1184,6 +1570,7 @@ function renderFluxImageCard(container, prompt, imageUrl, initialSeed) {
       downloadBtn.href = currentUrl;
       downloadBtn.download = `dexter-flux-${currentSeed}.jpg`;
     }
+    updateStudioCanvasImage(prompt, currentSeed);
   });
 
   copyBtn?.addEventListener("click", () => {
@@ -1197,6 +1584,9 @@ function renderFluxImageCard(container, prompt, imageUrl, initialSeed) {
   expandBtn?.addEventListener("click", () => {
     window.open(currentUrl, '_blank');
   });
+
+  // Automatically sync to Right Studio Canvas
+  updateStudioCanvasImage(prompt, currentSeed);
 }
 
 function postProcessContent(element) {
@@ -1254,10 +1644,14 @@ function postProcessContent(element) {
 
     if (isHtmlOrSvg) {
       const previewBtn = document.createElement("button");
-      previewBtn.className = "preview-btn bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1 font-semibold shadow-sm transition-all";
-      previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Run Sandbox';
+      previewBtn.className = "preview-btn bg-cyan-400 hover:bg-cyan-300 text-black px-2 py-1 rounded-md text-xs flex items-center gap-1 font-bold shadow-sm transition-all";
+      previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Live Sandbox';
       previewBtn.onclick = () => {
-        openSandbox(codeText);
+        if (window.innerWidth >= 1024) {
+          openInStudioSandbox(codeText);
+        } else {
+          openSandbox(codeText);
+        }
       };
       actionsContainer.appendChild(previewBtn);
     }
@@ -1308,9 +1702,9 @@ function showTypingIndicator() {
         <img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />
       </div>
       <div class="flex items-center gap-1.5 py-2">
-        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
-        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
-        <div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>
+        <div class="w-2 h-2 bg-cyan-400 rounded-full typing-dot"></div>
+        <div class="w-2 h-2 bg-cyan-400 rounded-full typing-dot"></div>
+        <div class="w-2 h-2 bg-cyan-400 rounded-full typing-dot"></div>
       </div>
     </div>
   `;

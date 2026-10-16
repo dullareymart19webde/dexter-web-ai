@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dexter AI Assistant</title>
+    <title>Dexter AI • Autonomous Studio & Neural Deck</title>
     <link rel="icon" type="image/jpeg" href="/logo.jpg" />
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="description" content="Dexter AI - Next-Gen Intelligent Workspace Companion with Multimodal Vision & Real-time AI">
+    <meta name="theme-color" content="#030712">
+    <meta name="description" content="Dexter AI - JARVIS-inspired Intelligent Workspace Companion with Studio Canvas, FLUX.1 Art Engine & Multimodal Neural Deck">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="./style.css">
     <!-- Phosphor Icons -->
@@ -25,27 +25,27 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body class="h-screen h-[100dvh] w-screen overflow-hidden bg-background text-foreground flex font-['Plus_Jakarta_Sans'] transition-colors duration-200 relative antialiased">
     
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-2xl transition-all duration-700">
       <div class="flex flex-col items-center justify-center gap-5 mb-8 animate-in zoom-in-95 duration-700">
-        <div class="relative w-24 h-24 rounded-3xl p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-2xl shadow-indigo-500/20">
+        <div class="relative w-24 h-24 rounded-3xl p-[2px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-2xl shadow-cyan-500/25">
           <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[22px]" />
-          <div class="absolute -inset-1 rounded-3xl bg-indigo-500/30 blur-md -z-10 animate-pulse"></div>
+          <div class="absolute -inset-1 rounded-3xl bg-cyan-400/30 blur-md -z-10 animate-pulse"></div>
         </div>
         <div class="flex items-center gap-2">
-          <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Dexter AI</h1>
-          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">2.5</span>
+          <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Dexter AI</h1>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">JARVIS 2.5</span>
         </div>
       </div>
       <div class="absolute bottom-12 flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
         <div class="flex items-center gap-1.5 mb-2">
-          <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 0ms"></div>
-          <div class="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style="animation-delay: 150ms"></div>
-          <div class="w-2 h-2 rounded-full bg-pink-500 animate-bounce" style="animation-delay: 300ms"></div>
+          <div class="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 0ms"></div>
+          <div class="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 150ms"></div>
+          <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 300ms"></div>
         </div>
         <p class="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">Designed & Developed by</p>
         <p class="text-sm font-bold text-foreground tracking-tight">Rey Mart Dulla</p>
@@ -54,22 +54,79 @@
 
     <!-- Ambient Atmospheric Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-transparent rounded-full blur-[120px] dark:from-indigo-600/20 dark:via-purple-600/15 animate-ambient-1"></div>
-      <div class="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-gradient-to-bl from-violet-500/15 via-pink-500/10 to-transparent rounded-full blur-[120px] dark:from-violet-600/15 dark:via-pink-600/10 animate-ambient-2"></div>
-      <div class="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-gradient-to-tr from-blue-500/10 via-cyan-500/10 to-transparent rounded-full blur-[120px] dark:from-blue-600/15 animate-ambient-3"></div>
+      <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-gradient-to-br from-cyan-500/15 via-blue-600/10 to-transparent rounded-full blur-[130px] animate-ambient-1"></div>
+      <div class="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-gradient-to-bl from-cyan-400/15 via-indigo-600/10 to-transparent rounded-full blur-[130px] animate-ambient-2"></div>
+      <div class="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-gradient-to-tr from-blue-600/10 via-cyan-500/10 to-transparent rounded-full blur-[130px] animate-ambient-3"></div>
     </div>
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 max-w-[85vw] h-full border-r border-border/80 bg-card/95 md:bg-card/60 backdrop-blur-2xl flex flex-col transition-all duration-300 z-40 md:z-30 transform -translate-x-full md:translate-x-0 fixed md:relative shadow-xl md:shadow-sm overflow-hidden shrink-0">
-      <div class="w-72 max-w-[85vw] h-full flex flex-col shrink-0">
+    <!-- JARVIS Left 64px Icon Rail (Desktop Workstation) -->
+    <aside id="jarvis-rail" class="hidden md:flex flex-col items-center justify-between py-3.5 z-40 shrink-0 select-none">
+      <!-- Top Brand / Logo -->
+      <div class="flex flex-col items-center gap-3.5 w-full">
+        <button id="rail-logo-btn" class="relative group cursor-pointer focus:outline-none" title="Dexter AI • Autonomous Neural Deck">
+          <div class="w-10 h-10 rounded-2xl p-[1.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-md shadow-cyan-500/20 group-hover:shadow-cyan-400/40 group-hover:scale-105 transition-all duration-300">
+            <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[14px]" />
+          </div>
+          <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-cyan-400 ring-2 ring-background animate-pulse"></span>
+        </button>
+
+        <!-- Divider -->
+        <div class="w-8 h-[1px] bg-cyan-500/20"></div>
+
+        <!-- Navigation Action Buttons -->
+        <div class="flex flex-col items-center gap-2 w-full px-2">
+          <button id="rail-new-chat-btn" class="rail-btn" title="New Session">
+            <i class="ph-bold ph-plus text-base"></i>
+          </button>
+          
+          <button id="rail-sessions-btn" class="rail-btn" title="Chat History & Sessions (Ctrl+B)">
+            <i class="ph-bold ph-chats-circle text-base"></i>
+          </button>
+
+          <button id="rail-canvas-btn" class="rail-btn" title="Toggle Studio Canvas">
+            <i class="ph-bold ph-browsers text-base"></i>
+          </button>
+
+          <button id="rail-image-btn" class="rail-btn" title="FLUX.1 Image Studio">
+            <i class="ph-bold ph-paint-brush-broad text-base"></i>
+          </button>
+
+          <button id="rail-sandbox-btn" class="rail-btn" title="Live Code Sandbox">
+            <i class="ph-bold ph-code-block text-base"></i>
+          </button>
+
+          <button id="rail-voice-btn" class="rail-btn" title="JARVIS Voice Briefing">
+            <i class="ph-bold ph-waveform text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom System Controls -->
+      <div class="flex flex-col items-center gap-2 w-full px-2">
+        <button id="rail-shortcuts-btn" class="rail-btn" title="Keyboard Shortcuts (?)">
+          <i class="ph ph-keyboard text-base"></i>
+        </button>
+        
+        <button id="rail-settings-btn" class="rail-btn" title="Preferences & Voice">
+          <i class="ph ph-gear text-base"></i>
+        </button>
+
+        <button id="rail-theme-btn" class="rail-btn" title="Toggle Theme">
+          <i class="ph ph-sun text-base" id="rail-theme-icon"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Slide-Out Frosted Glass Sessions Drawer -->
+    <aside id="sidebar" class="w-72 sm:w-80 max-w-[85vw] h-full border-r border-border/80 bg-card/95 md:bg-card/75 backdrop-blur-2xl flex flex-col transition-all duration-300 z-40 transform -translate-x-full fixed shadow-2xl overflow-hidden shrink-0">
+      <div class="w-full h-full flex flex-col shrink-0">
         <div class="p-3.5 sm:p-4 border-b border-border/60 flex items-center justify-between gap-2">
-          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.98]">
+          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98]">
             <i class="ph-bold ph-plus text-sm sm:text-base"></i>
             <span>New Chat</span>
           </button>
-          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center" title="Close sidebar">
-            <i class="ph ph-x md:hidden text-lg"></i>
-            <i class="ph ph-sidebar-simple hidden md:inline text-lg"></i>
+          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center" title="Close drawer">
+            <i class="ph ph-x text-lg"></i>
           </button>
         </div>
 
@@ -77,13 +134,13 @@
         <div class="px-3 pt-2 pb-1">
           <div class="relative flex items-center">
             <i class="ph ph-magnifying-glass absolute left-2.5 text-muted-foreground text-xs pointer-events-none"></i>
-            <input type="text" id="history-search-input" placeholder="Search chats..." class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl pl-7 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all">
+            <input type="text" id="history-search-input" placeholder="Search chats..." class="w-full bg-secondary/60 border border-border/80 focus:border-cyan-500/50 rounded-xl pl-7 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 transition-all">
           </div>
         </div>
 
         <!-- Chat History List -->
         <div class="flex-1 overflow-y-auto p-3 space-y-1" id="chat-history-list">
-          <div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent</div>
+          <div class="text-[11px] font-bold text-muted-foreground/70 px-2.5 py-2 uppercase tracking-wider">Recent Sessions</div>
           <div class="text-xs text-muted-foreground/60 px-3 py-3 italic">No previous chats</div>
         </div>
 
@@ -91,39 +148,40 @@
         <div class="p-3 border-t border-border/60 flex flex-col gap-1.5 bg-card/40">
           <button id="open-settings-btn" class="flex items-center gap-2.5 text-sm font-medium text-muted-foreground hover:text-foreground w-full px-3 py-2 rounded-xl hover:bg-secondary/70 transition-colors">
             <i class="ph ph-gear text-lg text-muted-foreground"></i>
-            <span>Settings</span>
+            <span>Preferences & Voice</span>
           </button>
           <div class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
             <span class="flex items-center gap-1.5 font-medium truncate">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Rey Mart Dulla
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Rey Mart Dulla
             </span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-secondary text-muted-foreground/80">Dexter AI</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">JARVIS Deck</span>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content Workspace Wrapper -->
     <div class="flex-1 flex flex-col h-full h-[100dvh] md:h-full relative z-10 w-full overflow-hidden">
-      <!-- Top Navigation Bar -->
+      
+      <!-- Top Navigation Bar (Header) -->
       <header class="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3.5 border-b border-border/60 bg-card/40 backdrop-blur-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] shrink-0 gap-2 overflow-hidden">
         <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 sm:flex-initial">
-          <button id="toggle-sidebar" class="p-1.5 sm:p-2 -ml-1 sm:-ml-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all flex items-center justify-center shrink-0" title="Toggle sidebar (Ctrl+B)">
+          <button id="toggle-sidebar" class="p-1.5 sm:p-2 -ml-1 sm:-ml-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all flex items-center justify-center shrink-0" title="Toggle Sessions (Ctrl+B)">
             <i class="ph ph-sidebar-simple text-xl"></i>
           </button>
           
-          <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl p-[1.5px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/20 shrink-0">
+          <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl p-[1.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-sm shadow-cyan-500/20 shrink-0">
             <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px] sm:rounded-[14px]" />
-            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 ring-2 ring-background"></span>
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-cyan-400 ring-2 ring-background"></span>
           </div>
           
           <div class="min-w-0">
             <div class="flex items-center gap-1.5 sm:gap-2">
               <h1 class="text-sm sm:text-lg font-bold tracking-tight truncate">Dexter</h1>
-              <span class="text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 whitespace-nowrap shrink-0">2.5 Flash</span>
+              <span class="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 whitespace-nowrap shrink-0">JARVIS 2.5</span>
             </div>
             <p class="text-[11px] text-muted-foreground font-medium hidden sm:flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Intelligent Workspace Companion
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Autonomous Neural Deck
             </p>
           </div>
         </div>
@@ -131,8 +189,8 @@
         <div class="flex items-center gap-1 sm:gap-2 shrink-0">
           <!-- Persona Selector -->
           <div class="relative flex items-center">
-            <select id="persona-select" class="appearance-none bg-secondary/80 hover:bg-secondary text-foreground text-xs font-medium py-1.5 pl-2.5 pr-6 sm:pr-7 rounded-xl border border-border/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-colors max-w-[110px] xs:max-w-[130px] sm:max-w-none truncate">
-              <option value="default">Dexter (General)</option>
+            <select id="persona-select" class="appearance-none bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold py-1.5 pl-2.5 pr-6 sm:pr-7 rounded-xl border border-border/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-cyan-500/30 transition-colors max-w-[110px] xs:max-w-[130px] sm:max-w-none truncate">
+              <option value="default">Dexter (JARVIS Core)</option>
               <option value="architect">Code Architect</option>
               <option value="tutor">Academic Tutor</option>
               <option value="writer">Executive Writer</option>
@@ -140,6 +198,12 @@
             </select>
             <i class="ph ph-caret-down text-muted-foreground absolute right-2 text-xs pointer-events-none"></i>
           </div>
+
+          <!-- Studio Canvas Toggle Button in Header -->
+          <button id="header-canvas-toggle-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-cyan-400 hover:text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-cyan-500/20 bg-cyan-500/5 shrink-0" title="Toggle Studio Canvas">
+            <i class="ph-bold ph-browsers text-base"></i>
+            <span class="hidden sm:inline">Studio Canvas</span>
+          </button>
 
           <!-- Export Conversation -->
           <button id="export-chat-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border shrink-0" title="Export Conversation (Markdown)">
@@ -155,277 +219,430 @@
 
           <!-- Theme Toggle -->
           <button id="theme-toggle" class="p-1.5 sm:p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 border border-transparent hover:border-border shrink-0" title="Toggle Theme">
-            <i class="ph ph-moon text-lg" id="theme-icon"></i>
+            <i class="ph ph-sun text-lg" id="theme-icon"></i>
           </button>
         </div>
       </header>
-      
-      <!-- Main Chat Area -->
-      <main id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 scroll-smooth bg-transparent relative">
-        <div id="messages-area" class="max-w-3xl mx-auto flex flex-col gap-6 pb-24">
+
+      <!-- Split Workstation: Chat Column + Studio Canvas Panel -->
+      <div class="flex-1 flex flex-row h-full min-h-0 overflow-hidden relative" id="workspace-container">
+        
+        <!-- Left Chat Column -->
+        <div class="flex-1 flex flex-col h-full min-w-0 relative overflow-hidden" id="chat-column">
           
-          <!-- Cyber-Organic Neural Deck Welcome HUD -->
-          <div class="flex flex-col items-center justify-center min-h-[58vh] sm:min-h-[72vh] text-center gap-4 sm:gap-6 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-4 sm:py-6" id="welcome-screen">
-            <div class="flex flex-col items-center gap-3 sm:gap-4 max-w-xl px-2">
+          <!-- Main Chat Area -->
+          <main id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 scroll-smooth bg-transparent relative">
+            <div id="messages-area" class="max-w-3xl mx-auto flex flex-col gap-6 pb-24">
               
-              <!-- Telemetry Status Chip -->
-              <div class="telemetry-chip">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>CORE ONLINE</span>
-                <span class="opacity-40">•</span>
-                <span>2.5 FLASH</span>
-                <span class="opacity-40">•</span>
-                <i class="ph-bold ph-sparkle text-indigo-400"></i>
-                <span>FLUX.1 ART ENGINE</span>
+              <!-- JARVIS Cyber-Organic Welcome HUD -->
+              <div class="flex flex-col items-center justify-center min-h-[58vh] sm:min-h-[72vh] text-center gap-4 sm:gap-6 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-4 sm:py-6" id="welcome-screen">
+                <div class="flex flex-col items-center gap-3 sm:gap-4 max-w-xl px-2">
+                  
+                  <!-- Telemetry Status Chip -->
+                  <div class="telemetry-chip">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span>CORE ONLINE</span>
+                    <span class="opacity-40">•</span>
+                    <span>JARVIS PROTOCOL</span>
+                    <span class="opacity-40">•</span>
+                    <i class="ph-bold ph-sparkle text-cyan-400"></i>
+                    <span>FLUX.1 ART ENGINE</span>
+                  </div>
+
+                  <!-- Animated JARVIS Arc Reactor Talking Core -->
+                  <div class="jarvis-reactor my-2 group cursor-pointer" id="neural-core-hero" title="Click to play JARVIS Voice Briefing">
+                    <div class="reactor-ring-outer"></div>
+                    <div class="reactor-ring-mid"></div>
+                    <div class="reactor-ring-inner"></div>
+                    <div class="reactor-core">
+                      <img src="/logo.jpg" alt="Dexter Arc Reactor Core" />
+                    </div>
+                  </div>
+
+                  <!-- Audio Waveform Visualizer -->
+                  <div class="jarvis-audio-wave" id="jarvis-waveform" title="Audio Waveform Visualizer">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                  </div>
+
+                  <!-- Interactive Talking JARVIS Speech Box -->
+                  <div class="jarvis-speech-box rounded-2xl p-4 sm:p-5 max-w-lg mx-auto w-full text-left relative group">
+                    <div class="flex items-start gap-3">
+                      <div class="w-7 h-7 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="ph-bold ph-waveform text-sm"></i>
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                          <span class="text-[10px] font-mono font-bold tracking-wider uppercase text-cyan-400">JARVIS Core Voice Briefing</span>
+                          <span class="text-[10px] text-muted-foreground/80 font-mono">Autonomous TTS</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-foreground/95 leading-relaxed font-medium" id="jarvis-speech-text">
+                          "Core online. Systems nominal. Greetings! I am Dexter, your autonomous intelligence companion. Tell me, what shall we engineer or create today?"
+                        </p>
+                      </div>
+                    </div>
+                    <div class="mt-3 pt-2.5 border-t border-cyan-500/15 flex items-center justify-between">
+                      <span class="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <i class="ph ph-headphones text-xs text-cyan-400"></i> Click below to listen
+                      </span>
+                      <button id="play-voice-intro-btn" type="button" class="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-500/30 hover:scale-105 active:scale-95 cursor-pointer">
+                        <i class="ph-bold ph-play text-xs" id="voice-intro-icon"></i>
+                        <span id="voice-intro-text">Voice Briefing</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Autonomous AI workspace companion. Generate FLUX art, architect code, analyze documents, and converse with adaptive personas.
+                  </p>
+                </div>
+                
+                <!-- HUD Bento Grid Command Center -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 w-full max-w-2xl px-2">
+                  
+                  <!-- Bento Card 1: FLUX.1 AI Image Synthesis -->
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="/image Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic">
+                    <div class="flex items-center justify-between w-full mb-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center ring-1 ring-cyan-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-paint-brush-broad text-base"></i>
+                      </div>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-cyan-400 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">FLUX.1 Studio</span>
+                    </div>
+                    <span class="font-bold text-foreground text-sm group-hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+                      FLUX Image Studio <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    </span>
+                    <span class="text-xs text-muted-foreground mt-1">Generate high-res 1024px art instantly with /image</span>
+                  </button>
+
+                  <!-- Bento Card 2: Code Architecture -->
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Architect a real-time reactive WebSocket cache manager in TypeScript with memory optimization">
+                    <div class="flex items-center justify-between w-full mb-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-code-block text-base"></i>
+                      </div>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Dev Studio</span>
+                    </div>
+                    <span class="font-bold text-foreground text-sm group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                      Full-Stack Architecture <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    </span>
+                    <span class="text-xs text-muted-foreground mt-1">Build type-safe systems, sandbox code & fix bugs</span>
+                  </button>
+
+                  <!-- Bento Card 3: Multimodal Vision -->
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Explain Quantum Superposition using everyday visual metaphors and real-world intuition">
+                    <div class="flex items-center justify-between w-full mb-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center ring-1 ring-indigo-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-atom text-base"></i>
+                      </div>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-indigo-400 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">Reasoning</span>
+                    </div>
+                    <span class="font-bold text-foreground text-sm group-hover:text-indigo-400 transition-colors flex items-center gap-1.5">
+                      Quantum Reasoning <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    </span>
+                    <span class="text-xs text-muted-foreground mt-1">Deconstruct STEM theorems, math formulas & logic</span>
+                  </button>
+
+                  <!-- Bento Card 4: Executive Strategy -->
+                  <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Draft a high-impact executive pitch deck outline for an autonomous AI platform to tier-1 VCs">
+                    <div class="flex items-center justify-between w-full mb-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-lightning text-base"></i>
+                      </div>
+                      <span class="text-[9px] font-bold tracking-wider uppercase text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">Executive</span>
+                    </div>
+                    <span class="font-bold text-foreground text-sm group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                      Strategic Synthesis <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
+                    </span>
+                    <span class="text-xs text-muted-foreground mt-1">Craft investor memos, pitch decks & executive copy</span>
+                  </button>
+                </div>
+
+                <!-- Quick Command Deck Chips -->
+                <div class="flex items-center justify-center gap-2 flex-wrap max-w-xl px-2 pt-1 text-[11px]">
+                  <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/image ">
+                    <i class="ph-bold ph-sparkle text-cyan-400"></i>
+                    <span class="font-mono font-bold text-foreground">/image</span>
+                    <span>FLUX Art</span>
+                  </button>
+                  <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/fix ">
+                    <i class="ph-bold ph-bug text-rose-500"></i>
+                    <span class="font-mono font-bold text-foreground">/fix</span>
+                    <span>Bug Hunter</span>
+                  </button>
+                  <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/explain ">
+                    <i class="ph-bold ph-lightbulb text-amber-500"></i>
+                    <span class="font-mono font-bold text-foreground">/explain</span>
+                    <span>Concepts</span>
+                  </button>
+                  <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/refactor ">
+                    <i class="ph-bold ph-arrows-clockwise text-emerald-500"></i>
+                    <span class="font-mono font-bold text-foreground">/refactor</span>
+                    <span>Clean Code</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+          
+          <!-- Input Area Container -->
+          <div id="input-container-wrapper" class="border-t border-border/60 bg-background/80 backdrop-blur-2xl px-3 sm:px-6 py-2 sm:py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] sm:pb-2.5 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.04)] shrink-0 relative z-20 transition-all duration-300">
+            <div class="max-w-2xl mx-auto relative">
+              
+              <!-- Scroll to Bottom Button -->
+              <button id="scroll-to-bottom" class="absolute bottom-[calc(100%+12px)] right-1 sm:right-0 z-30 bg-card/90 backdrop-blur border border-border text-foreground shadow-xl rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none hover:bg-secondary hover:scale-105 active:scale-95" title="Scroll to bottom">
+                <i class="ph-bold ph-arrow-down text-xs sm:text-sm"></i>
+              </button>
+
+              <!-- File / Image Preview Area -->
+              <div id="file-preview-container" class="hidden absolute bottom-[calc(100%+10px)] left-0 bg-card/95 backdrop-blur-xl border border-border rounded-xl p-2 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-200">
+                <div class="relative group flex items-center gap-2">
+                  <img id="image-preview" src="" alt="Preview" class="hidden h-16 sm:h-20 w-auto object-cover rounded-lg shadow-inner">
+                  <div id="file-preview-badge" class="hidden flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-secondary rounded-lg text-xs font-medium text-foreground">
+                    <i id="file-preview-icon" class="ph ph-file-text text-base sm:text-lg text-cyan-400"></i>
+                    <span id="file-preview-name" class="max-w-[140px] sm:max-w-[180px] truncate">file.txt</span>
+                  </div>
+                  <button id="remove-file-btn" class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full w-5 h-5 flex items-center justify-center shadow-md transition-transform hover:scale-110">
+                    <i class="ph ph-x text-[10px]"></i>
+                  </button>
+                </div>
               </div>
 
-              <!-- Animated 3D Quantum Neural Core Orb -->
-              <div class="neural-core neural-core-container my-1 group cursor-pointer" id="neural-core-hero" title="Interactive Quantum Neural Core">
-                <div class="orbit-ring orbit-ring-1"></div>
-                <div class="orbit-ring orbit-ring-2"></div>
-                <div class="orbit-ring orbit-ring-3"></div>
-                <div class="neural-core-orb">
-                  <img src="/logo.jpg" alt="Dexter Neural Core" />
+              <!-- Collapsed Floating Pill Trigger -->
+              <div id="collapsed-input-pill" class="hidden items-center justify-between gap-3 bg-card/90 hover:bg-card backdrop-blur-xl border border-border/80 hover:border-cyan-500/40 px-3.5 py-1.5 rounded-full shadow-lg shadow-black/5 hover:shadow-cyan-500/10 cursor-pointer transition-all duration-200 mx-auto w-fit group">
+                <div class="flex items-center gap-2 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                  <span class="font-medium">Message Dexter...</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <kbd class="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded border border-border font-mono hidden sm:inline">Ctrl+K</kbd>
+                  <div class="w-5 h-5 rounded-full hover:bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground">
+                    <i class="ph-bold ph-caret-up text-xs"></i>
+                  </div>
                 </div>
               </div>
 
-              <h2 class="text-2xl sm:text-4xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
-                Cyber-Organic Neural Deck
-              </h2>
-              <p class="text-xs sm:text-sm md:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Autonomous AI workspace companion. Generate FLUX art, architect code, analyze documents, and converse with adaptive personas.
-              </p>
-            </div>
-            
-            <!-- HUD Bento Grid Command Center -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 w-full max-w-2xl px-2">
-              
-              <!-- Bento Card 1: FLUX.1 AI Image Synthesis -->
-              <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="/image Cyberpunk neon metropolis floating in crystalline clouds, octane render 8k hyperrealistic">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-pink-500/10 text-pink-500 flex items-center justify-center ring-1 ring-pink-500/20 group-hover:scale-110 transition-transform">
-                    <i class="ph-bold ph-paint-brush-broad text-base"></i>
-                  </div>
-                  <span class="text-[9px] font-bold tracking-wider uppercase text-pink-400 px-2 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20">FLUX.1 Art</span>
+              <!-- Slash Commands Quick Menu -->
+              <div id="slash-commands-menu" class="hidden absolute bottom-[calc(100%+8px)] left-0 right-0 bg-card/95 backdrop-blur-2xl border border-border/80 shadow-2xl rounded-2xl p-2 z-40 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-bottom-2 duration-150">
+                <div class="text-[10px] font-bold text-muted-foreground/70 uppercase px-2.5 py-1 tracking-wider">Quick Commands (Type /)</div>
+                <div class="space-y-0.5" id="slash-commands-list">
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/image">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/image</span>
+                      <span class="text-xs text-foreground">FLUX.1 AI Image Synthesis</span>
+                    </div>
+                    <span class="text-[10px] text-cyan-400 font-medium hidden sm:inline">1024px Free Art</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/summarize">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">/summarize</span>
+                      <span class="text-xs text-foreground">Summarize key points</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">3 bullet points</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/fix">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">/fix</span>
+                      <span class="text-xs text-foreground">Find bugs & fix code</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">Debug & optimize</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/explain">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">/explain</span>
+                      <span class="text-xs text-foreground">Explain concept simply</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">Simple analogies</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/refactor">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">/refactor</span>
+                      <span class="text-xs text-foreground">Clean & modularize</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">Best practices</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/test">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">/test</span>
+                      <span class="text-xs text-foreground">Generate unit tests</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">With edge cases</span>
+                  </button>
+                  <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/translate">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/translate</span>
+                      <span class="text-xs text-foreground">Translate text</span>
+                    </div>
+                    <span class="text-[10px] text-muted-foreground hidden sm:inline">Multi-language</span>
+                  </button>
                 </div>
-                <span class="font-bold text-foreground text-sm group-hover:text-pink-400 transition-colors flex items-center gap-1.5">
-                  FLUX Image Studio <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
-                </span>
-                <span class="text-xs text-muted-foreground mt-1">Generate high-res 1024px art instantly with /image</span>
-              </button>
+              </div>
 
-              <!-- Bento Card 2: Code Architecture -->
-              <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Architect a real-time reactive WebSocket cache manager in TypeScript with memory optimization">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center ring-1 ring-cyan-500/20 group-hover:scale-110 transition-transform">
-                    <i class="ph-bold ph-code-block text-base"></i>
-                  </div>
-                  <span class="text-[9px] font-bold tracking-wider uppercase text-cyan-400 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">Dev Studio</span>
-                </div>
-                <span class="font-bold text-foreground text-sm group-hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-                  Full-Stack Architecture <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
-                </span>
-                <span class="text-xs text-muted-foreground mt-1">Build type-safe systems, sandbox code & fix bugs</span>
-              </button>
+              <!-- Command Deck Capsule Input -->
+              <form id="chat-form" class="command-deck-capsule relative flex items-center gap-1 sm:gap-1.5 rounded-2xl p-1 sm:p-1.5 pl-1.5 sm:pl-2.5 transition-all duration-200">
+                
+                <label for="file-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image, document, audio or code file">
+                  <i class="ph ph-paperclip text-base sm:text-lg"></i>
+                  <input type="file" id="file-upload" accept="image/*,audio/*,application/pdf,.txt,.csv,.json,.js,.ts,.py,.html,.css,.md,.xml,.sql" class="hidden">
+                </label>
 
-              <!-- Bento Card 3: Multimodal Vision -->
-              <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Explain Quantum Superposition using everyday visual metaphors and real-world intuition">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center ring-1 ring-purple-500/20 group-hover:scale-110 transition-transform">
-                    <i class="ph-bold ph-atom text-base"></i>
-                  </div>
-                  <span class="text-[9px] font-bold tracking-wider uppercase text-purple-400 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20">Reasoning</span>
-                </div>
-                <span class="font-bold text-foreground text-sm group-hover:text-purple-400 transition-colors flex items-center gap-1.5">
-                  Quantum Reasoning <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
-                </span>
-                <span class="text-xs text-muted-foreground mt-1">Deconstruct STEM theorems, math formulas & logic</span>
-              </button>
+                <!-- AI Image Generator Trigger Button -->
+                <button type="button" id="image-gen-btn" class="flex-shrink-0 text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Generate AI Image with FLUX.1 (/image)">
+                  <i class="ph-bold ph-paint-brush-broad text-base sm:text-lg"></i>
+                </button>
 
-              <!-- Bento Card 4: Executive Strategy -->
-              <button class="bento-card suggestion-btn flex flex-col items-start p-4 text-left group" data-prompt="Draft a high-impact executive pitch deck outline for an autonomous AI platform to tier-1 VCs">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:scale-110 transition-transform">
-                    <i class="ph-bold ph-lightning text-base"></i>
-                  </div>
-                  <span class="text-[9px] font-bold tracking-wider uppercase text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">Executive</span>
-                </div>
-                <span class="font-bold text-foreground text-sm group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                  Strategic Synthesis <i class="ph ph-arrow-up-right text-xs opacity-60"></i>
-                </span>
-                <span class="text-xs text-muted-foreground mt-1">Craft investor memos, pitch decks & executive copy</span>
-              </button>
-            </div>
+                <!-- Google Web Search Grounding Toggle -->
+                <button type="button" id="web-search-toggle" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Toggle Live Web Search">
+                  <i class="ph ph-globe text-base sm:text-lg" id="web-search-icon"></i>
+                </button>
+                
+                <textarea id="message-input" rows="1" class="flex-1 max-h-32 min-h-[34px] bg-transparent border-0 focus:border-0 focus:ring-0 focus:outline-none outline-none resize-none py-1.5 px-2 text-sm text-foreground placeholder:text-muted-foreground/70 disabled:opacity-50" placeholder="Message Dexter, or type /image for FLUX art..." autocomplete="off"></textarea>
+                
+                <button type="button" id="voice-button" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Voice Input">
+                  <i class="ph ph-microphone text-base sm:text-lg" id="voice-icon"></i>
+                </button>
 
-            <!-- Quick Command Deck Chips -->
-            <div class="flex items-center justify-center gap-2 flex-wrap max-w-xl px-2 pt-1 text-[11px]">
-              <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/image ">
-                <i class="ph-bold ph-sparkle text-pink-500"></i>
-                <span class="font-mono font-bold text-foreground">/image</span>
-                <span>FLUX Art</span>
-              </button>
-              <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/fix ">
-                <i class="ph-bold ph-bug text-rose-500"></i>
-                <span class="font-mono font-bold text-foreground">/fix</span>
-                <span>Bug Hunter</span>
-              </button>
-              <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/explain ">
-                <i class="ph-bold ph-lightbulb text-amber-500"></i>
-                <span class="font-mono font-bold text-foreground">/explain</span>
-                <span>Concepts</span>
-              </button>
-              <button class="quick-chip px-2.5 py-1 rounded-full bg-secondary/80 hover:bg-secondary border border-border/80 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1 cursor-pointer" data-fill="/refactor ">
-                <i class="ph-bold ph-arrows-clockwise text-emerald-500"></i>
-                <span class="font-mono font-bold text-foreground">/refactor</span>
-                <span>Clean Code</span>
-              </button>
+                <button type="button" id="collapse-input-btn" class="hidden sm:flex flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl items-center justify-center cursor-pointer transition-colors" title="Collapse prompt bar (Esc)">
+                  <i class="ph ph-arrows-in-simple text-sm"></i>
+                </button>
+
+                <button type="submit" id="send-button" class="flex-shrink-0 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold disabled:opacity-40 disabled:cursor-not-allowed w-7 h-7 sm:w-8 sm:h-8 rounded-xl shadow-md shadow-cyan-500/25 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center" title="Send message">
+                  <i class="ph-bold ph-paper-plane-right text-xs sm:text-sm"></i>
+                </button>
+              </form>
+
+              <div id="disclaimer-text" class="text-center mt-1 sm:mt-1.5">
+                <p class="text-[9px] sm:text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
+                  <span>Dexter AI may make mistakes. Verify important facts.</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </main>
-      
-      <!-- Input Area Container -->
-      <div id="input-container-wrapper" class="border-t border-border/60 bg-background/80 backdrop-blur-2xl px-3 sm:px-6 py-2 sm:py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] sm:pb-2.5 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.04)] shrink-0 relative z-20 transition-all duration-300">
-        <div class="max-w-2xl mx-auto relative">
-          
-          <!-- Scroll to Bottom Button -->
-          <button id="scroll-to-bottom" class="absolute bottom-[calc(100%+12px)] right-1 sm:right-0 z-30 bg-card/90 backdrop-blur border border-border text-foreground shadow-xl rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none hover:bg-secondary hover:scale-105 active:scale-95" title="Scroll to bottom">
-            <i class="ph-bold ph-arrow-down text-xs sm:text-sm"></i>
-          </button>
 
-          <!-- File / Image Preview Area -->
-          <div id="file-preview-container" class="hidden absolute bottom-[calc(100%+10px)] left-0 bg-card/95 backdrop-blur-xl border border-border rounded-xl p-2 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-200">
-            <div class="relative group flex items-center gap-2">
-              <img id="image-preview" src="" alt="Preview" class="hidden h-16 sm:h-20 w-auto object-cover rounded-lg shadow-inner">
-              <div id="file-preview-badge" class="hidden flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-secondary rounded-lg text-xs font-medium text-foreground">
-                <i id="file-preview-icon" class="ph ph-file-text text-base sm:text-lg text-indigo-500"></i>
-                <span id="file-preview-name" class="max-w-[140px] sm:max-w-[180px] truncate">file.txt</span>
+        <!-- Right Studio Canvas Workstation Panel -->
+        <aside id="right-canvas-panel" class="border-l border-border/80 bg-card/95 md:bg-card/75 backdrop-blur-2xl flex flex-col h-full overflow-hidden shrink-0 z-30 collapsed">
+          <!-- Canvas Header -->
+          <div class="p-3 border-b border-border/60 flex items-center justify-between gap-2 shrink-0 bg-secondary/30">
+            <!-- Tabs -->
+            <div class="flex items-center gap-1 bg-secondary/80 p-0.5 rounded-xl border border-border/60">
+              <button id="canvas-tab-art" class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all bg-primary text-primary-foreground shadow-sm">
+                <i class="ph-bold ph-paint-brush-broad"></i>
+                <span>Art Studio</span>
+              </button>
+              <button id="canvas-tab-sandbox" class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-muted-foreground hover:text-foreground">
+                <i class="ph-bold ph-code-block"></i>
+                <span>Code Sandbox</span>
+              </button>
+            </div>
+
+            <!-- Action icons & Close -->
+            <div class="flex items-center gap-1">
+              <button id="canvas-fullscreen-btn" class="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Expand Fullscreen">
+                <i class="ph-bold ph-arrows-out text-sm"></i>
+              </button>
+              <button id="close-canvas-btn" class="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Close Canvas">
+                <i class="ph ph-x text-base"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Content View 1: Art Studio -->
+          <div id="canvas-art-view" class="flex-1 flex flex-col overflow-y-auto p-4 gap-3">
+            <!-- Aspect Ratio Bar -->
+            <div class="flex items-center justify-between gap-1 bg-secondary/40 p-1 rounded-xl border border-border/40 text-xs">
+              <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider pl-1.5">Ratio:</span>
+              <div class="flex items-center gap-1" id="canvas-ratio-buttons">
+                <button data-ratio="1:1" class="ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold bg-primary text-primary-foreground">1:1</button>
+                <button data-ratio="16:9" class="ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary">16:9</button>
+                <button data-ratio="9:16" class="ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary">9:16</button>
+                <button data-ratio="4:3" class="ratio-btn px-2 py-0.5 rounded-lg font-mono text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary">4:3</button>
               </div>
-              <button id="remove-file-btn" class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full w-5 h-5 flex items-center justify-center shadow-md transition-transform hover:scale-110">
-                <i class="ph ph-x text-[10px]"></i>
-              </button>
             </div>
-          </div>
 
-          <!-- Collapsed Floating Pill Trigger -->
-          <div id="collapsed-input-pill" class="hidden items-center justify-between gap-3 bg-card/90 hover:bg-card backdrop-blur-xl border border-border/80 hover:border-indigo-500/40 px-3.5 py-1.5 rounded-full shadow-lg shadow-black/5 hover:shadow-indigo-500/10 cursor-pointer transition-all duration-200 mx-auto w-fit group">
-            <div class="flex items-center gap-2 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span class="font-medium">Message Dexter...</span>
+            <!-- Active Image Display Card -->
+            <div id="canvas-art-container" class="relative flex-1 min-h-[300px] rounded-2xl overflow-hidden border border-border/80 bg-black/40 flex items-center justify-center group shadow-xl">
+              <!-- Empty Placeholder State -->
+              <div id="canvas-art-empty" class="flex flex-col items-center justify-center p-6 text-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/10">
+                  <i class="ph-bold ph-sparkle text-2xl"></i>
+                </div>
+                <div class="max-w-[240px]">
+                  <h4 class="text-sm font-bold text-foreground">FLUX.1 Studio Canvas</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Generate an image with <code class="text-cyan-400">/image</code> or choose a suggestion below to view art here.</p>
+                </div>
+                <button id="canvas-generate-sample-btn" class="mt-1 px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                  <i class="ph-bold ph-magic-wand"></i> Synthesize Concept Art
+                </button>
+              </div>
+
+              <!-- Live Loading Spinner -->
+              <div id="canvas-art-loader" class="hidden absolute inset-0 bg-card/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2.5 z-20">
+                <div class="relative w-10 h-10 flex items-center justify-center">
+                  <span class="absolute inset-0 rounded-full border-2 border-cyan-400/30 animate-ping"></span>
+                  <i class="ph-bold ph-spinner animate-spin text-2xl text-cyan-400"></i>
+                </div>
+                <span class="text-xs text-cyan-300 font-medium animate-pulse">Rendering neural diffusion latent frames...</span>
+              </div>
+
+              <!-- Loaded Active Image -->
+              <img id="canvas-art-image" src="" alt="Studio Canvas Art" class="hidden w-full h-full object-contain max-h-[65vh] transition-transform duration-500 group-hover:scale-[1.01]" />
             </div>
-            <div class="flex items-center gap-1.5">
-              <kbd class="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded border border-border font-mono hidden sm:inline">Ctrl+K</kbd>
-              <div class="w-5 h-5 rounded-full hover:bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground">
-                <i class="ph-bold ph-caret-up text-xs"></i>
+
+            <!-- Active Image Details & Quick Toolbar -->
+            <div id="canvas-art-details" class="hidden flex-col gap-2 bg-secondary/30 p-3 rounded-2xl border border-border/50">
+              <div class="flex items-start justify-between gap-2">
+                <p id="canvas-art-prompt" class="text-xs text-foreground font-medium italic line-clamp-2 leading-relaxed">
+                  "Cyberpunk neon metropolis floating in crystalline clouds"
+                </p>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-border/40 text-xs">
+                <span id="canvas-art-dimensions" class="text-[10px] font-mono text-muted-foreground">1024 × 1024 · FLUX</span>
+                <div class="flex items-center gap-1.5">
+                  <button id="canvas-art-remix-btn" class="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-medium flex items-center gap-1 transition-colors" title="Generate variation with new seed">
+                    <i class="ph-bold ph-arrows-clockwise text-xs"></i>
+                    <span>Re-roll</span>
+                  </button>
+                  <a id="canvas-art-download-btn" href="#" target="_blank" download="dexter-flux.jpg" class="px-2.5 py-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-bold flex items-center gap-1 shadow-sm transition-colors" title="Download Full Res">
+                    <i class="ph-bold ph-download-simple text-xs"></i>
+                    <span>Save HD</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Slash Commands Quick Menu -->
-          <div id="slash-commands-menu" class="hidden absolute bottom-[calc(100%+8px)] left-0 right-0 bg-card/95 backdrop-blur-2xl border border-border/80 shadow-2xl rounded-2xl p-2 z-40 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-bottom-2 duration-150">
-            <div class="text-[10px] font-bold text-muted-foreground/70 uppercase px-2.5 py-1 tracking-wider">Quick Commands (Type /)</div>
-            <div class="space-y-0.5" id="slash-commands-list">
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/image">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-pink-500 bg-pink-500/10 px-1.5 py-0.5 rounded">/image</span>
-                  <span class="text-xs text-foreground">FLUX.1 AI Image Synthesis</span>
-                </div>
-                <span class="text-[10px] text-pink-400 font-medium hidden sm:inline">1024px Free Art</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/summarize">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">/summarize</span>
-                  <span class="text-xs text-foreground">Summarize key points</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">3 bullet points</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/fix">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">/fix</span>
-                  <span class="text-xs text-foreground">Find bugs & fix code</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">Debug & optimize</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/explain">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">/explain</span>
-                  <span class="text-xs text-foreground">Explain concept simply</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">Simple analogies</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/refactor">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">/refactor</span>
-                  <span class="text-xs text-foreground">Clean & modularize</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">Best practices</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/test">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">/test</span>
-                  <span class="text-xs text-foreground">Generate unit tests</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">With edge cases</span>
-              </button>
-              <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/translate">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/translate</span>
-                  <span class="text-xs text-foreground">Translate text</span>
-                </div>
-                <span class="text-[10px] text-muted-foreground hidden sm:inline">Multi-language</span>
+          <!-- Canvas Content View 2: Code Sandbox -->
+          <div id="canvas-sandbox-view" class="hidden flex-1 flex flex-col overflow-hidden p-3 gap-2">
+            <div class="flex items-center justify-between px-2 text-xs">
+              <div class="flex items-center gap-1.5 text-muted-foreground">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span class="font-mono text-[11px] font-semibold text-foreground">Interactive Code Sandbox</span>
+              </div>
+              <button id="canvas-sandbox-reload-btn" class="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground text-xs" title="Refresh Sandbox">
+                <i class="ph-bold ph-arrows-clockwise"></i>
               </button>
             </div>
+            <div class="flex-1 w-full rounded-xl overflow-hidden border border-border/80 bg-white shadow-inner relative">
+              <iframe id="canvas-sandbox-iframe" class="w-full h-full border-0" sandbox="allow-scripts allow-modals"></iframe>
+            </div>
           </div>
-
-          <!-- Command Deck Capsule Input -->
-          <form id="chat-form" class="command-deck-capsule relative flex items-center gap-1 sm:gap-1.5 rounded-2xl p-1 sm:p-1.5 pl-1.5 sm:pl-2.5 transition-all duration-200">
-            
-            <label for="file-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image, document, audio or code file">
-              <i class="ph ph-paperclip text-base sm:text-lg"></i>
-              <input type="file" id="file-upload" accept="image/*,audio/*,application/pdf,.txt,.csv,.json,.js,.ts,.py,.html,.css,.md,.xml,.sql" class="hidden">
-            </label>
-
-            <!-- AI Image Generator Trigger Button -->
-            <button type="button" id="image-gen-btn" class="flex-shrink-0 text-muted-foreground hover:text-pink-500 hover:bg-pink-500/10 w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Generate AI Image with FLUX.1 (/image)">
-              <i class="ph-bold ph-paint-brush-broad text-base sm:text-lg"></i>
-            </button>
-
-            <!-- Google Web Search Grounding Toggle -->
-            <button type="button" id="web-search-toggle" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Toggle Live Web Search">
-              <i class="ph ph-globe text-base sm:text-lg" id="web-search-icon"></i>
-            </button>
-            
-            <textarea id="message-input" rows="1" class="flex-1 max-h-32 min-h-[34px] bg-transparent border-0 focus:border-0 focus:ring-0 focus:outline-none outline-none resize-none py-1.5 px-2 text-sm text-foreground placeholder:text-muted-foreground/70 disabled:opacity-50" placeholder="Message Dexter, or type /image for FLUX art..." autocomplete="off"></textarea>
-            
-            <button type="button" id="voice-button" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Voice Input">
-              <i class="ph ph-microphone text-base sm:text-lg" id="voice-icon"></i>
-            </button>
-
-            <button type="button" id="collapse-input-btn" class="hidden sm:flex flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl items-center justify-center cursor-pointer transition-colors" title="Collapse prompt bar (Esc)">
-              <i class="ph ph-arrows-in-simple text-sm"></i>
-            </button>
-
-            <button type="submit" id="send-button" class="flex-shrink-0 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white disabled:opacity-40 disabled:cursor-not-allowed w-7 h-7 sm:w-8 sm:h-8 rounded-xl shadow-sm shadow-indigo-500/20 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center" title="Send message">
-              <i class="ph-bold ph-paper-plane-right text-xs sm:text-sm"></i>
-            </button>
-          </form>
-
-          <div id="disclaimer-text" class="text-center mt-1 sm:mt-1.5">
-            <p class="text-[9px] sm:text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
-              <span>Dexter AI may make mistakes. Verify important facts.</span>
-            </p>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
     
-    <!-- Live Code Sandbox Modal -->
+    <!-- Live Code Sandbox Modal (Full Screen Mode) -->
     <div id="sandbox-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
       <div class="absolute inset-0 bg-background/80 backdrop-blur-md sandbox-backdrop"></div>
       <div class="relative bg-card border border-border shadow-2xl rounded-2xl w-full max-w-4xl h-[82vh] flex flex-col overflow-hidden modal-spring">
         <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30 shrink-0">
           <div class="flex items-center gap-2">
-            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></div>
             <span class="text-xs font-semibold text-foreground">Live HTML/JS Sandbox Preview</span>
           </div>
           <button id="close-sandbox-btn" class="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-colors">
@@ -444,7 +661,7 @@
       <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-lg max-h-[88vh] flex flex-col overflow-hidden p-6 modal-spring">
         <div class="flex items-center justify-between pb-4 border-b border-border/60 shrink-0">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
               <i class="ph-bold ph-gear text-lg"></i>
             </div>
             <h2 class="text-lg font-bold">Preferences</h2>
@@ -459,10 +676,10 @@
           <div class="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 border border-border/40">
             <div>
               <h3 class="text-sm font-semibold">Appearance</h3>
-              <p class="text-xs text-muted-foreground">Switch between Light and Dark interface.</p>
+              <p class="text-xs text-muted-foreground">Switch between JARVIS Stealth Dark and Clean Light.</p>
             </div>
             <button id="settings-theme-toggle" class="p-2.5 bg-card hover:bg-card/80 border border-border rounded-xl transition-all shadow-sm">
-              <i class="ph ph-moon text-base" id="settings-theme-icon"></i>
+              <i class="ph ph-sun text-base" id="settings-theme-icon"></i>
             </button>
           </div>
 
@@ -473,20 +690,20 @@
               <span class="text-[10px] font-medium text-muted-foreground">Persisted locally</span>
             </div>
             <p class="text-xs text-muted-foreground">What would you like Dexter to know about you to tailor responses?</p>
-            <textarea id="custom-instructions-input" rows="3" placeholder="e.g. I am a software engineer. Provide concise explanations and production-ready code with type annotations." class="w-full bg-card/70 text-foreground px-3 py-2 rounded-xl text-xs border border-border/60 focus:border-indigo-500/50 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 resize-none transition-all"></textarea>
+            <textarea id="custom-instructions-input" rows="3" placeholder="e.g. I am a software engineer. Provide concise explanations and production-ready code with type annotations." class="w-full bg-card/70 text-foreground px-3 py-2 rounded-xl text-xs border border-border/60 focus:border-cyan-500/50 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 resize-none transition-all"></textarea>
           </div>
 
           <!-- Text-to-Speech Customizer -->
           <div class="p-3.5 rounded-2xl bg-secondary/50 border border-border/40 space-y-2.5">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold">Voice & Speech (TTS)</h3>
-              <button id="test-voice-btn" type="button" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+              <button id="test-voice-btn" type="button" class="text-[11px] font-semibold text-cyan-400 hover:underline flex items-center gap-1">
                 <i class="ph ph-speaker-high"></i> Test Voice
               </button>
             </div>
             <div class="space-y-1.5">
               <label class="text-[11px] font-medium text-muted-foreground">Voice</label>
-              <select id="tts-voice-select" class="w-full bg-card/70 text-foreground px-2.5 py-1.5 rounded-xl text-xs border border-border/60 focus:border-indigo-500/50 focus:outline-none">
+              <select id="tts-voice-select" class="w-full bg-card/70 text-foreground px-2.5 py-1.5 rounded-xl text-xs border border-border/60 focus:border-cyan-500/50 focus:outline-none">
                 <option value="">Default System Voice</option>
               </select>
             </div>
@@ -495,7 +712,7 @@
                 <span>Speed Rate</span>
                 <span id="tts-speed-val" class="font-mono text-foreground font-semibold">1.0x</span>
               </div>
-              <input type="range" id="tts-speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-indigo-600 cursor-pointer">
+              <input type="range" id="tts-speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-cyan-400 cursor-pointer">
             </div>
           </div>
 
@@ -503,8 +720,8 @@
           <div class="p-3.5 rounded-2xl bg-secondary/50 border border-border/40 space-y-2">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold">Gemini Intelligence</h3>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Connected
               </span>
             </div>
             <p class="text-xs text-muted-foreground">Model: <span class="font-mono font-medium text-foreground">gemini-2.5-flash</span> (Free Tier)</p>
@@ -527,7 +744,7 @@
       <div class="relative bg-card/95 backdrop-blur-2xl border border-border shadow-2xl rounded-3xl w-full max-w-md p-6 modal-spring">
         <div class="flex items-center justify-between pb-3.5 border-b border-border/60 mb-4">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
               <i class="ph-bold ph-keyboard text-lg"></i>
             </div>
             <h2 class="text-lg font-bold">Keyboard Shortcuts</h2>
@@ -538,8 +755,12 @@
         </div>
         <div class="space-y-2 text-xs">
           <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
-            <span class="text-muted-foreground">Toggle Sidebar</span>
+            <span class="text-muted-foreground">Toggle Sessions Drawer</span>
             <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Ctrl + B</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
+            <span class="text-muted-foreground">Toggle Studio Canvas</span>
+            <kbd class="px-2 py-1 rounded bg-card border border-border/80 font-mono text-foreground font-semibold">Ctrl + Shift + C</kbd>
           </div>
           <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/40">
             <span class="text-muted-foreground">Collapse / Expand Prompt Bar</span>
@@ -580,10 +801,10 @@
           </button>
         </div>
         <form id="rename-form" class="space-y-3">
-          <input type="text" id="rename-input" maxlength="60" class="w-full bg-secondary/60 border border-border/80 focus:border-indigo-500/50 rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500/20" placeholder="Chat title...">
+          <input type="text" id="rename-input" maxlength="60" class="w-full bg-secondary/60 border border-border/80 focus:border-cyan-500/50 rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500/20" placeholder="Chat title...">
           <div class="flex items-center justify-end gap-2 pt-1">
             <button type="button" id="cancel-rename-btn" class="px-3 py-1.5 rounded-xl hover:bg-secondary text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
-            <button type="submit" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors">Save</button>
+            <button type="submit" class="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold shadow-sm transition-colors">Save</button>
           </div>
         </form>
       </div>
@@ -591,8 +812,8 @@
 
     <!-- Drag-and-Drop Anywhere Overlay -->
     <div id="drag-drop-overlay" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-background/85 backdrop-blur-md pointer-events-none transition-all duration-200">
-      <div class="p-8 rounded-3xl border-2 border-dashed border-indigo-500 bg-card/90 shadow-2xl flex flex-col items-center gap-3 animate-in zoom-in-95 duration-150 text-center max-w-sm">
-        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center animate-bounce">
+      <div class="p-8 rounded-3xl border-2 border-dashed border-cyan-400 bg-card/90 shadow-2xl flex flex-col items-center gap-3 animate-in zoom-in-95 duration-150 text-center max-w-sm">
+        <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center animate-bounce">
           <i class="ph-bold ph-cloud-arrow-up text-3xl"></i>
         </div>
         <p class="text-base font-bold text-foreground">Drop file to analyze</p>
@@ -601,7 +822,7 @@
     </div>
 
     <!-- Sidebar Backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity opacity-0"></div>
 
     <script type="module" src="./main.js"></script>
   </body>
