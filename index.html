@@ -27,7 +27,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
-  <body class="h-screen w-screen overflow-hidden bg-background text-foreground flex font-['Plus_Jakarta_Sans'] transition-colors duration-200 relative antialiased">
+  <body class="h-screen h-[100dvh] w-screen overflow-hidden bg-background text-foreground flex font-['Plus_Jakarta_Sans'] transition-colors duration-200 relative antialiased">
     
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-2xl transition-all duration-700">
@@ -60,15 +60,16 @@
     </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-68 md:w-72 h-full border-r border-border/80 bg-card/60 backdrop-blur-2xl flex flex-col transition-all duration-300 z-30 transform -translate-x-full md:translate-x-0 absolute md:relative shadow-sm overflow-hidden shrink-0">
-      <div class="w-68 md:w-72 h-full flex flex-col shrink-0">
-        <div class="p-4 border-b border-border/60 flex items-center justify-between gap-2">
-          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 shadow-sm shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.98]">
-            <i class="ph-bold ph-plus text-base"></i>
+    <aside id="sidebar" class="w-72 max-w-[85vw] h-full border-r border-border/80 bg-card/95 md:bg-card/60 backdrop-blur-2xl flex flex-col transition-all duration-300 z-40 md:z-30 transform -translate-x-full md:translate-x-0 fixed md:relative shadow-xl md:shadow-sm overflow-hidden shrink-0">
+      <div class="w-72 max-w-[85vw] h-full flex flex-col shrink-0">
+        <div class="p-3.5 sm:p-4 border-b border-border/60 flex items-center justify-between gap-2">
+          <button id="new-chat-btn" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.98]">
+            <i class="ph-bold ph-plus text-sm sm:text-base"></i>
             <span>New Chat</span>
           </button>
-          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Collapse sidebar (Ctrl+B)">
-            <i class="ph ph-sidebar-simple text-lg"></i>
+          <button id="close-sidebar" class="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center" title="Close sidebar">
+            <i class="ph ph-x md:hidden text-lg"></i>
+            <i class="ph ph-sidebar-simple hidden md:inline text-lg"></i>
           </button>
         </div>
 
@@ -103,57 +104,57 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col h-full relative z-10 w-full overflow-hidden">
+    <div class="flex-1 flex flex-col h-full h-[100dvh] md:h-full relative z-10 w-full overflow-hidden">
       <!-- Top Navigation Bar -->
-      <header class="flex items-center justify-between px-4 sm:px-8 py-3.5 border-b border-border/60 bg-card/40 backdrop-blur-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] shrink-0">
-        <div class="flex items-center gap-3">
-          <button id="toggle-sidebar" class="p-2 -ml-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all flex items-center justify-center" title="Toggle sidebar (Ctrl+B)">
+      <header class="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3.5 border-b border-border/60 bg-card/40 backdrop-blur-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] shrink-0 gap-2 overflow-hidden">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 sm:flex-initial">
+          <button id="toggle-sidebar" class="p-1.5 sm:p-2 -ml-1 sm:-ml-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all flex items-center justify-center shrink-0" title="Toggle sidebar (Ctrl+B)">
             <i class="ph ph-sidebar-simple text-xl"></i>
           </button>
           
-          <div class="relative w-10 h-10 rounded-2xl p-[1.5px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/20">
-            <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[14px]" />
-            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-background"></span>
+          <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl p-[1.5px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/20 shrink-0">
+            <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px] sm:rounded-[14px]" />
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 ring-2 ring-background"></span>
           </div>
           
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-base sm:text-lg font-bold tracking-tight">Dexter</h1>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">2.5 Flash</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <h1 class="text-sm sm:text-lg font-bold tracking-tight truncate">Dexter</h1>
+              <span class="text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 whitespace-nowrap shrink-0">2.5 Flash</span>
             </div>
-            <p class="text-[11px] text-muted-foreground font-medium flex items-center gap-1.5">
+            <p class="text-[11px] text-muted-foreground font-medium hidden sm:flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Intelligent Workspace Companion
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 sm:gap-2 shrink-0">
           <!-- Persona Selector -->
           <div class="relative flex items-center">
-            <select id="persona-select" class="appearance-none bg-secondary/80 hover:bg-secondary text-foreground text-xs font-medium py-1.5 pl-3 pr-7 rounded-xl border border-border/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-colors">
+            <select id="persona-select" class="appearance-none bg-secondary/80 hover:bg-secondary text-foreground text-xs font-medium py-1.5 pl-2.5 pr-6 sm:pr-7 rounded-xl border border-border/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-colors max-w-[110px] xs:max-w-[130px] sm:max-w-none truncate">
               <option value="default">Dexter (General)</option>
               <option value="architect">Code Architect</option>
               <option value="tutor">Academic Tutor</option>
               <option value="writer">Executive Writer</option>
               <option value="debugger">Bug Hunter</option>
             </select>
-            <i class="ph ph-caret-down text-muted-foreground absolute right-2.5 text-xs pointer-events-none"></i>
+            <i class="ph ph-caret-down text-muted-foreground absolute right-2 text-xs pointer-events-none"></i>
           </div>
 
           <!-- Export Conversation -->
-          <button id="export-chat-btn" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border" title="Export Conversation (Markdown)">
+          <button id="export-chat-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border shrink-0" title="Export Conversation (Markdown)">
             <i class="ph ph-download-simple text-base"></i>
-            <span class="hidden sm:inline">Export</span>
+            <span class="hidden md:inline">Export</span>
           </button>
 
           <!-- Keyboard Shortcuts -->
-          <button id="shortcuts-btn" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium flex items-center gap-1.5 transition-colors border border-transparent hover:border-border" title="Keyboard Shortcuts (?)">
+          <button id="shortcuts-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium hidden md:flex items-center gap-1.5 transition-colors border border-transparent hover:border-border shrink-0" title="Keyboard Shortcuts (?)">
             <i class="ph ph-keyboard text-base"></i>
-            <span class="hidden md:inline">Shortcuts</span>
+            <span class="hidden lg:inline">Shortcuts</span>
           </button>
 
           <!-- Theme Toggle -->
-          <button id="theme-toggle" class="p-2 sm:p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 border border-transparent hover:border-border" title="Toggle Theme">
+          <button id="theme-toggle" class="p-1.5 sm:p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 border border-transparent hover:border-border shrink-0" title="Toggle Theme">
             <i class="ph ph-moon text-lg" id="theme-icon"></i>
           </button>
         </div>
@@ -164,74 +165,74 @@
         <div id="messages-area" class="max-w-3xl mx-auto flex flex-col gap-6 pb-24">
           
           <!-- Welcome Message & Suggestions -->
-          <div class="flex flex-col items-center justify-center min-h-[72vh] text-center gap-8 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-8" id="welcome-screen">
-            <div class="flex flex-col items-center gap-4 max-w-xl">
+          <div class="flex flex-col items-center justify-center min-h-[58vh] sm:min-h-[72vh] text-center gap-5 sm:gap-8 animate-in fade-in zoom-in-95 duration-500 text-muted-foreground w-full py-4 sm:py-8" id="welcome-screen">
+            <div class="flex flex-col items-center gap-3 sm:gap-4 max-w-xl px-2">
               <!-- Holographic Avatar Ring -->
-              <div class="relative group cursor-pointer mb-2">
+              <div class="relative group cursor-pointer mb-1 sm:mb-2">
                 <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-30 blur-lg group-hover:opacity-60 transition duration-500"></div>
-                <div class="relative w-24 h-24 rounded-3xl p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-xl overflow-hidden">
-                  <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[22px]" />
+                <div class="relative w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-xl overflow-hidden">
+                  <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[14px] sm:rounded-[22px]" />
                 </div>
               </div>
 
               <!-- Pill Badge -->
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-secondary/80 text-foreground border border-border/80 shadow-sm">
+              <div class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-secondary/80 text-foreground border border-border/80 shadow-sm">
                 <i class="ph-fill ph-sparkle text-indigo-500"></i>
                 <span>Next-Gen Vision & Real-time AI</span>
               </div>
 
-              <h2 class="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
+              <h2 class="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
                 How can I assist you today?
               </h2>
-              <p class="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
+              <p class="text-xs sm:text-base text-muted-foreground leading-relaxed max-w-xs sm:max-w-md">
                 Ask questions, inspect code, draft professional documents, or upload photos for instant multimodal analysis.
               </p>
             </div>
             
             <!-- Elevated Suggestion Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full max-w-2xl px-2">
-              <button class="suggestion-btn flex flex-col items-start p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-indigo-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5 text-left group" data-prompt="Write a Python script to automate renaming files and folders">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                    <i class="ph-bold ph-code text-base"></i>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 w-full max-w-2xl px-2">
+              <button class="suggestion-btn flex flex-col items-start p-3.5 sm:p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-indigo-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5 text-left group" data-prompt="Write a Python script to automate renaming files and folders">
+                <div class="flex items-center justify-between w-full mb-2">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i class="ph-bold ph-code text-sm sm:text-base"></i>
                   </div>
-                  <span class="text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Dev</span>
+                  <span class="text-[9px] sm:text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Dev</span>
                 </div>
-                <span class="font-semibold text-foreground text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Write a Python script</span>
-                <span class="text-xs text-muted-foreground mt-1">to automate renaming files and folders</span>
+                <span class="font-semibold text-foreground text-xs sm:text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Write a Python script</span>
+                <span class="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">to automate renaming files and folders</span>
               </button>
 
-              <button class="suggestion-btn flex flex-col items-start p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-purple-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/5 text-left group" data-prompt="Explain Quantum Physics using simple everyday metaphors">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                    <i class="ph-bold ph-atom text-base"></i>
+              <button class="suggestion-btn flex flex-col items-start p-3.5 sm:p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-purple-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/5 text-left group" data-prompt="Explain Quantum Physics using simple everyday metaphors">
+                <div class="flex items-center justify-between w-full mb-2">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                    <i class="ph-bold ph-atom text-sm sm:text-base"></i>
                   </div>
-                  <span class="text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Science</span>
+                  <span class="text-[9px] sm:text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Science</span>
                 </div>
-                <span class="font-semibold text-foreground text-sm group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Explain Quantum Physics</span>
-                <span class="text-xs text-muted-foreground mt-1">using simple everyday metaphors</span>
+                <span class="font-semibold text-foreground text-xs sm:text-sm group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Explain Quantum Physics</span>
+                <span class="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">using simple everyday metaphors</span>
               </button>
 
-              <button class="suggestion-btn flex flex-col items-start p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-emerald-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/5 text-left group" data-prompt="Plan a 3-day itinerary in Tokyo on a budget with food spots">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <i class="ph-bold ph-airplane-tilt text-base"></i>
+              <button class="suggestion-btn flex flex-col items-start p-3.5 sm:p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-emerald-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/5 text-left group" data-prompt="Plan a 3-day itinerary in Tokyo on a budget with food spots">
+                <div class="flex items-center justify-between w-full mb-2">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <i class="ph-bold ph-airplane-tilt text-sm sm:text-base"></i>
                   </div>
-                  <span class="text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Travel</span>
+                  <span class="text-[9px] sm:text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Travel</span>
                 </div>
-                <span class="font-semibold text-foreground text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Plan a 3-day itinerary</span>
-                <span class="text-xs text-muted-foreground mt-1">in Tokyo on a budget with food spots</span>
+                <span class="font-semibold text-foreground text-xs sm:text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Plan a 3-day itinerary</span>
+                <span class="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">in Tokyo on a budget with food spots</span>
               </button>
 
-              <button class="suggestion-btn flex flex-col items-start p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-amber-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/5 text-left group" data-prompt="Draft a formal email asking my director for PTO approval">
-                <div class="flex items-center justify-between w-full mb-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                    <i class="ph-bold ph-envelope-simple text-base"></i>
+              <button class="suggestion-btn flex flex-col items-start p-3.5 sm:p-4 bg-card/70 hover:bg-card border border-border/80 hover:border-amber-500/40 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/5 text-left group" data-prompt="Draft a formal email asking my director for PTO approval">
+                <div class="flex items-center justify-between w-full mb-2">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <i class="ph-bold ph-envelope-simple text-sm sm:text-base"></i>
                   </div>
-                  <span class="text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Writing</span>
+                  <span class="text-[9px] sm:text-[10px] font-bold tracking-wider uppercase text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">Writing</span>
                 </div>
-                <span class="font-semibold text-foreground text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Draft a formal email</span>
-                <span class="text-xs text-muted-foreground mt-1">asking my director for PTO approval</span>
+                <span class="font-semibold text-foreground text-xs sm:text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Draft a formal email</span>
+                <span class="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">asking my director for PTO approval</span>
               </button>
             </div>
           </div>
@@ -239,21 +240,21 @@
       </main>
       
       <!-- Input Area Container -->
-      <div id="input-container-wrapper" class="border-t border-border/60 bg-background/80 backdrop-blur-2xl px-4 py-2.5 sm:px-6 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.04)] shrink-0 relative z-20 transition-all duration-300">
+      <div id="input-container-wrapper" class="border-t border-border/60 bg-background/80 backdrop-blur-2xl px-3 sm:px-6 py-2 sm:py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] sm:pb-2.5 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.04)] shrink-0 relative z-20 transition-all duration-300">
         <div class="max-w-2xl mx-auto relative">
           
           <!-- Scroll to Bottom Button -->
-          <button id="scroll-to-bottom" class="absolute bottom-[calc(100%+14px)] right-0 z-30 bg-card/90 backdrop-blur border border-border text-foreground shadow-xl rounded-full w-9 h-9 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none hover:bg-secondary hover:scale-105 active:scale-95">
-            <i class="ph-bold ph-arrow-down text-sm"></i>
+          <button id="scroll-to-bottom" class="absolute bottom-[calc(100%+12px)] right-1 sm:right-0 z-30 bg-card/90 backdrop-blur border border-border text-foreground shadow-xl rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none hover:bg-secondary hover:scale-105 active:scale-95" title="Scroll to bottom">
+            <i class="ph-bold ph-arrow-down text-xs sm:text-sm"></i>
           </button>
 
           <!-- File / Image Preview Area -->
           <div id="file-preview-container" class="hidden absolute bottom-[calc(100%+10px)] left-0 bg-card/95 backdrop-blur-xl border border-border rounded-xl p-2 shadow-2xl animate-in slide-in-from-bottom-2 fade-in duration-200">
             <div class="relative group flex items-center gap-2">
-              <img id="image-preview" src="" alt="Preview" class="hidden h-20 w-auto object-cover rounded-lg shadow-inner">
-              <div id="file-preview-badge" class="hidden flex items-center gap-2 px-3 py-2 bg-secondary rounded-lg text-xs font-medium text-foreground">
-                <i id="file-preview-icon" class="ph ph-file-text text-lg text-indigo-500"></i>
-                <span id="file-preview-name" class="max-w-[180px] truncate">file.txt</span>
+              <img id="image-preview" src="" alt="Preview" class="hidden h-16 sm:h-20 w-auto object-cover rounded-lg shadow-inner">
+              <div id="file-preview-badge" class="hidden flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-secondary rounded-lg text-xs font-medium text-foreground">
+                <i id="file-preview-icon" class="ph ph-file-text text-base sm:text-lg text-indigo-500"></i>
+                <span id="file-preview-name" class="max-w-[140px] sm:max-w-[180px] truncate">file.txt</span>
               </div>
               <button id="remove-file-btn" class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full w-5 h-5 flex items-center justify-center shadow-md transition-transform hover:scale-110">
                 <i class="ph ph-x text-[10px]"></i>
@@ -268,7 +269,7 @@
               <span class="font-medium">Message Dexter...</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <kbd class="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded border border-border font-mono">Ctrl+K</kbd>
+              <kbd class="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded border border-border font-mono hidden sm:inline">Ctrl+K</kbd>
               <div class="w-5 h-5 rounded-full hover:bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground">
                 <i class="ph-bold ph-caret-up text-xs"></i>
               </div>
@@ -284,76 +285,76 @@
                   <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">/summarize</span>
                   <span class="text-xs text-foreground">Summarize key points</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">3 bullet points</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">3 bullet points</span>
               </button>
               <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/fix">
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">/fix</span>
                   <span class="text-xs text-foreground">Find bugs & fix code</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">Debug & optimize</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">Debug & optimize</span>
               </button>
               <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/explain">
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">/explain</span>
                   <span class="text-xs text-foreground">Explain concept simply</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">Simple analogies</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">Simple analogies</span>
               </button>
               <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/refactor">
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">/refactor</span>
                   <span class="text-xs text-foreground">Clean & modularize</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">Best practices</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">Best practices</span>
               </button>
               <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/test">
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">/test</span>
                   <span class="text-xs text-foreground">Generate unit tests</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">With edge cases</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">With edge cases</span>
               </button>
               <button type="button" class="slash-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-secondary text-left transition-colors group cursor-pointer" data-cmd="/translate">
                 <div class="flex items-center gap-2">
                   <span class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/translate</span>
                   <span class="text-xs text-foreground">Translate text</span>
                 </div>
-                <span class="text-[10px] text-muted-foreground">Multi-language</span>
+                <span class="text-[10px] text-muted-foreground hidden sm:inline">Multi-language</span>
               </button>
             </div>
           </div>
 
           <!-- Compact Chat Form Floating Island -->
-          <form id="chat-form" class="relative flex items-center gap-1.5 bg-card/90 backdrop-blur-xl border border-border/80 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/15 rounded-2xl p-1.5 pl-2.5 transition-all duration-200 shadow-sm">
+          <form id="chat-form" class="relative flex items-center gap-1 sm:gap-1.5 bg-card/90 backdrop-blur-xl border border-border/80 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/15 rounded-2xl p-1 sm:p-1.5 pl-1.5 sm:pl-2.5 transition-all duration-200 shadow-sm">
             
-            <label for="file-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image, document, audio or code file">
-              <i class="ph ph-paperclip text-lg"></i>
+            <label for="file-upload" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Attach image, document, audio or code file">
+              <i class="ph ph-paperclip text-base sm:text-lg"></i>
               <input type="file" id="file-upload" accept="image/*,audio/*,application/pdf,.txt,.csv,.json,.js,.ts,.py,.html,.css,.md,.xml,.sql" class="hidden">
             </label>
 
             <!-- Google Web Search Grounding Toggle -->
-            <button type="button" id="web-search-toggle" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Toggle Live Web Search">
-              <i class="ph ph-globe text-lg" id="web-search-icon"></i>
+            <button type="button" id="web-search-toggle" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all" title="Toggle Live Web Search">
+              <i class="ph ph-globe text-base sm:text-lg" id="web-search-icon"></i>
             </button>
             
             <textarea id="message-input" rows="1" class="flex-1 max-h-32 min-h-[34px] bg-transparent border-0 focus:border-0 focus:ring-0 focus:outline-none outline-none resize-none py-1.5 px-2 text-sm text-foreground placeholder:text-muted-foreground/70 disabled:opacity-50" placeholder="Ask Dexter anything..." autocomplete="off"></textarea>
             
-            <button type="button" id="voice-button" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Voice Input">
-              <i class="ph ph-microphone text-lg" id="voice-icon"></i>
+            <button type="button" id="voice-button" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Voice Input">
+              <i class="ph ph-microphone text-base sm:text-lg" id="voice-icon"></i>
             </button>
 
-            <button type="button" id="collapse-input-btn" class="flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-colors" title="Collapse prompt bar (Esc)">
+            <button type="button" id="collapse-input-btn" class="hidden sm:flex flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-secondary w-8 h-8 rounded-xl items-center justify-center cursor-pointer transition-colors" title="Collapse prompt bar (Esc)">
               <i class="ph ph-arrows-in-simple text-sm"></i>
             </button>
 
-            <button type="submit" id="send-button" class="flex-shrink-0 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white disabled:opacity-40 disabled:cursor-not-allowed w-8 h-8 rounded-xl shadow-sm shadow-indigo-500/20 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center" title="Send message">
-              <i class="ph-bold ph-paper-plane-right text-sm"></i>
+            <button type="submit" id="send-button" class="flex-shrink-0 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white disabled:opacity-40 disabled:cursor-not-allowed w-7 h-7 sm:w-8 sm:h-8 rounded-xl shadow-sm shadow-indigo-500/20 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center" title="Send message">
+              <i class="ph-bold ph-paper-plane-right text-xs sm:text-sm"></i>
             </button>
           </form>
 
-          <div id="disclaimer-text" class="text-center mt-1.5">
-            <p class="text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
+          <div id="disclaimer-text" class="text-center mt-1 sm:mt-1.5">
+            <p class="text-[9px] sm:text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
               <span>Dexter AI may make mistakes. Verify important facts.</span>
             </p>
           </div>
@@ -543,7 +544,7 @@
     </div>
 
     <!-- Sidebar Backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 hidden md:hidden transition-opacity opacity-0"></div>
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
 
     <script type="module" src="./main.js"></script>
   </body>

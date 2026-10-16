@@ -208,7 +208,6 @@ if(clearDataBtn) {
         
         currentSessionId = null;
         clearMessages();
-        loadSidebarSessions();
         toggleSettings();
       } catch (error) {
         console.error("Error clearing data:", error);
@@ -821,11 +820,11 @@ function appendMessage(role, text, fileInfo = null) {
   } else {
     // Dexter Message - Frameless and clean, just like ChatGPT/Claude
     const wrapperDiv = document.createElement("div");
-    wrapperDiv.className = "flex gap-3.5 w-full";
+    wrapperDiv.className = "flex gap-2.5 sm:gap-3.5 w-full min-w-0";
     
     // Avatar
     const avatar = document.createElement("div");
-    avatar.className = `w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mt-0.5 shadow-sm ring-1 ring-border/80 ${isGrouped ? 'invisible' : ''}`;
+    avatar.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden flex-shrink-0 mt-0.5 shadow-sm ring-1 ring-border/80 ${isGrouped ? 'invisible' : ''}`;
     avatar.innerHTML = '<img src="/logo.jpg" alt="Dexter" class="w-full h-full object-cover" />';
     
     const contentWrapper = document.createElement("div");
@@ -836,7 +835,7 @@ function appendMessage(role, text, fileInfo = null) {
 
     // Message Action Buttons with Text-to-Speech
     const actionRow = document.createElement("div");
-    actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0 flex-wrap";
+    actionRow.className = "flex items-center gap-1 mt-1 ml-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 translate-y-0 sm:translate-y-1 sm:group-hover:translate-y-0 flex-wrap";
     actionRow.innerHTML = `
       <button class="text-muted-foreground hover:text-foreground hover:bg-secondary/80 p-1.5 rounded-lg transition-colors tts-msg" title="Listen / Read Aloud">
         <i class="ph ph-speaker-high text-sm"></i>
@@ -1066,7 +1065,7 @@ function postProcessContent(element) {
 
     // Copy Code Button
     const copyBtn = document.createElement("button");
-    copyBtn.className = "copy-btn absolute top-2 right-2 bg-secondary/80 text-secondary-foreground hover:bg-secondary p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 backdrop-blur-md";
+    copyBtn.className = "copy-btn absolute top-2 right-2 bg-secondary/80 text-secondary-foreground hover:bg-secondary p-1.5 rounded-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 backdrop-blur-md";
     copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy';
     copyBtn.onclick = () => {
       navigator.clipboard.writeText(block.innerText);
@@ -1086,7 +1085,7 @@ function postProcessContent(element) {
 
     if (isHtmlOrSvg) {
       const previewBtn = document.createElement("button");
-      previewBtn.className = "preview-btn absolute top-2 right-20 bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 font-semibold shadow-sm";
+      previewBtn.className = "preview-btn absolute top-2 right-16 sm:right-20 bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 font-semibold shadow-sm";
       previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Run';
       previewBtn.onclick = () => {
         openSandbox(codeText);
@@ -1294,6 +1293,15 @@ function renderSidebarSessions(querySnapshot) {
     }
   });
 
+  const getMs = (t) => {
+    if (!t) return 0;
+    if (typeof t.toMillis === 'function') return t.toMillis();
+    if (t.seconds) return t.seconds * 1000;
+    return new Date(t).getTime() || 0;
+  };
+  pinnedSessions.sort((a, b) => getMs(b.createdAt) - getMs(a.createdAt));
+  recentSessions.sort((a, b) => getMs(b.createdAt) - getMs(a.createdAt));
+
   function createSessionItem(session) {
     const sessionId = session.id;
     const isCurrent = currentSessionId === sessionId;
@@ -1317,7 +1325,7 @@ function renderSidebarSessions(querySnapshot) {
 
     // Pin Button
     const pinBtn = document.createElement("button");
-    pinBtn.className = `p-1 rounded-lg hover:bg-secondary/80 ${session.isPinned ? 'text-amber-500' : 'text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-amber-500'} transition-all`;
+    pinBtn.className = `p-1 rounded-lg hover:bg-secondary/80 ${session.isPinned ? 'text-amber-500 opacity-100' : 'text-muted-foreground opacity-70 sm:opacity-0 sm:group-hover:opacity-100 hover:text-amber-500'} transition-all`;
     pinBtn.title = session.isPinned ? "Unpin chat" : "Pin to top";
     pinBtn.innerHTML = `<i class="${session.isPinned ? 'ph-fill ph-star' : 'ph ph-star'} text-xs"></i>`;
     pinBtn.addEventListener("click", async (e) => {
@@ -1333,7 +1341,7 @@ function renderSidebarSessions(querySnapshot) {
 
     // Rename Button
     const renameBtn = document.createElement("button");
-    renameBtn.className = "opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-secondary/80 p-1 rounded-lg transition-all text-muted-foreground";
+    renameBtn.className = "opacity-70 sm:opacity-0 sm:group-hover:opacity-100 hover:text-foreground hover:bg-secondary/80 p-1 rounded-lg transition-all text-muted-foreground";
     renameBtn.title = "Rename Chat";
     renameBtn.innerHTML = '<i class="ph ph-pencil-simple text-xs"></i>';
     renameBtn.addEventListener("click", (e) => {
@@ -1343,7 +1351,7 @@ function renderSidebarSessions(querySnapshot) {
 
     // Delete Button
     const deleteBtn = document.createElement("button");
-    deleteBtn.className = "opacity-0 group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 p-1 rounded-lg transition-all text-muted-foreground";
+    deleteBtn.className = "opacity-70 sm:opacity-0 sm:group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 p-1 rounded-lg transition-all text-muted-foreground";
     deleteBtn.title = "Delete Chat";
     deleteBtn.innerHTML = '<i class="ph ph-trash text-xs"></i>';
     deleteBtn.addEventListener("click", async (e) => {

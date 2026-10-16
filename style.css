@@ -359,3 +359,23 @@ button:active:not(:disabled) {
     display: flex !important;
   }
 }
+
+/* Responsive Mobile Typography & Code Block Utilities */
+@media (max-width: 640px) {
+  .markdown-body {
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .markdown-body pre {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.84em;
+    margin: 0.75em 0;
+    max-width: 100%;
+  }
+  .markdown-body table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}
