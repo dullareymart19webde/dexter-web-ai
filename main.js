@@ -287,12 +287,18 @@ if (SpeechRecognition) {
 }
 
 
-// Persona Selector Listener
+// Persona Selector & Cyber Aura Synchronization
+function applyPersona(persona) {
+  currentPersona = persona || "default";
+  localStorage.setItem("dexter_persona", currentPersona);
+  document.documentElement.setAttribute("data-persona", currentPersona);
+}
+applyPersona(currentPersona);
+
 if (personaSelect) {
   personaSelect.value = currentPersona;
   personaSelect.addEventListener("change", (e) => {
-    currentPersona = e.target.value;
-    localStorage.setItem("dexter_persona", currentPersona);
+    applyPersona(e.target.value);
   });
 }
 
@@ -621,6 +627,7 @@ function clearAttachedFile() {
 
 
 const COMMAND_PREFIXES = {
+  "/image": "/image ",
   "/summarize": "Summarize this clearly with key takeaways: ",
   "/fix": "Analyze, debug, and fix any errors or bottlenecks in this code: ",
   "/explain": "Explain this concept in simple terms with everyday analogies: ",
@@ -628,6 +635,32 @@ const COMMAND_PREFIXES = {
   "/test": "Write comprehensive unit test cases and edge tests for: ",
   "/translate": "Translate this text accurately into English: "
 };
+
+// Image Generator Direct Button in Command Deck Capsule
+const imageGenBtn = document.getElementById("image-gen-btn");
+if (imageGenBtn) {
+  imageGenBtn.addEventListener("click", () => {
+    expandInput();
+    if (!messageInput.value.startsWith("/image ")) {
+      messageInput.value = "/image " + messageInput.value.replace(/^\/image\s*/, "");
+    }
+    messageInput.focus();
+    messageInput.style.height = 'auto';
+    messageInput.style.height = (messageInput.scrollHeight) + 'px';
+  });
+}
+
+// Quick HUD Command Chips on Welcome Screen
+document.querySelectorAll(".quick-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const fill = chip.dataset.fill || "";
+    expandInput();
+    messageInput.value = fill;
+    messageInput.focus();
+    messageInput.style.height = 'auto';
+    messageInput.style.height = (messageInput.scrollHeight) + 'px';
+  });
+});
 
 function updateSlashCommandsMenu() {
   if (!slashCommandsMenu) return;
@@ -910,6 +943,8 @@ function appendMessage(role, text, fileInfo = null) {
   lastMessageRole = role;
 
   return {
+    element: contentElement,
+    msgDiv: msgDiv,
     updateText: (newText) => {
       contentElement.dataset.rawText = newText;
       contentElement.innerHTML = marked.parse(newText) + `
@@ -1054,27 +1089,161 @@ function speakText(rawText, btn = null) {
   speechSynthesis.speak(utterance);
 }
 
+// ==========================================
+// FLUX.1 NEURAL IMAGE ENGINE (POLLINATIONS.AI)
+// ==========================================
+function extractImagePrompt(text) {
+  if (!text) return null;
+  const trimmed = text.trim();
+  
+  if (trimmed.toLowerCase().startsWith("/image")) {
+    const after = trimmed.substring(6).trim();
+    return after || "Futuristic holographic AI neural core, octane render, 8k";
+  }
+
+  const regex = /^(?:please\s+)?(?:generate|create|make|draw|paint|render|produce)\s+(?:an?\s+)?(?:image|photo|picture|artwork|illustration|wallpaper|portrait|drawing)\s+(?:of|for|showing|depicting)\s+(.+)/i;
+  const match = trimmed.match(regex);
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+
+  return null;
+}
+
+function renderFluxImageCard(container, prompt, imageUrl, initialSeed) {
+  let currentSeed = initialSeed || Math.floor(Math.random() * 9999999);
+  let currentUrl = imageUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${currentSeed}`;
+
+  container.innerHTML = `
+    <div class="ai-image-card">
+      <div class="px-3.5 py-2 bg-secondary/50 border-b border-border/40 flex items-center justify-between text-xs">
+        <span class="flex items-center gap-1.5 font-bold text-pink-500">
+          <i class="ph-bold ph-paint-brush-broad"></i> FLUX.1 Neural Synthesis
+        </span>
+        <span class="text-[10px] font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded-full border border-border/40">1024 × 1024 · Ultra-HD</span>
+      </div>
+      <div class="relative min-h-[260px] sm:min-h-[340px] flex items-center justify-center bg-black/10 overflow-hidden group">
+        <div class="image-spinner flex flex-col items-center gap-2.5 p-6 text-center">
+          <div class="relative w-10 h-10 flex items-center justify-center">
+            <span class="absolute inset-0 rounded-full border-2 border-pink-500/30 animate-ping"></span>
+            <i class="ph-bold ph-spinner animate-spin text-2xl text-pink-500"></i>
+          </div>
+          <span class="text-xs text-muted-foreground font-medium animate-pulse">Rendering neural diffusion latent frames...</span>
+        </div>
+        <img src="${currentUrl}" alt="${prompt}" class="hidden w-full h-auto object-cover transition-all duration-500 cursor-pointer hover:scale-[1.01]" />
+      </div>
+      <div class="ai-image-card-bar">
+        <div class="min-w-0 pr-2">
+          <p class="text-[11px] text-muted-foreground truncate max-w-[180px] xs:max-w-xs italic font-medium">"${prompt}"</p>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <a href="${currentUrl}" target="_blank" download="dexter-flux-${currentSeed}.jpg" class="download-img-btn p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground text-xs transition-colors flex items-center gap-1" title="Download High-Res (1024px)">
+            <i class="ph-bold ph-download-simple text-sm"></i>
+          </a>
+          <button class="regen-flux-btn p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground text-xs transition-colors flex items-center gap-1" title="Generate New Variation">
+            <i class="ph-bold ph-arrows-clockwise text-sm"></i>
+          </button>
+          <button class="copy-flux-url p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground text-xs transition-colors flex items-center gap-1" title="Copy Image URL">
+            <i class="ph-bold ph-link text-sm"></i>
+          </button>
+          <button class="expand-flux-btn p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground text-xs transition-colors flex items-center gap-1" title="Fullscreen Preview">
+            <i class="ph-bold ph-arrows-out text-sm"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const card = container.querySelector(".ai-image-card");
+  if (!card) return;
+  const img = card.querySelector("img");
+  const spinner = card.querySelector(".image-spinner");
+  const downloadBtn = card.querySelector(".download-img-btn");
+  const regenBtn = card.querySelector(".regen-flux-btn");
+  const copyBtn = card.querySelector(".copy-flux-url");
+  const expandBtn = card.querySelector(".expand-flux-btn");
+
+  img.onload = () => {
+    spinner.classList.add("hidden");
+    img.classList.remove("hidden");
+    img.classList.add("animate-in", "fade-in", "duration-500");
+    scrollToBottom();
+  };
+  img.onerror = () => {
+    spinner.innerHTML = '<span class="text-xs text-rose-500 font-medium">Image generation timed out. Click regenerate to retry.</span>';
+  };
+  img.onclick = () => window.open(img.src, '_blank');
+
+  regenBtn?.addEventListener("click", () => {
+    currentSeed = Math.floor(Math.random() * 9999999);
+    currentUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${currentSeed}`;
+    spinner.classList.remove("hidden");
+    img.classList.add("hidden");
+    img.src = currentUrl;
+    if (downloadBtn) {
+      downloadBtn.href = currentUrl;
+      downloadBtn.download = `dexter-flux-${currentSeed}.jpg`;
+    }
+  });
+
+  copyBtn?.addEventListener("click", () => {
+    navigator.clipboard.writeText(currentUrl);
+    copyBtn.innerHTML = '<i class="ph-bold ph-check text-green-500 text-sm"></i>';
+    setTimeout(() => {
+      copyBtn.innerHTML = '<i class="ph-bold ph-link text-sm"></i>';
+    }, 2000);
+  });
+
+  expandBtn?.addEventListener("click", () => {
+    window.open(currentUrl, '_blank');
+  });
+}
+
 function postProcessContent(element) {
-  // Syntax Highlighting & Code Preview
+  // 1. Process Pollinations / FLUX AI Images in Markdown
+  element.querySelectorAll('img').forEach((img) => {
+    if (img.closest('.ai-image-card') || img.closest('#file-preview-container') || (img.src && img.src.includes('logo.jpg'))) return;
+    if (img.src && (img.src.includes('pollinations.ai') || img.alt.includes('FLUX'))) {
+      const promptText = img.alt || "AI Artwork";
+      const wrapper = document.createElement("div");
+      if (img.parentNode) {
+        img.parentNode.replaceChild(wrapper, img);
+        renderFluxImageCard(wrapper, promptText, img.src);
+      }
+    }
+  });
+
+  // 2. Syntax Highlighting & Futuristic IDE Terminal Window
   element.querySelectorAll('pre code').forEach((block) => {
     if (block.classList.contains("language-mermaid")) return;
     hljs.highlightElement(block);
     const pre = block.parentElement;
-    if (pre.querySelector('.copy-btn')) return;
-    pre.classList.add("relative", "group");
+    if (pre.dataset.processed === "true") return;
+    pre.dataset.processed = "true";
 
-    // Copy Code Button
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "copy-btn absolute top-2 right-2 bg-secondary/80 text-secondary-foreground hover:bg-secondary p-1.5 rounded-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 backdrop-blur-md";
-    copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy';
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(block.innerText);
-      copyBtn.innerHTML = '<i class="ph ph-check text-green-500"></i> Copied';
-      setTimeout(() => copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy', 2000);
-    };
-    pre.appendChild(copyBtn);
+    let lang = "code";
+    const match = block.className.match(/language-(\w+)/);
+    if (match) lang = match[1];
 
-    // Live HTML / SVG Sandbox Preview Button
+    const terminalWindow = document.createElement("div");
+    terminalWindow.className = "terminal-window relative group";
+
+    const header = document.createElement("div");
+    header.className = "terminal-header";
+    header.innerHTML = `
+      <div class="flex items-center gap-2.5">
+        <div class="terminal-dots">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+        </div>
+        <span class="text-[11px] font-mono text-muted-foreground/80 tracking-wide uppercase px-2 py-0.5 rounded bg-white/5 border border-white/5 font-semibold">${lang}</span>
+      </div>
+      <div class="flex items-center gap-1.5 terminal-actions"></div>
+    `;
+
+    const actionsContainer = header.querySelector(".terminal-actions");
+
     const codeText = block.innerText;
     const isHtmlOrSvg = block.classList.contains("language-html") || 
                         block.classList.contains("language-xml") || 
@@ -1085,12 +1254,31 @@ function postProcessContent(element) {
 
     if (isHtmlOrSvg) {
       const previewBtn = document.createElement("button");
-      previewBtn.className = "preview-btn absolute top-2 right-16 sm:right-20 bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs flex items-center gap-1 font-semibold shadow-sm";
-      previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Run';
+      previewBtn.className = "preview-btn bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1 font-semibold shadow-sm transition-all";
+      previewBtn.innerHTML = '<i class="ph-bold ph-play"></i> Run Sandbox';
       previewBtn.onclick = () => {
         openSandbox(codeText);
       };
-      pre.appendChild(previewBtn);
+      actionsContainer.appendChild(previewBtn);
+    }
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn bg-white/10 hover:bg-white/20 text-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1 transition-all border border-white/10";
+    copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy';
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(block.innerText);
+      copyBtn.innerHTML = '<i class="ph ph-check text-green-400"></i> Copied';
+      setTimeout(() => copyBtn.innerHTML = '<i class="ph ph-copy"></i> Copy', 2000);
+    };
+    actionsContainer.appendChild(copyBtn);
+
+    if (pre.parentNode) {
+      pre.parentNode.insertBefore(terminalWindow, pre);
+      terminalWindow.appendChild(header);
+      terminalWindow.appendChild(pre);
+      pre.style.margin = "0";
+      pre.style.borderRadius = "0";
+      pre.style.border = "none";
     }
   });
 
@@ -1464,7 +1652,11 @@ function getActiveModel() {
 }
 
 async function streamDexterResponse(prompt, attachedFile, uiUpdater) {
+  const heroCore = document.getElementById("neural-core-hero");
+  if (heroCore) heroCore.classList.add("thinking");
+
   if (!GEMINI_API_KEY) {
+    if (heroCore) heroCore.classList.remove("thinking");
     const errorText = "**Configuration Error:** Gemini API key is missing. Please set `VITE_GEMINI_API_KEY` in your environment variables (or Vercel dashboard).";
     uiUpdater.updateText(errorText);
     uiUpdater.finalize();
@@ -1517,7 +1709,10 @@ async function streamDexterResponse(prompt, attachedFile, uiUpdater) {
         }
       }
     } else {
-      if (!prompt) return "";
+      if (!prompt) {
+        if (heroCore) heroCore.classList.remove("thinking");
+        return "";
+      }
 
       // Multi-turn conversation context
       let usedChatSession = false;
@@ -1579,8 +1774,10 @@ async function streamDexterResponse(prompt, attachedFile, uiUpdater) {
       activeSessionHistory.push({ role: 'model', parts: [{ text: fullText }] });
     }
 
+    if (heroCore) heroCore.classList.remove("thinking");
     return fullText;
   } catch (error) {
+    if (heroCore) heroCore.classList.remove("thinking");
     console.error("Error calling Gemini API: ", error);
     const errorText = `**Error:** ${error.message || error.toString()}`;
     uiUpdater.updateText(errorText);
@@ -1625,6 +1822,33 @@ chatForm.addEventListener("submit", async (e) => {
   // Create an empty Dexter message bubble with waving typing dots!
   const updater = appendMessage("dexter", null);
   
+  // Intercept FLUX.1 AI Image Generation requests
+  const imagePrompt = extractImagePrompt(promptText);
+  if (imagePrompt && !fileDataToDisplay) {
+    const heroCore = document.getElementById("neural-core-hero");
+    if (heroCore) heroCore.classList.add("thinking");
+
+    const seed = Math.floor(Math.random() * 9999999);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
+
+    renderFluxImageCard(updater.element, imagePrompt, imageUrl, seed);
+    
+    if (heroCore) {
+      setTimeout(() => heroCore.classList.remove("thinking"), 1800);
+    }
+
+    const savedMessage = `Here is your generated FLUX.1 AI artwork for **"${imagePrompt}"**:\n\n![${imagePrompt}](${imageUrl})`;
+    updater.element.dataset.rawText = savedMessage;
+    
+    saveMessageToFirestore("dexter", savedMessage);
+    activeSessionHistory.push({ role: 'user', parts: [{ text: promptText }] });
+    activeSessionHistory.push({ role: 'model', parts: [{ text: savedMessage }] });
+
+    sendButton.disabled = false;
+    if (voiceButton) voiceButton.disabled = false;
+    return;
+  }
+
   const aiResponse = await streamDexterResponse(promptText, fileDataToDisplay, updater);
   
   saveMessageToFirestore("dexter", aiResponse);
