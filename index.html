@@ -817,8 +817,11 @@
     <!-- Sidebar Backdrop (Mobile Only) -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity opacity-0 md:hidden pointer-events-auto"></div>
 
-    <!-- Autonomous Voice Audio Source -->
-    <audio id="dexter-voice-audio" src="/audio/dexter-greeting.mp3" preload="auto"></audio>
+    <!-- Autonomous Robotic Voice Audio Source -->
+    <audio id="dexter-voice-audio" src="/audio/dexter-greeting.wav" preload="auto">
+      <source src="/audio/dexter-greeting.wav" type="audio/wav">
+      <source src="/audio/dexter-greeting.mp3" type="audio/mpeg">
+    </audio>
 
     <script type="module" src="./main.js"></script>
   </body>

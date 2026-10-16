@@ -214,17 +214,31 @@ function isDesktop() {
   return window.innerWidth >= 768;
 }
 
-function updateHeaderBrandVisibility(isSidebarOpen) {
+function updateHeaderControls(isSidebarOpen) {
   const headerBrand = document.getElementById("header-brand");
-  if (!headerBrand) return;
+  const toggleBtn = document.getElementById("toggle-sidebar");
   if (isDesktop()) {
-    headerBrand.classList.toggle("hidden", isSidebarOpen);
-    headerBrand.classList.toggle("flex", !isSidebarOpen);
+    if (headerBrand) {
+      headerBrand.classList.toggle("hidden", isSidebarOpen);
+      headerBrand.classList.toggle("flex", !isSidebarOpen);
+    }
+    if (toggleBtn) {
+      toggleBtn.classList.toggle("hidden", isSidebarOpen);
+      toggleBtn.classList.toggle("flex", !isSidebarOpen);
+    }
   } else {
-    headerBrand.classList.remove("hidden");
-    headerBrand.classList.add("flex");
+    // On mobile screens, always show toggle button and header brand
+    if (headerBrand) {
+      headerBrand.classList.remove("hidden");
+      headerBrand.classList.add("flex");
+    }
+    if (toggleBtn) {
+      toggleBtn.classList.remove("hidden");
+      toggleBtn.classList.add("flex");
+    }
   }
 }
+const updateHeaderBrandVisibility = updateHeaderControls;
 
 function toggleSidebar(forceState) {
   if (isDesktop()) {
@@ -776,6 +790,8 @@ let audioAnalyser = null;
 let audioSource = null;
 let audioBeatTimeout = null;
 
+let audioVocoderFilter = null;
+
 function setupAudioSpectrumAnalyser() {
   if (audioContext || !dexterVoiceAudio) return;
   try {
@@ -783,9 +799,19 @@ function setupAudioSpectrumAnalyser() {
     if (!AudioContextClass) return;
     audioContext = new AudioContextClass();
     audioSource = audioContext.createMediaElementSource(dexterVoiceAudio);
+    
+    // Cybernetic vocoder resonator node for crisp robotic JARVIS voice
+    audioVocoderFilter = audioContext.createBiquadFilter();
+    audioVocoderFilter.type = "peaking";
+    audioVocoderFilter.frequency.value = 1680;
+    audioVocoderFilter.Q.value = 5.2;
+    audioVocoderFilter.gain.value = 7.5;
+
     audioAnalyser = audioContext.createAnalyser();
     audioAnalyser.fftSize = 64;
-    audioSource.connect(audioAnalyser);
+
+    audioSource.connect(audioVocoderFilter);
+    audioVocoderFilter.connect(audioAnalyser);
     audioAnalyser.connect(audioContext.destination);
   } catch (err) {
     console.warn("AudioContext setup notice:", err);
@@ -860,6 +886,10 @@ function playDexterGreeting() {
   setupAudioSpectrumAnalyser();
   if (audioContext && audioContext.state === "suspended") {
     audioContext.resume().catch(() => {});
+  }
+
+  if (!dexterVoiceAudio.src || !dexterVoiceAudio.src.includes("dexter-greeting.wav")) {
+    dexterVoiceAudio.src = "/audio/dexter-greeting.wav";
   }
 
   dexterVoiceAudio.currentTime = 0;

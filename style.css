@@ -507,9 +507,17 @@ button:active:not(:disabled) {
     pointer-events: none !important;
   }
 
-  /* When desktop sidebar is open, hide duplicate logo & name in header */
+  /* When desktop sidebar is open, hide duplicate toggle-sidebar icon & duplicate brand in header */
+  #sidebar:not(.collapsed) ~ div #toggle-sidebar {
+    display: none !important;
+  }
   #sidebar:not(.collapsed) ~ div #header-brand {
     display: none !important;
+  }
+
+  /* When desktop sidebar is collapsed, show toggle button and brand in header */
+  #sidebar.collapsed ~ div #toggle-sidebar {
+    display: flex !important;
   }
   #sidebar.collapsed ~ div #header-brand {
     display: flex !important;
