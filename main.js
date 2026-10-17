@@ -769,9 +769,15 @@ if (authGoogleBtn) {
       await signInWithPopup(auth, googleProvider);
       closeAuthModal();
     } catch (err) {
-      if (err.code !== "auth/popup-closed-by-user") {
-        console.warn("Google Sign-In error:", err);
-        showAuthAlert("Google sign-in was cancelled or encountered an issue.");
+      console.warn("Google Sign-In error:", err);
+      if (err.code === "auth/unauthorized-domain") {
+        showAuthAlert("Domain unauthorized: Go to Firebase Console > Authentication > Settings > Authorized domains and add: dexter-ai-phi.vercel.app");
+      } else if (err.code === "auth/popup-blocked") {
+        showAuthAlert("Popup was blocked. Please allow popups or turn off Brave Shields for this tab.");
+      } else if (err.code === "auth/popup-closed-by-user") {
+        showAuthAlert("Google sign-in popup was closed.");
+      } else {
+        showAuthAlert(err.message || "Google sign-in encountered an issue.");
       }
     }
   });
