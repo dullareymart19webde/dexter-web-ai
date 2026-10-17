@@ -425,31 +425,150 @@ if(settingsThemeToggle) {
   });
 }
 
+// ==========================================
+// CUSTOM CYBERPUNK CONFIRMATION & TOAST SYSTEM
+// ==========================================
+function showCustomConfirm({
+  title = "Confirm Action",
+  message = "Are you sure you want to proceed?",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  icon = "ph-question",
+  type = "normal" // 'normal' | 'danger'
+}) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirm-modal");
+    const titleEl = document.getElementById("confirm-title");
+    const msgEl = document.getElementById("confirm-message");
+    const okBtn = document.getElementById("confirm-ok-btn");
+    const cancelBtn = document.getElementById("confirm-cancel-btn");
+    const iconEl = document.getElementById("confirm-icon");
+    const iconContainer = document.getElementById("confirm-icon-container");
+
+    if (!modal || !titleEl || !msgEl || !okBtn || !cancelBtn) {
+      resolve(window.confirm(message));
+      return;
+    }
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    okBtn.textContent = confirmText;
+    cancelBtn.textContent = cancelText;
+
+    if (type === "danger") {
+      okBtn.className = "flex-1 py-2.5 px-3.5 rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground text-xs font-bold shadow-md shadow-destructive/20 transition-all hover:scale-[1.01] active:scale-[0.98]";
+      iconContainer.className = "w-12 h-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-4 ring-1 ring-destructive/20";
+      iconEl.className = `ph-bold ${icon || "ph-warning"} text-2xl`;
+    } else {
+      okBtn.className = "flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 text-xs font-bold shadow-md shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.98]";
+      iconContainer.className = "w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-4 ring-1 ring-cyan-500/20";
+      iconEl.className = `ph-bold ${icon || "ph-question"} text-2xl`;
+    }
+
+    const backdrop = modal.querySelector(".confirm-backdrop");
+
+    const cleanup = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      if (backdrop) backdrop.removeEventListener("click", onCancel);
+    };
+
+    const onOk = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    if (backdrop) backdrop.addEventListener("click", onCancel);
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  });
+}
+
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+  const toast = document.createElement("div");
+  const isError = type === "error";
+  const isWarning = type === "warning";
+  const isSuccess = type === "success";
+
+  let iconClass = "ph-info text-cyan-400";
+  let borderClass = "border-border/80";
+  let bgClass = "bg-card/95";
+
+  if (isError) {
+    iconClass = "ph-x-circle text-destructive";
+    borderClass = "border-destructive/30";
+  } else if (isWarning) {
+    iconClass = "ph-warning text-amber-400";
+    borderClass = "border-amber-500/30";
+  } else if (isSuccess) {
+    iconClass = "ph-check-circle text-emerald-400";
+    borderClass = "border-emerald-500/30";
+  }
+
+  toast.className = `p-3.5 rounded-2xl ${bgClass} ${borderClass} border shadow-xl backdrop-blur-xl flex items-center gap-3 text-xs font-semibold text-foreground pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 select-none`;
+  toast.innerHTML = `
+    <i class="ph-bold ${iconClass} text-lg shrink-0"></i>
+    <span class="flex-1 leading-snug">${message}</span>
+  `;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.remove("translate-y-2", "opacity-0");
+    toast.classList.add("translate-y-0", "opacity-100");
+  });
+
+  setTimeout(() => {
+    toast.classList.add("opacity-0", "translate-y-2");
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
 if(clearDataBtn) {
   clearDataBtn.addEventListener("click", async () => {
-    if(confirm("Are you sure you want to delete chat history for this account? This cannot be undone.")) {
-      clearDataBtn.disabled = true;
-      clearDataBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Clearing...';
-      try {
-        const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
-        const q = query(collection(db, "sessions"), where("userId", "==", effectiveUserId));
-        const snapshot = await getDocs(q);
-        const batch = writeBatch(db);
-        snapshot.forEach((doc) => {
-          batch.delete(doc.ref);
-        });
-        await batch.commit();
-        
-        currentSessionId = null;
-        clearMessages();
-        toggleSettings();
-      } catch (error) {
-        console.error("Error clearing data:", error);
-        alert("Failed to clear history.");
-      } finally {
-        clearDataBtn.disabled = false;
-        clearDataBtn.innerHTML = '<i class="ph ph-trash"></i> Clear All Chat History';
-      }
+    const confirmed = await showCustomConfirm({
+      title: "Clear All History",
+      message: "Are you sure you want to delete all chat history for this account? This cannot be undone.",
+      confirmText: "Clear Everything",
+      cancelText: "Keep History",
+      icon: "ph-trash",
+      type: "danger"
+    });
+    if (!confirmed) return;
+
+    clearDataBtn.disabled = true;
+    clearDataBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Clearing...';
+    try {
+      const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
+      const q = query(collection(db, "sessions"), where("userId", "==", effectiveUserId));
+      const snapshot = await getDocs(q);
+      const batch = writeBatch(db);
+      snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      
+      currentSessionId = null;
+      clearMessages();
+      toggleSettings();
+      showToast("Chat history deleted successfully.", "success");
+    } catch (error) {
+      console.error("Error clearing data:", error);
+      showToast("Failed to clear history.", "error");
+    } finally {
+      clearDataBtn.disabled = false;
+      clearDataBtn.innerHTML = '<i class="ph ph-trash"></i> Clear All Chat History';
     }
   });
 }
@@ -621,37 +740,54 @@ if (openAuthBtn) {
   });
 }
 if (headerAuthBtn) {
-  headerAuthBtn.addEventListener("click", () => {
-    if (!currentUser) openAuthModal("signin");
-    else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
-      signOut(auth).then(() => {
-        currentSessionId = null;
-        clearMessages();
+  headerAuthBtn.addEventListener("click", async () => {
+    if (!currentUser) {
+      openAuthModal("signin");
+    } else {
+      const confirmed = await showCustomConfirm({
+        title: "Sign Out",
+        message: `Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`,
+        confirmText: "Sign Out",
+        cancelText: "Stay Logged In",
+        icon: "ph-sign-out",
+        type: "danger"
+      });
+      if (confirmed) {
         localStorage.removeItem("dexter_active_user");
+        await signOut(auth).catch(() => {});
         currentUser = null;
         updateUserUI(null);
         currentSessionId = null;
         clearMessages();
         initSidebarSessionsListener();
         openAuthModal("signin");
-      });
+      }
     }
   });
 }
 if (railAuthBtn) {
-  railAuthBtn.addEventListener("click", () => {
+  railAuthBtn.addEventListener("click", async () => {
     if (!currentUser) {
       openAuthModal("signin");
-    } else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
-      localStorage.removeItem("dexter_active_user");
-      signOut(auth).catch(() => {}).then(() => {
+    } else {
+      const confirmed = await showCustomConfirm({
+        title: "Sign Out",
+        message: `Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`,
+        confirmText: "Sign Out",
+        cancelText: "Stay Logged In",
+        icon: "ph-sign-out",
+        type: "danger"
+      });
+      if (confirmed) {
+        localStorage.removeItem("dexter_active_user");
+        await signOut(auth).catch(() => {});
         currentUser = null;
         updateUserUI(null);
         currentSessionId = null;
         clearMessages();
         initSidebarSessionsListener();
         openAuthModal("signin");
-      });
+      }
     }
   });
 }
@@ -660,7 +796,15 @@ if (authActionBtn) {
   authActionBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
     if (currentUser) {
-      if (confirm(`Sign out of ${currentUser.displayName || currentUser.email || "Dexter"}?`)) {
+      const confirmed = await showCustomConfirm({
+        title: "Sign Out",
+        message: `Are you sure you want to sign out of ${currentUser.displayName || currentUser.email || "Dexter"}?`,
+        confirmText: "Sign Out",
+        cancelText: "Stay Logged In",
+        icon: "ph-sign-out",
+        type: "danger"
+      });
+      if (confirmed) {
         localStorage.removeItem("dexter_active_user");
         await signOut(auth).catch(() => {});
         currentUser = null;
@@ -936,7 +1080,7 @@ if (exportChatBtn) {
   exportChatBtn.addEventListener("click", () => {
     const allChildren = Array.from(messagesArea.children).filter(c => c.id !== "welcome-screen");
     if (allChildren.length === 0) {
-      alert("No messages to export yet.");
+      showToast("No messages to export yet.", "info");
       return;
     }
     let markdown = `# Dexter AI Conversation Export\n*Exported on ${new Date().toLocaleString()}*\n\n---\n\n`;
@@ -1415,7 +1559,7 @@ function handleSelectedFile(file) {
     };
     reader.readAsText(file);
   } else {
-    alert("Unsupported file format. Please attach images, audio, PDF, or code/text files.");
+    showToast("Unsupported file format. Please attach images, audio, PDF, or code/text files.", "warning");
   }
 }
 
@@ -2011,7 +2155,7 @@ function renderMermaid(element) {
 // Text-to-Speech Helper with Customized Voice, Rate, and Reactive Motion
 function speakText(rawText, btn = null) {
   if (!window.speechSynthesis) {
-    alert("Speech synthesis is not supported in this browser.");
+    showToast("Speech synthesis is not supported in this browser.", "warning");
     return;
   }
   if (speechSynthesis.speaking) {
@@ -2556,15 +2700,25 @@ function renderSidebarSessions(querySnapshot) {
     deleteBtn.innerHTML = '<i class="ph ph-trash text-xs"></i>';
     deleteBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
-      if (confirm(`Delete "${session.title || "this chat"}"?`)) {
+      const confirmed = await showCustomConfirm({
+        title: "Delete Chat Session",
+        message: `Permanently delete "${session.title || "this chat"}"?`,
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        icon: "ph-trash",
+        type: "danger"
+      });
+      if (confirmed) {
         try {
           await deleteDoc(doc(db, "sessions", sessionId));
           if (currentSessionId === sessionId) {
             currentSessionId = null;
             clearMessages();
           }
+          showToast("Chat session deleted.", "info");
         } catch (err) {
           console.error("Error deleting session:", err);
+          showToast("Failed to delete chat.", "error");
         }
       }
     });

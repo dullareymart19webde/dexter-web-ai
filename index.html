@@ -931,6 +931,30 @@
           Each account maintains an isolated, encrypted chat history.
         </p>
       </div>
+    </div>
+
+    <!-- Custom Futuristic Confirmation Dialog -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-md confirm-backdrop"></div>
+      <div class="relative bg-card/95 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/10 rounded-3xl w-full max-w-sm p-6 modal-spring flex flex-col items-center text-center">
+        <div id="confirm-icon-container" class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-4 ring-1 ring-cyan-500/20">
+          <i id="confirm-icon" class="ph-bold ph-question text-2xl"></i>
+        </div>
+        <h3 id="confirm-title" class="text-base font-bold text-foreground mb-1.5">Are you sure?</h3>
+        <p id="confirm-message" class="text-xs text-muted-foreground leading-relaxed mb-6">This action cannot be undone.</p>
+        <div class="flex items-center gap-2.5 w-full">
+          <button id="confirm-cancel-btn" type="button" class="flex-1 py-2.5 px-3.5 rounded-xl bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold border border-border/80 transition-all hover:scale-[1.01] active:scale-[0.98]">
+            Cancel
+          </button>
+          <button id="confirm-ok-btn" type="button" class="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 text-xs font-bold shadow-md shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.98]">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Floating Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
 
     <!-- Drag-and-Drop Anywhere Overlay -->
     <div id="drag-drop-overlay" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-background/85 backdrop-blur-md pointer-events-none transition-all duration-200">
