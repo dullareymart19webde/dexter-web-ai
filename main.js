@@ -567,10 +567,10 @@ function updateUserUI(user) {
     if (headerAuthLabel) headerAuthLabel.textContent = name.length > 10 ? name.substring(0, 8) + "..." : name;
     if (headerAuthBtn) headerAuthBtn.title = `Signed in as ${user.email || name}`;
   } else {
-    if (userDisplayName) userDisplayName.textContent = "Guest User";
-    if (authActionText) authActionText.textContent = "Log In";
+    if (userDisplayName) userDisplayName.textContent = "Guest (No History)";
+    if (authActionText) authActionText.textContent = "Sign In";
     if (headerAuthLabel) headerAuthLabel.textContent = "Log In";
-    if (headerAuthBtn) headerAuthBtn.title = "Log in or create account";
+    if (headerAuthBtn) headerAuthBtn.title = "Guest Mode - Log in to save chats";
   }
 }
 
@@ -2305,15 +2305,17 @@ async function createNewSession(firstMessageText) {
   if (!currentSessionId) {
     currentSessionId = crypto.randomUUID();
   }
+  // If not logged in, keep session strictly ephemeral in memory
+  if (!currentUser) return;
+
   const cleanTitle = (firstMessageText || "New Chat").replace(/[\r\n]+/g, " ").trim();
   const title = cleanTitle.length > 28 ? cleanTitle.substring(0, 28) + "..." : cleanTitle;
-  const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
   try {
     await setDoc(doc(db, "sessions", currentSessionId), {
       title: title || "New Chat",
       createdAt: serverTimestamp(),
       isPinned: false,
-      userId: effectiveUserId
+      userId: currentUser.uid
     });
   } catch (error) {
     console.error("Error creating session:", error);
@@ -2321,6 +2323,9 @@ async function createNewSession(firstMessageText) {
 }
 
 async function saveMessageToFirestore(role, message, image = null) {
+  // If not logged in, do not save messages to database
+  if (!currentUser) return;
+
   if (!currentSessionId) {
     await createNewSession(message || "Image Query");
   }
@@ -2523,12 +2528,37 @@ function initSidebarSessionsListener() {
     sessionsUnsubscribe = null;
   }
 
-  const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
+  const historyList = document.getElementById("chat-history-list");
+
+  if (!currentUser) {
+    if (historyList) {
+      historyList.innerHTML = `
+        <div class="p-3 my-2 rounded-2xl bg-secondary/50 border border-border/60 text-center space-y-2.5">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 mx-auto flex items-center justify-center">
+            <i class="ph-bold ph-shield-check text-base"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-foreground">Guest Mode</p>
+            <p class="text-[11px] text-muted-foreground mt-0.5 leading-snug">Chats are ephemeral and not saved to database.</p>
+          </div>
+          <button id="sidebar-guest-signin-btn" type="button" class="w-full py-1.5 px-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition-all">
+            Sign In to Save History
+          </button>
+        </div>
+      `;
+      const guestSignInBtn = document.getElementById("sidebar-guest-signin-btn");
+      if (guestSignInBtn) {
+        guestSignInBtn.addEventListener("click", () => openAuthModal("signin"));
+      }
+    }
+    dismissLoadingScreen();
+    return;
+  }
 
   try {
     const q = query(
       collection(db, "sessions"), 
-      where("userId", "==", effectiveUserId)
+      where("userId", "==", currentUser.uid)
     );
     sessionsUnsubscribe = onSnapshot(q, (snapshot) => {
       renderSidebarSessions(snapshot);
