@@ -96,7 +96,10 @@
       </div>
 
       <!-- Bottom System Controls -->
-      <div class="flex flex-col items-center gap-2 w-full px-2">
+        <button id="rail-auth-btn" class="rail-btn" title="Account / Log In">
+          <i class="ph ph-user-circle text-base"></i>
+        </button>
+
         <button id="rail-shortcuts-btn" class="rail-btn" title="Keyboard Shortcuts (?)">
           <i class="ph ph-keyboard text-base"></i>
         </button>
@@ -164,11 +167,14 @@
             <i class="ph ph-gear text-lg text-muted-foreground"></i>
             <span>Preferences & Voice</span>
           </button>
-          <div class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
-            <span class="flex items-center gap-1.5 font-medium truncate">
-              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Rey Mart Dulla
-            </span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">JARVIS Deck</span>
+          <div id="user-profile-bar" class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
+            <button id="open-auth-btn" class="flex items-center gap-1.5 font-medium truncate hover:text-cyan-400 transition-colors text-left flex-1 min-w-0" title="Account / Authentication">
+              <span id="user-status-indicator" class="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0"></span> 
+              <span id="user-display-name" class="truncate font-semibold">Rey Mart Dulla</span>
+            </button>
+            <button id="auth-action-btn" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/20 transition-all flex items-center gap-1 shrink-0" title="Account / Log In">
+              <span id="auth-action-text">JARVIS Deck</span>
+            </button>
           </div>
         </div>
       </div>
@@ -232,6 +238,12 @@
           <button id="shortcuts-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground text-xs font-medium hidden md:flex items-center gap-1.5 transition-colors border border-transparent hover:border-border shrink-0" title="Keyboard Shortcuts (?)">
             <i class="ph ph-keyboard text-base"></i>
             <span class="hidden lg:inline">Shortcuts</span>
+          </button>
+
+          <!-- Account / Login Button -->
+          <button id="header-auth-btn" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-secondary text-muted-foreground hover:text-cyan-400 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-border/80 shrink-0" title="Account / Log In">
+            <i class="ph ph-user-circle text-base"></i>
+            <span id="header-auth-label" class="hidden sm:inline">Account</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -802,6 +814,123 @@
         </form>
       </div>
     </div>
+
+    <!-- Authentication / Login Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-md auth-backdrop"></div>
+      <div class="relative bg-card/95 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/10 rounded-3xl w-full max-w-md flex flex-col overflow-hidden p-6 modal-spring">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-border/60 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="relative w-8 h-8 rounded-xl p-[1px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-sm shrink-0">
+              <img src="/logo.jpg" alt="Dexter Logo" class="w-full h-full object-cover rounded-[10px]" />
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-foreground">Dexter AI Authentication</h2>
+              <p class="text-[11px] text-muted-foreground">Autonomous Neural Deck Access</p>
+            </div>
+          </div>
+          <button id="close-auth-modal" class="p-2 hover:bg-secondary rounded-xl transition-colors text-muted-foreground hover:text-foreground" title="Close">
+            <i class="ph ph-x text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Mode Tabs: Sign In / Create Account -->
+        <div class="flex items-center p-1 bg-secondary/60 rounded-2xl border border-border/60 my-4">
+          <button id="auth-tab-signin" type="button" class="flex-1 py-1.5 text-xs font-bold rounded-xl transition-all bg-card text-cyan-400 shadow-sm">
+            Sign In
+          </button>
+          <button id="auth-tab-signup" type="button" class="flex-1 py-1.5 text-xs font-bold rounded-xl transition-all text-muted-foreground hover:text-foreground">
+            Create Account
+          </button>
+        </div>
+
+        <!-- Notification / Error Messages -->
+        <div id="auth-alert" class="hidden p-3 rounded-2xl text-xs font-medium border mb-3 flex items-start gap-2">
+          <i id="auth-alert-icon" class="ph-bold ph-warning-circle text-base mt-0.5 shrink-0"></i>
+          <span id="auth-alert-text" class="flex-1 leading-relaxed"></span>
+        </div>
+
+        <!-- Auth Form -->
+        <form id="auth-form" class="space-y-3.5">
+          <!-- Full Name Field (Sign Up Only) -->
+          <div id="auth-name-group" class="space-y-1.5 hidden">
+            <label class="text-[11px] font-semibold text-muted-foreground flex items-center justify-between">
+              <span>Full Name</span>
+            </label>
+            <div class="relative flex items-center">
+              <i class="ph ph-user absolute left-3 text-muted-foreground text-sm pointer-events-none"></i>
+              <input type="text" id="auth-name-input" placeholder="e.g. Rey Mart Dulla" class="w-full bg-secondary/50 text-foreground pl-9 pr-3 py-2 rounded-xl text-xs border border-border/70 focus:border-cyan-500/60 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 transition-all">
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-semibold text-muted-foreground flex items-center justify-between">
+              <span>Email Address</span>
+            </label>
+            <div class="relative flex items-center">
+              <i class="ph ph-envelope-simple absolute left-3 text-muted-foreground text-sm pointer-events-none"></i>
+              <input type="email" id="auth-email-input" required placeholder="you@domain.com" class="w-full bg-secondary/50 text-foreground pl-9 pr-3 py-2 rounded-xl text-xs border border-border/70 focus:border-cyan-500/60 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 transition-all">
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-semibold text-muted-foreground flex items-center justify-between">
+              <span>Password</span>
+              <span id="auth-password-hint" class="text-[10px] text-muted-foreground/70 hidden">Min. 6 chars</span>
+            </label>
+            <div class="relative flex items-center">
+              <i class="ph ph-lock-key absolute left-3 text-muted-foreground text-sm pointer-events-none"></i>
+              <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full bg-secondary/50 text-foreground pl-9 pr-10 py-2 rounded-xl text-xs border border-border/70 focus:border-cyan-500/60 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 transition-all">
+              <button type="button" id="toggle-auth-password" class="absolute right-3 text-muted-foreground hover:text-foreground text-sm" title="Toggle password visibility">
+                <i class="ph ph-eye" id="toggle-auth-password-icon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="auth-submit-btn" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold py-2.5 rounded-2xl text-xs sm:text-sm transition-all duration-200 shadow-md shadow-cyan-500/20 hover:scale-[1.01] active:scale-[0.98] mt-2">
+            <span id="auth-submit-text">Sign In</span>
+            <i class="ph-bold ph-arrow-right text-sm"></i>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-border/60"></div>
+          </div>
+          <div class="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
+            <span class="bg-card px-2 text-muted-foreground/70">Or connect with</span>
+          </div>
+        </div>
+
+        <!-- Google & Guest Providers -->
+        <div class="space-y-2">
+          <button id="auth-google-btn" type="button" class="w-full flex items-center justify-center gap-2.5 bg-secondary/70 hover:bg-secondary text-foreground font-semibold py-2 rounded-xl text-xs border border-border/80 transition-all">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <button id="auth-guest-btn" type="button" class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-secondary/40 text-muted-foreground hover:text-foreground font-medium py-1.5 rounded-xl text-xs transition-all">
+            <i class="ph ph-user text-sm"></i>
+            <span>Continue as Guest (Demo Mode)</span>
+          </button>
+        </div>
+
+        <!-- Footer Notice -->
+        <p class="text-[10px] text-center text-muted-foreground/60 mt-3">
+          Each account maintains an isolated, encrypted chat history.
+        </p>
+      </div>
 
     <!-- Drag-and-Drop Anywhere Overlay -->
     <div id="drag-drop-overlay" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-background/85 backdrop-blur-md pointer-events-none transition-all duration-200">

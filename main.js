@@ -1,7 +1,16 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, query, orderBy, serverTimestamp, getDocs, doc, setDoc, writeBatch, onSnapshot, deleteDoc, updateDoc } from "firebase/firestore";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  signOut, 
+  onAuthStateChanged, 
+  updateProfile 
+} from "firebase/auth";
+import { getFirestore, collection, addDoc, query, orderBy, where, serverTimestamp, getDocs, doc, setDoc, writeBatch, onSnapshot, deleteDoc, updateDoc } from "firebase/firestore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-sUbdC9QLa6qNx7nhEfZhfUenG9gbk7I",
@@ -15,10 +24,14 @@ const firebaseConfig = {
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+let currentUser = null;
+let sessionsUnsubscribe = null;
 
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
@@ -414,11 +427,12 @@ if(settingsThemeToggle) {
 
 if(clearDataBtn) {
   clearDataBtn.addEventListener("click", async () => {
-    if(confirm("Are you sure you want to delete ALL chat history? This cannot be undone.")) {
+    if(confirm("Are you sure you want to delete chat history for this account? This cannot be undone.")) {
       clearDataBtn.disabled = true;
       clearDataBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Clearing...';
       try {
-        const q = query(collection(db, "sessions"));
+        const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
+        const q = query(collection(db, "sessions"), where("userId", "==", effectiveUserId));
         const snapshot = await getDocs(q);
         const batch = writeBatch(db);
         snapshot.forEach((doc) => {
@@ -440,6 +454,283 @@ if(clearDataBtn) {
   });
 }
 
+// ==========================================
+// DEXTER MULTI-ACCOUNT AUTHENTICATION SYSTEM
+// ==========================================
+const authModal = document.getElementById("auth-modal");
+const closeAuthModalBtn = document.getElementById("close-auth-modal");
+const authTabSignin = document.getElementById("auth-tab-signin");
+const authTabSignup = document.getElementById("auth-tab-signup");
+const authForm = document.getElementById("auth-form");
+const authNameGroup = document.getElementById("auth-name-group");
+const authNameInput = document.getElementById("auth-name-input");
+const authEmailInput = document.getElementById("auth-email-input");
+const authPasswordInput = document.getElementById("auth-password-input");
+const authPasswordHint = document.getElementById("auth-password-hint");
+const toggleAuthPasswordBtn = document.getElementById("toggle-auth-password");
+const toggleAuthPasswordIcon = document.getElementById("toggle-auth-password-icon");
+const authSubmitBtn = document.getElementById("auth-submit-btn");
+const authSubmitText = document.getElementById("auth-submit-text");
+const authAlert = document.getElementById("auth-alert");
+const authAlertIcon = document.getElementById("auth-alert-icon");
+const authAlertText = document.getElementById("auth-alert-text");
+const authGoogleBtn = document.getElementById("auth-google-btn");
+const authGuestBtn = document.getElementById("auth-guest-btn");
+const openAuthBtn = document.getElementById("open-auth-btn");
+const authActionBtn = document.getElementById("auth-action-btn");
+const authActionText = document.getElementById("auth-action-text");
+const userDisplayName = document.getElementById("user-display-name");
+const headerAuthBtn = document.getElementById("header-auth-btn");
+const headerAuthLabel = document.getElementById("header-auth-label");
+const railAuthBtn = document.getElementById("rail-auth-btn");
+
+let currentAuthMode = "signin"; // 'signin' or 'signup'
+
+function getGuestId() {
+  let guestId = localStorage.getItem("dexter_guest_id");
+  if (!guestId) {
+    guestId = "guest_" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem("dexter_guest_id", guestId);
+  }
+  return guestId;
+}
+
+function openAuthModal(mode = "signin") {
+  if (!authModal) return;
+  setAuthMode(mode);
+  hideAuthAlert();
+  authModal.classList.remove("hidden");
+  authModal.classList.add("flex");
+  setTimeout(() => {
+    if (currentAuthMode === "signup" && authNameInput) {
+      authNameInput.focus();
+    } else if (authEmailInput) {
+      authEmailInput.focus();
+    }
+  }, 100);
+}
+
+function closeAuthModal() {
+  if (!authModal) return;
+  authModal.classList.add("hidden");
+  authModal.classList.remove("flex");
+  hideAuthAlert();
+  if (authForm) authForm.reset();
+}
+
+function setAuthMode(mode) {
+  currentAuthMode = mode;
+  hideAuthAlert();
+  if (mode === "signin") {
+    authTabSignin?.classList.add("bg-card", "text-cyan-400", "shadow-sm");
+    authTabSignin?.classList.remove("text-muted-foreground");
+    authTabSignup?.classList.remove("bg-card", "text-cyan-400", "shadow-sm");
+    authTabSignup?.classList.add("text-muted-foreground");
+    authNameGroup?.classList.add("hidden");
+    authPasswordHint?.classList.add("hidden");
+    if (authSubmitText) authSubmitText.textContent = "Sign In";
+    if (authNameInput) authNameInput.required = false;
+  } else {
+    authTabSignup?.classList.add("bg-card", "text-cyan-400", "shadow-sm");
+    authTabSignup?.classList.remove("text-muted-foreground");
+    authTabSignin?.classList.remove("bg-card", "text-cyan-400", "shadow-sm");
+    authTabSignin?.classList.add("text-muted-foreground");
+    authNameGroup?.classList.remove("hidden");
+    authPasswordHint?.classList.remove("hidden");
+    if (authSubmitText) authSubmitText.textContent = "Create Account";
+    if (authNameInput) authNameInput.required = true;
+  }
+}
+
+function showAuthAlert(msg, type = "error") {
+  if (!authAlert || !authAlertText) return;
+  authAlertText.textContent = msg;
+  authAlert.classList.remove("hidden");
+  if (type === "error") {
+    authAlert.className = "p-3 rounded-2xl text-xs font-medium border mb-3 flex items-start gap-2 bg-destructive/10 text-destructive border-destructive/20";
+    if (authAlertIcon) authAlertIcon.className = "ph-bold ph-warning-circle text-base mt-0.5 shrink-0";
+  } else {
+    authAlert.className = "p-3 rounded-2xl text-xs font-medium border mb-3 flex items-start gap-2 bg-cyan-500/10 text-cyan-400 border-cyan-500/20";
+    if (authAlertIcon) authAlertIcon.className = "ph-bold ph-check-circle text-base mt-0.5 shrink-0";
+  }
+}
+
+function hideAuthAlert() {
+  if (authAlert) authAlert.classList.add("hidden");
+}
+
+function updateUserUI(user) {
+  if (user) {
+    const name = user.displayName || (user.email ? user.email.split("@")[0] : "Student User");
+    if (userDisplayName) userDisplayName.textContent = name;
+    if (authActionText) authActionText.textContent = "Sign Out";
+    if (headerAuthLabel) headerAuthLabel.textContent = name.length > 10 ? name.substring(0, 8) + "..." : name;
+    if (headerAuthBtn) headerAuthBtn.title = `Signed in as ${user.email || name}`;
+  } else {
+    if (userDisplayName) userDisplayName.textContent = "Guest User";
+    if (authActionText) authActionText.textContent = "Log In";
+    if (headerAuthLabel) headerAuthLabel.textContent = "Log In";
+    if (headerAuthBtn) headerAuthBtn.title = "Log in or create account";
+  }
+}
+
+if (authTabSignin) authTabSignin.addEventListener("click", () => setAuthMode("signin"));
+if (authTabSignup) authTabSignup.addEventListener("click", () => setAuthMode("signup"));
+if (closeAuthModalBtn) closeAuthModalBtn.addEventListener("click", closeAuthModal);
+
+const authBackdrop = document.querySelector(".auth-backdrop");
+if (authBackdrop) authBackdrop.addEventListener("click", closeAuthModal);
+
+if (openAuthBtn) {
+  openAuthBtn.addEventListener("click", () => {
+    if (!currentUser) openAuthModal("signin");
+  });
+}
+if (headerAuthBtn) {
+  headerAuthBtn.addEventListener("click", () => {
+    if (!currentUser) openAuthModal("signin");
+    else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
+      signOut(auth).then(() => {
+        currentSessionId = null;
+        clearMessages();
+        openAuthModal("signin");
+      });
+    }
+  });
+}
+if (railAuthBtn) {
+  railAuthBtn.addEventListener("click", () => {
+    if (!currentUser) openAuthModal("signin");
+    else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
+      signOut(auth).then(() => {
+        currentSessionId = null;
+        clearMessages();
+        openAuthModal("signin");
+      });
+    }
+  });
+}
+
+if (authActionBtn) {
+  authActionBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (currentUser) {
+      if (confirm(`Sign out of ${currentUser.displayName || currentUser.email || "Dexter"}?`)) {
+        await signOut(auth);
+        currentSessionId = null;
+        clearMessages();
+        openAuthModal("signin");
+      }
+    } else {
+      openAuthModal("signin");
+    }
+  });
+}
+
+if (toggleAuthPasswordBtn && authPasswordInput && toggleAuthPasswordIcon) {
+  toggleAuthPasswordBtn.addEventListener("click", () => {
+    const isPass = authPasswordInput.type === "password";
+    authPasswordInput.type = isPass ? "text" : "password";
+    toggleAuthPasswordIcon.className = isPass ? "ph ph-eye-slash" : "ph ph-eye";
+  });
+}
+
+if (authForm) {
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAuthAlert();
+    const email = authEmailInput?.value.trim();
+    const password = authPasswordInput?.value;
+    const name = authNameInput?.value.trim();
+
+    if (!email || !password) {
+      showAuthAlert("Please provide both email and password.");
+      return;
+    }
+
+    if (password.length < 6) {
+      showAuthAlert("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (authSubmitBtn) {
+      authSubmitBtn.disabled = true;
+      authSubmitBtn.classList.add("opacity-75");
+      if (authSubmitText) authSubmitText.textContent = currentAuthMode === "signup" ? "Creating Account..." : "Signing In...";
+    }
+
+    try {
+      if (currentAuthMode === "signup") {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (name && userCredential.user) {
+          try {
+            await updateProfile(userCredential.user, { displayName: name });
+          } catch (e) {}
+        }
+        showAuthAlert("Account created successfully! Connecting neural deck...", "success");
+        setTimeout(() => closeAuthModal(), 700);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        showAuthAlert("Authenticated successfully! Loading your sessions...", "success");
+        setTimeout(() => closeAuthModal(), 700);
+      }
+    } catch (err) {
+      console.warn("Auth error:", err);
+      let userFriendlyMsg = "Authentication failed. Please check your credentials.";
+      if (err.code === "auth/invalid-email") userFriendlyMsg = "Please enter a valid email address.";
+      else if (err.code === "auth/user-not-found") userFriendlyMsg = "No account found with this email. Switch to 'Create Account' to sign up.";
+      else if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") userFriendlyMsg = "Invalid credentials. Please verify your email and password.";
+      else if (err.code === "auth/email-already-in-use") userFriendlyMsg = "This email is already registered. Please sign in instead.";
+      else if (err.code === "auth/weak-password") userFriendlyMsg = "Password must be at least 6 characters.";
+      else if (err.message) userFriendlyMsg = err.message;
+      showAuthAlert(userFriendlyMsg);
+    } finally {
+      if (authSubmitBtn) {
+        authSubmitBtn.disabled = false;
+        authSubmitBtn.classList.remove("opacity-75");
+        if (authSubmitText) authSubmitText.textContent = currentAuthMode === "signup" ? "Create Account" : "Sign In";
+      }
+    }
+  });
+}
+
+if (authGoogleBtn) {
+  authGoogleBtn.addEventListener("click", async () => {
+    hideAuthAlert();
+    try {
+      await signInWithPopup(auth, googleProvider);
+      closeAuthModal();
+    } catch (err) {
+      if (err.code !== "auth/popup-closed-by-user") {
+        console.warn("Google Sign-In error:", err);
+        showAuthAlert("Google sign-in was cancelled or encountered an issue.");
+      }
+    }
+  });
+}
+
+if (authGuestBtn) {
+  authGuestBtn.addEventListener("click", () => {
+    closeAuthModal();
+  });
+}
+
+// Global Firebase Auth State Listener
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  updateUserUI(user);
+  currentSessionId = null;
+  clearMessages();
+  initSidebarSessionsListener();
+
+  // If not logged in, pop open the login modal on first visit for easy sign-in & screenshots!
+  if (!user && !sessionStorage.getItem("dexter_auth_seen")) {
+    sessionStorage.setItem("dexter_auth_seen", "true");
+    setTimeout(() => {
+      openAuthModal("signin");
+    }, 800);
+  }
+});
 
 chatContainer.addEventListener("scroll", () => {
   const isScrolledUp = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight > 100;
@@ -2016,11 +2307,13 @@ async function createNewSession(firstMessageText) {
   }
   const cleanTitle = (firstMessageText || "New Chat").replace(/[\r\n]+/g, " ").trim();
   const title = cleanTitle.length > 28 ? cleanTitle.substring(0, 28) + "..." : cleanTitle;
+  const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
   try {
     await setDoc(doc(db, "sessions", currentSessionId), {
       title: title || "New Chat",
       createdAt: serverTimestamp(),
-      isPinned: false
+      isPinned: false,
+      userId: effectiveUserId
     });
   } catch (error) {
     console.error("Error creating session:", error);
@@ -2225,9 +2518,19 @@ function renderSidebarSessions(querySnapshot) {
 }
 
 function initSidebarSessionsListener() {
+  if (sessionsUnsubscribe) {
+    sessionsUnsubscribe();
+    sessionsUnsubscribe = null;
+  }
+
+  const effectiveUserId = currentUser ? currentUser.uid : getGuestId();
+
   try {
-    const q = query(collection(db, "sessions"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snapshot) => {
+    const q = query(
+      collection(db, "sessions"), 
+      where("userId", "==", effectiveUserId)
+    );
+    sessionsUnsubscribe = onSnapshot(q, (snapshot) => {
       renderSidebarSessions(snapshot);
       dismissLoadingScreen();
     }, (error) => {
