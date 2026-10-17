@@ -408,7 +408,13 @@ function toggleSettings() {
 }
 
 if(openSettingsBtn) openSettingsBtn.addEventListener("click", () => {
-  if (window.innerWidth < 768) toggleSidebar();
+  if (window.innerWidth < 768) toggleSidebar(false);
+  toggleSettings();
+});
+
+const mobileSettingsBtn = document.getElementById("mobile-settings-btn");
+if(mobileSettingsBtn) mobileSettingsBtn.addEventListener("click", () => {
+  if (window.innerWidth < 768) toggleSidebar(false);
   toggleSettings();
 });
 if(closeSettingsBtn) closeSettingsBtn.addEventListener("click", toggleSettings);
@@ -755,7 +761,12 @@ if (authBackdrop) authBackdrop.addEventListener("click", closeAuthModal);
 
 if (openAuthBtn) {
   openAuthBtn.addEventListener("click", () => {
-    if (!currentUser) openAuthModal("signin");
+    if (!currentUser) {
+      openAuthModal("signin");
+    } else {
+      if (window.innerWidth < 768) toggleSidebar(false);
+      toggleSettings();
+    }
   });
 }
 if (headerAuthBtn) {

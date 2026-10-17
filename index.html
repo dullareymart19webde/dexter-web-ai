@@ -151,19 +151,20 @@
         </div>
 
         <!-- Sidebar Footer -->
-        <div class="p-3 border-t border-border/60 flex flex-col gap-1.5 bg-card/40">
-          <button id="open-settings-btn" class="flex items-center gap-2.5 text-sm font-medium text-muted-foreground hover:text-foreground w-full px-3 py-2 rounded-xl hover:bg-secondary/70 transition-colors">
-            <i class="ph ph-gear text-lg text-muted-foreground"></i>
-            <span>Preferences & Voice</span>
-          </button>
-          <div id="user-profile-bar" class="px-3 py-2 flex items-center justify-between text-[11px] text-muted-foreground/70 border-t border-border/40 mt-1">
-            <button id="open-auth-btn" class="flex items-center gap-1.5 font-medium truncate hover:text-cyan-400 transition-colors text-left flex-1 min-w-0" title="Account / Authentication">
+        <div class="p-3 border-t border-border/60 bg-card/40">
+          <div id="user-profile-bar" class="px-2 py-1.5 flex items-center justify-between text-[11px] text-muted-foreground/70">
+            <button id="open-auth-btn" class="flex items-center gap-1.5 font-medium truncate hover:text-cyan-400 transition-colors text-left flex-1 min-w-0" title="Account / Preferences">
               <span id="user-status-indicator" class="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0"></span> 
               <span id="user-display-name" class="truncate font-semibold">Rey Mart Dulla</span>
             </button>
-            <button id="auth-action-btn" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/20 transition-all flex items-center gap-1 shrink-0" title="Account / Log In">
-              <span id="auth-action-text">JARVIS Deck</span>
-            </button>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button id="auth-action-btn" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/20 transition-all flex items-center gap-1" title="Account / Log In">
+                <span id="auth-action-text">JARVIS Deck</span>
+              </button>
+              <button id="mobile-settings-btn" class="md:hidden p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Settings">
+                <i class="ph ph-gear text-base"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
