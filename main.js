@@ -495,6 +495,40 @@ function getGuestId() {
   return guestId;
 }
 
+function handleLocalAuthFallback(email, password, name, mode) {
+  let localUsers = {};
+  try {
+    localUsers = JSON.parse(localStorage.getItem("dexter_local_users") || "{}");
+  } catch (e) {
+    localUsers = {};
+  }
+  const normalizedEmail = email.toLowerCase().trim();
+  
+  if (mode === "signup") {
+    if (localUsers[normalizedEmail]) {
+      throw new Error("This email is already registered. Please switch to Sign In.");
+    }
+    const cleanUid = "local_" + btoa(normalizedEmail).replace(/[^a-zA-Z0-9]/g, "").substring(0, 20);
+    localUsers[normalizedEmail] = {
+      uid: cleanUid,
+      email: normalizedEmail,
+      displayName: name || normalizedEmail.split("@")[0],
+      password: password
+    };
+    localStorage.setItem("dexter_local_users", JSON.stringify(localUsers));
+    const user = localUsers[normalizedEmail];
+    localStorage.setItem("dexter_active_user", JSON.stringify(user));
+    return user;
+  } else {
+    const user = localUsers[normalizedEmail];
+    if (!user || user.password !== password) {
+      throw new Error("Invalid email or password. Please verify your credentials or create an account.");
+    }
+    localStorage.setItem("dexter_active_user", JSON.stringify(user));
+    return user;
+  }
+}
+
 function openAuthModal(mode = "signin") {
   if (!authModal) return;
   setAuthMode(mode);
@@ -593,6 +627,12 @@ if (headerAuthBtn) {
       signOut(auth).then(() => {
         currentSessionId = null;
         clearMessages();
+        localStorage.removeItem("dexter_active_user");
+        currentUser = null;
+        updateUserUI(null);
+        currentSessionId = null;
+        clearMessages();
+        initSidebarSessionsListener();
         openAuthModal("signin");
       });
     }
@@ -600,11 +640,16 @@ if (headerAuthBtn) {
 }
 if (railAuthBtn) {
   railAuthBtn.addEventListener("click", () => {
-    if (!currentUser) openAuthModal("signin");
-    else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
-      signOut(auth).then(() => {
+    if (!currentUser) {
+      openAuthModal("signin");
+    } else if (confirm(`Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`)) {
+      localStorage.removeItem("dexter_active_user");
+      signOut(auth).catch(() => {}).then(() => {
+        currentUser = null;
+        updateUserUI(null);
         currentSessionId = null;
         clearMessages();
+        initSidebarSessionsListener();
         openAuthModal("signin");
       });
     }
@@ -616,9 +661,13 @@ if (authActionBtn) {
     e.stopPropagation();
     if (currentUser) {
       if (confirm(`Sign out of ${currentUser.displayName || currentUser.email || "Dexter"}?`)) {
-        await signOut(auth);
+        localStorage.removeItem("dexter_active_user");
+        await signOut(auth).catch(() => {});
+        currentUser = null;
+        updateUserUI(null);
         currentSessionId = null;
         clearMessages();
+        initSidebarSessionsListener();
         openAuthModal("signin");
       }
     } else {
@@ -676,6 +725,25 @@ if (authForm) {
       }
     } catch (err) {
       console.warn("Auth error:", err);
+
+      // If Firebase Auth is not yet enabled in the console (auth/configuration-not-found), seamlessly fallback to local account mode
+      if (err.code === "auth/configuration-not-found" || err.message?.includes("configuration-not-found")) {
+        try {
+          const localUser = handleLocalAuthFallback(email, password, name, currentAuthMode);
+          currentUser = localUser;
+          updateUserUI(currentUser);
+          currentSessionId = null;
+          clearMessages();
+          initSidebarSessionsListener();
+          showAuthAlert(`Authenticated as ${localUser.displayName || localUser.email}! Connecting...`, "success");
+          setTimeout(() => closeAuthModal(), 700);
+          return;
+        } catch (fallbackErr) {
+          showAuthAlert(fallbackErr.message || "Authentication error.");
+          return;
+        }
+      }
+
       let userFriendlyMsg = "Authentication failed. Please check your credentials.";
       if (err.code === "auth/invalid-email") userFriendlyMsg = "Please enter a valid email address.";
       else if (err.code === "auth/user-not-found") userFriendlyMsg = "No account found with this email. Switch to 'Create Account' to sign up.";
@@ -717,14 +785,26 @@ if (authGuestBtn) {
 
 // Global Firebase Auth State Listener
 onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  updateUserUI(user);
+  if (user) {
+    currentUser = user;
+    localStorage.removeItem("dexter_active_user");
+  } else {
+    // Check if active local account session exists
+    try {
+      const savedLocal = localStorage.getItem("dexter_active_user");
+      currentUser = savedLocal ? JSON.parse(savedLocal) : null;
+    } catch (e) {
+      currentUser = null;
+    }
+  }
+
+  updateUserUI(currentUser);
   currentSessionId = null;
   clearMessages();
   initSidebarSessionsListener();
 
   // If not logged in, pop open the login modal on first visit for easy sign-in & screenshots!
-  if (!user && !sessionStorage.getItem("dexter_auth_seen")) {
+  if (!currentUser && !sessionStorage.getItem("dexter_auth_seen")) {
     sessionStorage.setItem("dexter_auth_seen", "true");
     setTimeout(() => {
       openAuthModal("signin");
