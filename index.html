@@ -95,21 +95,10 @@
         </button>
       </div>
 
-      <!-- Bottom System Controls -->
-        <button id="rail-auth-btn" class="rail-btn" title="Account / Log In">
-          <i class="ph ph-user-circle text-base"></i>
-        </button>
-
-        <button id="rail-shortcuts-btn" class="rail-btn" title="Keyboard Shortcuts (?)">
-          <i class="ph ph-keyboard text-base"></i>
-        </button>
-        
-        <button id="rail-settings-btn" class="rail-btn" title="Preferences & Voice">
+      <!-- Bottom System Controls (Settings & Account) -->
+      <div class="flex flex-col items-center gap-2 w-full px-2">
+        <button id="rail-settings-btn" class="rail-btn" title="Settings & Account">
           <i class="ph ph-gear text-base"></i>
-        </button>
-
-        <button id="rail-theme-btn" class="rail-btn" title="Toggle Theme">
-          <i class="ph ph-sun text-base" id="rail-theme-icon"></i>
         </button>
       </div>
     </aside>
@@ -669,7 +658,7 @@
             <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
               <i class="ph-bold ph-gear text-lg"></i>
             </div>
-            <h2 class="text-lg font-bold">Preferences</h2>
+            <h2 class="text-lg font-bold">Settings & Preferences</h2>
           </div>
           <button class="close-settings p-2 hover:bg-secondary rounded-xl transition-colors text-muted-foreground hover:text-foreground">
             <i class="ph ph-x text-lg"></i>
@@ -677,6 +666,22 @@
         </div>
         
         <div class="space-y-4 overflow-y-auto pr-1 py-4 flex-1">
+          <!-- Account Profile & Sign Out / In Card -->
+          <div class="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 border border-border/40">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400/20 via-blue-500/20 to-indigo-500/20 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/30">
+                <i class="ph-bold ph-user-circle text-xl"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 id="settings-account-name" class="text-sm font-semibold truncate text-foreground">Rey Mart Dulla</h3>
+                <p id="settings-account-email" class="text-xs text-muted-foreground truncate">dullareymart@gmail.com</p>
+              </div>
+            </div>
+            <button id="settings-auth-action-btn" type="button" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+              Sign Out
+            </button>
+          </div>
+
           <!-- Theme Setting Card -->
           <div class="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 border border-border/40">
             <div>
@@ -685,6 +690,18 @@
             </div>
             <button id="settings-theme-toggle" class="p-2.5 bg-card hover:bg-card/80 border border-border rounded-xl transition-all shadow-sm">
               <i class="ph ph-sun text-base" id="settings-theme-icon"></i>
+            </button>
+          </div>
+
+          <!-- Keyboard Shortcuts Card -->
+          <div class="flex items-center justify-between p-3.5 rounded-2xl bg-secondary/50 border border-border/40">
+            <div>
+              <h3 class="text-sm font-semibold">Keyboard Shortcuts</h3>
+              <p class="text-xs text-muted-foreground">Quick commands for navigation and workspace control.</p>
+            </div>
+            <button id="settings-shortcuts-btn" type="button" class="px-3 py-1.5 rounded-xl bg-card hover:bg-card/80 border border-border text-foreground text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm shrink-0">
+              <i class="ph ph-keyboard text-sm"></i>
+              <span>View Shortcuts</span>
             </button>
           </div>
 

@@ -417,11 +417,14 @@ if(settingsBackdrop) settingsBackdrop.addEventListener("click", toggleSettings);
 if(settingsThemeToggle) {
   settingsThemeToggle.addEventListener("click", () => {
     themeToggleBtn.click();
-    if (document.documentElement.getAttribute("data-theme") === "dark") {
-      settingsThemeIcon.classList.replace("ph-moon", "ph-sun");
-    } else {
-      settingsThemeIcon.classList.replace("ph-sun", "ph-moon");
-    }
+  });
+}
+
+const settingsShortcutsBtn = document.getElementById("settings-shortcuts-btn");
+if (settingsShortcutsBtn) {
+  settingsShortcutsBtn.addEventListener("click", () => {
+    toggleSettings();
+    toggleShortcutsModal();
   });
 }
 
@@ -602,6 +605,9 @@ const userDisplayName = document.getElementById("user-display-name");
 const headerAuthBtn = document.getElementById("header-auth-btn");
 const headerAuthLabel = document.getElementById("header-auth-label");
 const railAuthBtn = document.getElementById("rail-auth-btn");
+const settingsAccountName = document.getElementById("settings-account-name");
+const settingsAccountEmail = document.getElementById("settings-account-email");
+const settingsAuthActionBtn = document.getElementById("settings-auth-action-btn");
 
 let currentAuthMode = "signin"; // 'signin' or 'signup'
 
@@ -715,15 +721,28 @@ function hideAuthAlert() {
 function updateUserUI(user) {
   if (user) {
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Student User");
+    const email = user.email || "Active Dexter Account";
     if (userDisplayName) userDisplayName.textContent = name;
     if (authActionText) authActionText.textContent = "Sign Out";
     if (headerAuthLabel) headerAuthLabel.textContent = name.length > 10 ? name.substring(0, 8) + "..." : name;
-    if (headerAuthBtn) headerAuthBtn.title = `Signed in as ${user.email || name}`;
+    if (headerAuthBtn) headerAuthBtn.title = `Signed in as ${email}`;
+    if (settingsAccountName) settingsAccountName.textContent = name;
+    if (settingsAccountEmail) settingsAccountEmail.textContent = email;
+    if (settingsAuthActionBtn) {
+      settingsAuthActionBtn.textContent = "Sign Out";
+      settingsAuthActionBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 transition-all shrink-0 cursor-pointer";
+    }
   } else {
     if (userDisplayName) userDisplayName.textContent = "Guest (No History)";
     if (authActionText) authActionText.textContent = "Sign In";
     if (headerAuthLabel) headerAuthLabel.textContent = "Log In";
     if (headerAuthBtn) headerAuthBtn.title = "Guest Mode - Log in to save chats";
+    if (settingsAccountName) settingsAccountName.textContent = "Guest Mode";
+    if (settingsAccountEmail) settingsAccountEmail.textContent = "No history saved. Sign in to sync across devices.";
+    if (settingsAuthActionBtn) {
+      settingsAuthActionBtn.textContent = "Sign In";
+      settingsAuthActionBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all shrink-0 cursor-pointer";
+    }
   }
 }
 
@@ -816,6 +835,35 @@ if (authActionBtn) {
       }
     } else {
       openAuthModal("signin");
+    }
+  });
+}
+
+if (settingsAuthActionBtn) {
+  settingsAuthActionBtn.addEventListener("click", async () => {
+    if (!currentUser) {
+      toggleSettings();
+      openAuthModal("signin");
+    } else {
+      const confirmed = await showCustomConfirm({
+        title: "Sign Out",
+        message: `Signed in as ${currentUser.displayName || currentUser.email}. Do you want to sign out?`,
+        confirmText: "Sign Out",
+        cancelText: "Stay Logged In",
+        icon: "ph-sign-out",
+        type: "danger"
+      });
+      if (confirmed) {
+        localStorage.removeItem("dexter_active_user");
+        await signOut(auth).catch(() => {});
+        currentUser = null;
+        updateUserUI(null);
+        currentSessionId = null;
+        clearMessages();
+        initSidebarSessionsListener();
+        toggleSettings();
+        openAuthModal("signin");
+      }
     }
   });
 }
